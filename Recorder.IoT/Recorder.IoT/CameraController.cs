@@ -1,20 +1,22 @@
-﻿using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices.Shared;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System;
 using System.Text;
+using System.Net;
 using System.Threading.Tasks;
-using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Graphics.Display;
-using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+
+using Newtonsoft.Json;
+
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+
 using Windows.Storage;
+using Windows.Foundation;
+using Windows.Media.Capture;
 using Windows.Storage.Streams;
+using Windows.Graphics.Display;
+using Windows.Devices.Enumeration;
+using Windows.Media.MediaProperties;
 
 namespace Recorder.IoT
 {
