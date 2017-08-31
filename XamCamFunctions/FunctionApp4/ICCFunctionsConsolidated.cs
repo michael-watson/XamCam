@@ -13,6 +13,11 @@ using FunctionApp4.DataModels;
 using System.Security.Cryptography;
 using System.Globalization;
 using FunctionApp4.DataModels.UploadFileToBlobStorage;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure;
+using System.Collections.Generic;
 
 namespace FunctionApp4
 {
@@ -220,65 +225,161 @@ namespace FunctionApp4
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
 
+            //THIS REQUIRES CONFIGURATION FILE
+            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Retrieve a reference to a container.
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            // Create the container if it doesn't already exist.
+            container.CreateIfNotExists();
+            
+            //By default, the new container is private, 
+            //meaning that you must specify your storage access key to download blobs 
+            //from this container.If you want to make the files within the container available 
+            //to everyone, you can set the container to be public using the following code:
+            container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            // Retrieve reference to a blob named "myblob".
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
+
+            //IN CASE YOU NEED TO SET THE MEDIA TYPE
+            //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
+
+            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
+
+            string aOne = "1";
+
+            ////////////////////////////////////////////////////////////////////////////////
+            // Get the list of items - temporary
+            ////////////////////////////////////////////////////////////////////////////////
+
             if (httpClient.DefaultRequestHeaders != null)
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-            var xmsversion = "2017-04-17";
-            var accountKey = "N0cfqGOzaWIkSUNfiUxodYEmD1yHLAFexLw6YG8hg2368MBho3MsiC6BLbeoyfjUodNjOzax1vZEGDprHrK3aQ==";
-            var accountName = "xamcamstorage";
-            var requestMethod = "PUT";
-            var date = DateTime.UtcNow.AddSeconds(-300).ToString("R", CultureInfo.InvariantCulture);
-            var blobType = "BlockBlob";
+            //CREATE HTTP REQUEST
+            HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/GetVideosConsolidated"));
+            //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            UploadFileToBlobStorageBody thePutUploadFileToBlobStorage = new UploadFileToBlobStorageBody
+            TEMPFromFunctionGettingContainerInformation createdGetListBody = new TEMPFromFunctionGettingContainerInformation
             {
-                FileViaByteArray = myUploadedFile.File
+                ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" // containerName
             };
 
-            string uploadToBlobStoragejsonBody = JsonConvert.SerializeObject(thePutUploadFileToBlobStorage);
-            int contentLengthInt = Encoding.UTF8.GetByteCount(uploadToBlobStoragejsonBody);
-            string authorizationHeader = CreateAuthorizationHeader(requestMethod, blobType, date, xmsversion, contentLengthInt, "application/json", accountName, accountKey, containerName, myUploadedFile.FileName);
-
-            httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
-            httpClient.DefaultRequestHeaders.Add("x-ms-version", xmsversion);
-            httpClient.DefaultRequestHeaders.Add("x-ms-date", date);
-            httpClient.DefaultRequestHeaders.Add("x-ms-blob-type", blobType);
-
-            //CREATE HTTP REQUEST
-            HttpRequestMessage myUploadToBlobStorageRequest = new HttpRequestMessage(HttpMethod.Put, String.Format("{0}/{1}{2}", myPostCreateLocatordObjectResults.BaseUri, myUploadedFile.FileName, myPostCreateLocatordObjectResults.ContentAccessComponent));
-
-            myUploadToBlobStorageRequest.Content = new StringContent(uploadToBlobStoragejsonBody, Encoding.UTF8, "application/json");
-            myUploadToBlobStorageRequest.Content.Headers.Add("Content-Length", contentLengthInt.ToString());
+            string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
+            getTheListOfItemsRequest.Content = new StringContent(myGetListOfBlobsjsonString, Encoding.UTF8, "application/json");
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage UploadToBlobStorageResponseMessage = await httpClient.SendAsync(myUploadToBlobStorageRequest);
+            HttpResponseMessage myGetListResponseMessage = await httpClient.SendAsync(getTheListOfItemsRequest);
 
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var stringResult2 = await UploadToBlobStorageResponseMessage.Content.ReadAsStringAsync();
-
+            var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
+            string myString2 = "2";
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            //var resultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.UploadFileToBlobStorage.RootObject>(stringResult);
+            var myListOfBlobsResults = 
+                Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
+                (myListOfBlobsHttpResult);
 
-            //var dObjectResults = resultObject.d;
-            //var locatorResults = dObjectResults.Id;
+            var myListOfBlobs = myListOfBlobsResults;
 
-            ////ASSIGN OBJECTS TO THE CLASS LEVEL PROPERTIES 
-            //ReturnedUploadFileToBlobStorage = dObjectResults;
-            //ReturnedReturnedUploadFileToBlobStorageId = locatorResults;
-
-            //RETURN THE HTTP RESPONSE MESSAGE
-            return UploadToBlobStorageResponseMessage;
-
-
+            return myPostCreateLocatorResponseMessage;
 
 
 
 
 
         }
+
+
+        [FunctionName("GetVideosConsolidated")]
+        public static async Task<HttpResponseMessage> RunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+
+            //GET AN EMAIL ADDRESS AND TOKEN (SALTED)
+            //var mobileClient = await req.Content.ReadAsAsync<MobileClientInformation>();
+
+            //GET NAME OF CONTAINER 
+            //var containerNameForAccountResponse = await client.SendAsync(MyHTTPRequest); 
+
+            ////EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
+            //var stringAccountInfoFromCosmosDBResult = await containerNameForAccountResponse.Content.ReadAsStringAsync();
+
+            ////DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
+            ////var resultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.UploadFileToBlobStorage.RootObject>(stringAccountInfoFromCosmosDBResult);
+
+            ////var dObjectResults = resultObject.TheContainer; 
+            ////this should look like ASSET-f93jur0sdfj-sdfoejfe-seifje
+
+            //GET THE CONTAINER
+            var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
+            var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
+
+            // Retrieve storage account from connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            
+            // Retrieve reference to a previously created container.
+            CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
+
+            List<TEMPFromFunctionGettingContainerInformation> listOfBlobs = new List<TEMPFromFunctionGettingContainerInformation>();
+
+            // Loop over items within the container and output the length and URI.
+            foreach (IListBlobItem item in container.ListBlobs(null, true))
+            {
+                if (item.GetType() == typeof(CloudBlockBlob))
+                {
+                    CloudBlockBlob blob = (CloudBlockBlob)item;
+                    var temp = new TEMPFromFunctionGettingContainerInformation() {
+                        ContainerName = blob.Uri.ToString() 
+
+                    };
+                    //string tempString = blob.Uri.ToString();
+                    listOfBlobs.Add(temp);
+                    Console.WriteLine("Block blob of length {0}: {1}", blob.Properties.Length, blob.Uri);
+
+                }
+                else if (item.GetType() == typeof(CloudPageBlob))
+                {
+                    CloudPageBlob pageBlob = (CloudPageBlob)item;
+                    Console.WriteLine("Page blob of length {0}: {1}", pageBlob.Properties.Length, pageBlob.Uri);
+
+                }
+                else if (item.GetType() == typeof(CloudBlobDirectory))
+                {
+                    CloudBlobDirectory directory = (CloudBlobDirectory)item;
+                    Console.WriteLine("Directory: {0}", directory.Uri);
+                }
+            }
+
+            //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK!
+            log.Info("Partial Return List with One Object processed a request.");
+            string jsonResult = JsonConvert.SerializeObject(listOfBlobs);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
+            return httpRM;
+            
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
         static string CreateAuthorizationHeader(string httpVerb, string xMsBlobType, string xMsDate, string xMsVersion, long contentLength, string contentType, string storageAccountName, string accountKey, string containerName, string blobName)
         {
