@@ -270,7 +270,10 @@ namespace FunctionApp4
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
             TEMPFromFunctionGettingContainerInformation createdGetListBody = new TEMPFromFunctionGettingContainerInformation
             {
-                ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" // containerName
+                //TEST TO WORK WITH A FIXED ASSET
+                //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
+                ContainerName = containerName
+
             };
 
             string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
