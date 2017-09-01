@@ -300,6 +300,62 @@ namespace FunctionApp4
 
         }
 
+        //UPLOAD TO A SPECIFIC CONTAINER
+        //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
+        //NEXT STEP WILL BE TO GET IT INTO A COSMOS DB
+
+        [FunctionName("PostItemToSpecifiedBlobContainer")]
+        public static async Task<HttpResponseMessage> RunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+
+            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
+
+            ///////////////////////////////////
+            ///// UPLOAD TO BLOB STORAGE
+            //////////////////////////////////
+
+            //THIS REQUIRES CONFIGURATION FILE
+            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
+            
+            // Retrieve a reference to a container.
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            // Create the container if it doesn't already exist.
+            container.CreateIfNotExists();
+
+            //By default, the new container is private, 
+            //meaning that you must specify your storage access key to download blobs 
+            //from this container.If you want to make the files within the container available 
+            //to everyone, you can set the container to be public using the following code:
+            container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            // Retrieve reference to a blob named "myblob".
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
+
+            //IN CASE YOU NEED TO SET THE MEDIA TYPE
+            //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
+
+            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
+
+            ////////////////////////////////////////////////////////
+            //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
+            ////////////////////////////////////////////////////////
+
+            HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);            
+            //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
+            
+            return postFileInCreatedBlob;
+
+        }
+
+
+
 
         [FunctionName("GetVideosConsolidated")]
         public static async Task<HttpResponseMessage> RunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -370,32 +426,28 @@ namespace FunctionApp4
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
             
-    }
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        static string CreateAuthorizationHeader(string httpVerb, string xMsBlobType, string xMsDate, string xMsVersion, long contentLength, string contentType, string storageAccountName, string accountKey, string containerName, string blobName)
+        [FunctionName("PostToCosmos")]
+        public static async Task<HttpResponseMessage> RunPostToCosmos([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
 
-            string headerResource = $"x-ms-blob-type:{xMsBlobType}\nx-ms-date:{xMsDate}\nx-ms-version:{xMsVersion}";
-            string urlResource = $"/{storageAccountName}/{containerName}/{blobName}";
-            string stringToSign = $"{httpVerb}\n\n\n{contentLength}\n\n{contentType}\n\n\n\n\n\n\n{headerResource}\n{urlResource}";
+            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
-            HMACSHA256 hmac = new HMACSHA256(Convert.FromBase64String(accountKey));
-            string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
-
-            String AuthorizationHeader = String.Format("{0} {1}:{2}", "SharedKey", storageAccountName, signature);
-            return AuthorizationHeader;
         }
+
+        [FunctionName("GetDataFromCosmos")]
+        public static async Task<HttpResponseMessage> RunGetDataFromCosmos([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+
+            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
+
+        }
+
+
+
+
+
+
     }
-}
+    }
