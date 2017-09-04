@@ -10,6 +10,7 @@ namespace FunctionApp4
     public class TEMPFromFunctionGettingContainerInformation
     {
         public string ContainerName { get; set; }
+        public string AccountEmailName { get; set; }
 
     }
 }

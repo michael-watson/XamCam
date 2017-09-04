@@ -1,4 +1,4 @@
-
+﻿
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -21,7 +21,7 @@ using System.Collections.Generic;
 
 namespace FunctionApp4
 {
-    public static class ICCFunctionsConsolidated
+    public static class ICCFunctionsConsolidatedDynamic
     {
         //CONSTANTS NEEDED FOR AZURE AD
         static string tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
@@ -44,6 +44,17 @@ namespace FunctionApp4
 
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
+            //CHECK TO SEE IF THE ACCOUNT TYPE IS "NEW"
+            if(myUploadedFile.AccountType!="New") //Existing accounts should have account type = "Existing"
+            {
+                var httpRM = new HttpResponseMessage(HttpStatusCode.BadRequest );
+                string errorMessage = "Account type is not defined as \"New\".  Either i) include an \"AccountType\" equal to New or 2) make your call to PostItemToSpecifiedBlobContainer";
+
+                httpRM.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+                return httpRM;
+            }
+
+            
             HttpClient httpClient = new HttpClient();
 
             //CREATE HTTP REQUEST
@@ -237,7 +248,7 @@ namespace FunctionApp4
 
             // Create the container if it doesn't already exist.
             container.CreateIfNotExists();
-            
+
             //By default, the new container is private, 
             //meaning that you must specify your storage access key to download blobs 
             //from this container.If you want to make the files within the container available 
@@ -252,7 +263,26 @@ namespace FunctionApp4
 
             blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
-            string aOne = "1";
+            /////////////////////////////////////////////////////////////////////////////////
+            // UPLOAD ACCOUNT INFO TO CLOUD
+            /////////////////////////////////////////////////////////////////////////////////
+
+            //CREATE A NEW ACCOUNT IN THE COSMOS DB
+            //YOU'LL ADD THE EMAIL ADDRESS PLUS A NEW GUID
+            //SAVE THE GUID - YOU'LL NEED TO ATTACH THE CONTAINER TO THE ENTRY
+
+            string newAccountId = Guid.NewGuid().ToString();
+
+            XamCamAccountTwo newlyCreatedXamCamAccountTwo = new XamCamAccountTwo()
+            {
+                email = myUploadedFile.Email,
+                id = newAccountId,
+                blobContainer = containerName
+            };
+
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(newlyCreatedXamCamAccountTwo);
+
+
 
             ////////////////////////////////////////////////////////////////////////////////
             // Get the list of items - temporary
@@ -284,20 +314,16 @@ namespace FunctionApp4
 
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
             var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
-            string myString2 = "2";
+
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myListOfBlobsResults = 
+            var myListOfBlobsResults =
                 Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
                 (myListOfBlobsHttpResult);
 
             var myListOfBlobs = myListOfBlobsResults;
 
             return myPostCreateLocatorResponseMessage;
-
-
-
-
-
+            
         }
 
         //UPLOAD TO A SPECIFIC CONTAINER
@@ -310,6 +336,16 @@ namespace FunctionApp4
 
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
+            //CHECK TO SEE IF THE ACCOUNT TYPE IS "EXISTING"
+            if (myUploadedFile.AccountType != "Existing") //Existing accounts should have account type = "Existing"
+            {
+                var httpRM = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                string errorMessage = "Account type is not defined as \"Existing\".  Either i) include an \"AccountType\" equal to Exisiting or 2) make your call to GetAzureADAuthTokenConsolidated ";
+
+                httpRM.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+                return httpRM;
+            }
+
             ///////////////////////////////////
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
@@ -321,8 +357,18 @@ namespace FunctionApp4
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-            
+            string emailFromUploadedFile = myUploadedFile.Email;
+
+            //FIND THE ACCOUNT IN COSMOS DB
+            //GET THE ACCOUNTSTRING
+            // DO IT HERE FIRST AND THEN CREATE A FUNCTION THAT ADD IT TO THE QUERY STRING
+
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+            var firstXamAccountTwo = listofThings.First();
+            string containerName = firstXamAccountTwo.blobContainer;
+
+            //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
+
             // Retrieve a reference to a container.
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
@@ -347,9 +393,9 @@ namespace FunctionApp4
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             ////////////////////////////////////////////////////////
 
-            HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);            
+            HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);
             //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
-            
+
             return postFileInCreatedBlob;
 
         }
@@ -360,6 +406,8 @@ namespace FunctionApp4
         [FunctionName("GetVideosConsolidated")]
         public static async Task<HttpResponseMessage> RunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
+
+
 
             //GET AN EMAIL ADDRESS AND TOKEN (SALTED)
             //var mobileClient = await req.Content.ReadAsAsync<MobileClientInformation>();
@@ -376,16 +424,35 @@ namespace FunctionApp4
             ////var dObjectResults = resultObject.TheContainer; 
             ////this should look like ASSET-f93jur0sdfj-sdfoejfe-seifje
 
-            //GET THE CONTAINER
-            var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
-            var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
+            //GET THE CONTAINER DIRECTLY - METHOD 1
+            //            {
+            //                "ContainerName":"asset-edf7a7c9-dc64-49e1-bf6f-82507fb43b76"
+            //}
+
+            //var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
+            //var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
+
+            //GET THE CONTAINER FROM COSMOS DB
+
+            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
+            string emailFromUploadedFile = myUploadedFile.Email;
+
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+            var firstXamAccountTwo = listofThings.First();
+            string nameOfContainerForAccount = firstXamAccountTwo.blobContainer;
+            // {
+            //     "Email": "accountToMakeVideo2@xamarin.com", "AccountType": "Existing"
+            //}
+
+
+            //var nameOfContainerForAccount
 
             // Retrieve storage account from connection string.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
 
             // Create the blob client.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            
+
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
 
@@ -397,8 +464,9 @@ namespace FunctionApp4
                 if (item.GetType() == typeof(CloudBlockBlob))
                 {
                     CloudBlockBlob blob = (CloudBlockBlob)item;
-                    var temp = new TEMPFromFunctionGettingContainerInformation() {
-                        ContainerName = blob.Uri.ToString() 
+                    var temp = new TEMPFromFunctionGettingContainerInformation()
+                    {
+                        ContainerName = blob.Uri.ToString()
 
                     };
                     //string tempString = blob.Uri.ToString();
@@ -425,29 +493,65 @@ namespace FunctionApp4
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
+        }
+
+
+
+        //VERSION 3
+        //DOES WORK - CREATED A COSMOS DB COMPATIBLE VERSION OF OBJECT WITHOUT JSSON PROPERTY TAGS
+
+        [FunctionName("PostToCosmosObjectTwo")]
+        public static async Task<HttpResponseMessage> RunPostToCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(myUploadedFile);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            return httpRM;
+
+        }
+
+
+        [FunctionName("DeleteDataFromCosmosObjectTwo")]
+        public static async Task<HttpResponseMessage> RunDeleteDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "delete", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.DeleteCosmosDogAsync(myUploadedFile);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            return httpRM;
+
+        }
+
+        [FunctionName("GetDataFromCosmosObjectTwo")]
+        public static async Task<HttpResponseMessage> RunGetDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "get", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByIdAsync(myUploadedFile.id.ToString());
+
+            string jsonResult = JsonConvert.SerializeObject(listofThings);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
+
+            return httpRM;
+        }
+
+        [FunctionName("GetDataFromCosmosObjectTwoFilterByEmail")]
+        public static async Task<HttpResponseMessage> RunGetDataFromCosmosObjectTwoFilterByEmail([HttpTrigger(AuthorizationLevel.Anonymous, "post", "get", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            //string email = "accountemail@xamarin.com";
+
+            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
+            var listofThings = await FunctionApp4
+                .CosmosDB
+                .CosmosDBServiceTwo
+                .GetCosmosDogByEmailAsync(myUploadedFile.email);
             
+            string jsonResult = JsonConvert.SerializeObject(listofThings);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
+
+            return httpRM;
         }
-
-        [FunctionName("PostToCosmos")]
-        public static async Task<HttpResponseMessage> RunPostToCosmos([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-
-            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
-
-        }
-
-        [FunctionName("GetDataFromCosmos")]
-        public static async Task<HttpResponseMessage> RunGetDataFromCosmos([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-
-            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
-
-        }
-
-
-
-
-
 
     }
-    }
+
+}
