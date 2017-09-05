@@ -456,7 +456,7 @@ namespace FunctionApp4
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
 
-            List<TEMPFromFunctionGettingContainerInformation> listOfBlobs = new List<TEMPFromFunctionGettingContainerInformation>();
+            List<MediaAssetsInBlobContainer> listOfBlobs = new List<MediaAssetsInBlobContainer>();
 
             // Loop over items within the container and output the length and URI.
             foreach (IListBlobItem item in container.ListBlobs(null, true))
@@ -464,9 +464,9 @@ namespace FunctionApp4
                 if (item.GetType() == typeof(CloudBlockBlob))
                 {
                     CloudBlockBlob blob = (CloudBlockBlob)item;
-                    var temp = new TEMPFromFunctionGettingContainerInformation()
+                    var temp = new MediaAssetsInBlobContainer()
                     {
-                        ContainerName = blob.Uri.ToString()
+                        MediaAssetName = blob.Uri.ToString()
 
                     };
                     //string tempString = blob.Uri.ToString();
