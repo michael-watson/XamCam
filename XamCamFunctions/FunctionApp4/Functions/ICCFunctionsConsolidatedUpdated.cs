@@ -263,7 +263,7 @@ namespace FunctionApp4
             }
 
             //CREATE HTTP REQUEST
-            HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/GetVideosConsolidated"));
+            HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/MVPGetVideosConsolidated"));
             //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
@@ -396,8 +396,8 @@ namespace FunctionApp4
                     CloudBlockBlob blob = (CloudBlockBlob)item;
                     var temp = new MediaAssetsInBlobContainer()
                     {
-                        MediaAssetName = blob.Uri.ToString(),
-                        MediaAssetUri = blob.Name.ToString() 
+                        MediaAssetUri = blob.Uri.ToString(),
+                        MediaAssetName = blob.Name.ToString() 
 
 
                     };
