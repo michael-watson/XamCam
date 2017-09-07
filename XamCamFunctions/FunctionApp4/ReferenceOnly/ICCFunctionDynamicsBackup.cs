@@ -44,6 +44,17 @@
 
 //            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
+//            //CHECK TO SEE IF THE ACCOUNT TYPE IS "NEW"
+//            if (myUploadedFile.AccountType != "New") //Existing accounts should have account type = "Existing"
+//            {
+//                var httpRM = new HttpResponseMessage(HttpStatusCode.BadRequest);
+//                string errorMessage = "Account type is not defined as \"New\".  Either i) include an \"AccountType\" equal to New or 2) make your call to PostItemToSpecifiedBlobContainer";
+
+//                httpRM.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+//                return httpRM;
+//            }
+
+
 //            HttpClient httpClient = new HttpClient();
 
 //            //CREATE HTTP REQUEST
@@ -252,6 +263,26 @@
 
 //            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
+//            /////////////////////////////////////////////////////////////////////////////////
+//            // UPLOAD ACCOUNT INFO TO CLOUD
+//            /////////////////////////////////////////////////////////////////////////////////
+
+//            //CREATE A NEW ACCOUNT IN THE COSMOS DB
+//            //YOU'LL ADD THE EMAIL ADDRESS PLUS A NEW GUID
+//            //SAVE THE GUID - YOU'LL NEED TO ATTACH THE CONTAINER TO THE ENTRY
+
+//            string newAccountId = Guid.NewGuid().ToString();
+
+//            XamCamAccountTwo newlyCreatedXamCamAccountTwo = new XamCamAccountTwo()
+//            {
+//                email = myUploadedFile.Email,
+//                id = newAccountId,
+//                blobContainer = containerName
+//            };
+
+//            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(newlyCreatedXamCamAccountTwo);
+
+
 
 //            ////////////////////////////////////////////////////////////////////////////////
 //            // Get the list of items - temporary
@@ -283,7 +314,7 @@
 
 //            //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
 //            var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
-//            string myString2 = "2";
+
 //            //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
 //            var myListOfBlobsResults =
 //                Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
@@ -305,6 +336,16 @@
 
 //            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
+//            //CHECK TO SEE IF THE ACCOUNT TYPE IS "EXISTING"
+//            if (myUploadedFile.AccountType != "Existing") //Existing accounts should have account type = "Existing"
+//            {
+//                var httpRM = new HttpResponseMessage(HttpStatusCode.BadRequest);
+//                string errorMessage = "Account type is not defined as \"Existing\".  Either i) include an \"AccountType\" equal to Exisiting or 2) make your call to GetAzureADAuthTokenConsolidated ";
+
+//                httpRM.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+//                return httpRM;
+//            }
+
 //            ///////////////////////////////////
 //            ///// UPLOAD TO BLOB STORAGE
 //            //////////////////////////////////
@@ -316,7 +357,17 @@
 //            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
 //            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-//            string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
+//            string emailFromUploadedFile = myUploadedFile.Email;
+
+//            //FIND THE ACCOUNT IN COSMOS DB
+//            //GET THE ACCOUNTSTRING
+//            // DO IT HERE FIRST AND THEN CREATE A FUNCTION THAT ADD IT TO THE QUERY STRING
+
+//            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+//            var firstXamAccountTwo = listofThings.First();
+//            string containerName = firstXamAccountTwo.blobContainer;
+
+//            //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
 
 //            // Retrieve a reference to a container.
 //            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
@@ -356,6 +407,8 @@
 //        public static async Task<HttpResponseMessage> RunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
 //        {
 
+
+
 //            //GET AN EMAIL ADDRESS AND TOKEN (SALTED)
 //            //var mobileClient = await req.Content.ReadAsAsync<MobileClientInformation>();
 
@@ -371,9 +424,28 @@
 //            ////var dObjectResults = resultObject.TheContainer; 
 //            ////this should look like ASSET-f93jur0sdfj-sdfoejfe-seifje
 
-//            //GET THE CONTAINER
-//            var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
-//            var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
+//            //GET THE CONTAINER DIRECTLY - METHOD 1
+//            //            {
+//            //                "ContainerName":"asset-edf7a7c9-dc64-49e1-bf6f-82507fb43b76"
+//            //}
+
+//            //var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
+//            //var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
+
+//            //GET THE CONTAINER FROM COSMOS DB
+
+//            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
+//            string emailFromUploadedFile = myUploadedFile.Email;
+
+//            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+//            var firstXamAccountTwo = listofThings.First();
+//            string nameOfContainerForAccount = firstXamAccountTwo.blobContainer;
+//            // {
+//            //     "Email": "accountToMakeVideo2@xamarin.com", "AccountType": "Existing"
+//            //}
+
+
+//            //var nameOfContainerForAccount
 
 //            // Retrieve storage account from connection string.
 //            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
@@ -384,7 +456,7 @@
 //            // Retrieve reference to a previously created container.
 //            CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
 
-//            List<TEMPFromFunctionGettingContainerInformation> listOfBlobs = new List<TEMPFromFunctionGettingContainerInformation>();
+//            List<MediaAssetsInBlobContainer> listOfBlobs = new List<MediaAssetsInBlobContainer>();
 
 //            // Loop over items within the container and output the length and URI.
 //            foreach (IListBlobItem item in container.ListBlobs(null, true))
@@ -392,9 +464,9 @@
 //                if (item.GetType() == typeof(CloudBlockBlob))
 //                {
 //                    CloudBlockBlob blob = (CloudBlockBlob)item;
-//                    var temp = new TEMPFromFunctionGettingContainerInformation()
+//                    var temp = new MediaAssetsInBlobContainer()
 //                    {
-//                        ContainerName = blob.Uri.ToString()
+//                        MediaAssetName = blob.Uri.ToString()
 
 //                    };
 //                    //string tempString = blob.Uri.ToString();

@@ -8,6 +8,8 @@ namespace FunctionApp4.DataModels
 {
     class MediaAssetsInBlobContainer
     {
+        public string MediaAssetUri { get; set; }
+
         public string MediaAssetName { get; set; }
 
     }
