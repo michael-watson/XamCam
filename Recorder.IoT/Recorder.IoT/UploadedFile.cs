@@ -13,7 +13,7 @@ namespace Recorder.IoT
             File = file;
             Title = title;
 
-            FileName = $"{title}-{DateTime.UtcNow.Ticks}.mp4";
+            FileName = $"{DeviceInfo.Instance.Id}-{DateTime.UtcNow.Ticks}.wmv";
         }
         public string Title { get; set; }
         public string FileName { get; set; }
