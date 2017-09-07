@@ -17,6 +17,7 @@ using Windows.Storage.Streams;
 using Windows.Graphics.Display;
 using Windows.Devices.Enumeration;
 using Windows.Media.MediaProperties;
+using System.Net.Http;
 
 namespace Recorder.IoT
 {
@@ -31,13 +32,12 @@ namespace Recorder.IoT
         List<DeviceInformation> deviceList;
         bool isRecording, isInitialized;
         string recordedFileName;
-        string DeviceConnectionString = "";
+        string DeviceConnectionString = "HostName=HomeCam-IoT.azure-devices.net;DeviceId=watson-rasp-pi3;SharedAccessKey=k0uO1WERfL22co55eTCGXlxhy/OyspURhZXfAVP+w2M=";
 
         public static CameraController Instance
         {
             get
             {
-
                 if (instance == null)
                     instance = new CameraController();
 
@@ -100,7 +100,16 @@ namespace Recorder.IoT
             if (storageFile != null)
             {
                 var videoToUpload = await fileToBytesAsync(storageFile);
-                //Upload video bytes to Azure Function
+                //TODO: Upload video bytes to Azure Function
+
+                using (var httpClient = new HttpClient())
+                {
+                    var content = new ByteArrayContent(videoToUpload);
+                    var postResult = await httpClient.PostAsync($"http://localhost:7071/api/Test/{deviceTwin.DeviceId}", content);
+                    var success = await postResult.Content.ReadAsStringAsync();
+
+                    System.Diagnostics.Debug.WriteLine(success);
+                }
 
                 await client.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Completed")));
             }
