@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Text;
 using System.Net;
+using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -17,7 +18,6 @@ using Windows.Storage.Streams;
 using Windows.Graphics.Display;
 using Windows.Devices.Enumeration;
 using Windows.Media.MediaProperties;
-using System.Net.Http;
 
 namespace Recorder.IoT
 {
@@ -54,6 +54,10 @@ namespace Recorder.IoT
             await client.SetMethodHandlerAsync("StopRecording", stopRecordingAsync, null);
 
             await initializeCameraAsync();
+
+            await startRecordingAsync(null, null);
+            await Task.Delay(3000);
+            await stopRecordingAsync(null, null);
 
             isInitialized = true;
         }
@@ -101,12 +105,19 @@ namespace Recorder.IoT
             {
                 var videoToUpload = await fileToBytesAsync(storageFile);
                 //TODO: Upload video bytes to Azure Function
+                var uploadContent = new UploadedFile("MyUnique.mp4", videoToUpload);
 
                 using (var httpClient = new HttpClient())
                 {
-                    var content = new ByteArrayContent(videoToUpload);
-                    var postResult = await httpClient.PostAsync($"http://localhost:7071/api/Test/{deviceTwin.DeviceId}", content);
+                    var content = new StringContent(JsonConvert.SerializeObject(videoToUpload));
+                    //var content = new ByteArrayContent(videoToUpload);
+                    var postResult = await httpClient.PostAsync($"http://iccfunction.azurewebsites.net/api/MVPPostItemToSpecifiedBlobContainer", content);
                     var success = await postResult.Content.ReadAsStringAsync();
+
+                    if(postResult.IsSuccessStatusCode)
+                    {
+
+                    }
 
                     System.Diagnostics.Debug.WriteLine(success);
                 }
