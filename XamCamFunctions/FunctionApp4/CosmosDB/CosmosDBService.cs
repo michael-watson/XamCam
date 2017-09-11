@@ -88,5 +88,6 @@
 //        {
 //            await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteXamCamAccount.Id));
 //        }
-//    }
+//    } 
+//
 //}
