@@ -19,7 +19,7 @@ using FunctionApp4.DataModels;
 
 namespace FunctionApp4.CosmosDB
 {
-    public class CosmosDBServiceTwo
+    public class CosmosDBService
 
     {
         //DBS - Collections - Documents

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4
 {
-    public class TEMPFromFunctionGettingContainerInformation
+    public class ContainerInformationModel
     {
         public string ContainerName { get; set; }
         public string AccountEmailName { get; set; }

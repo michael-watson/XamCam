@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4
 {
-    public class TEMPListOfBlobs
+    public class ListOfBlobsModel
     {
-        public List<TEMPFromFunctionGettingContainerInformation> ListOfBlobs { get; set; }
+        public List<ContainerInformationModel> ListOfBlobs { get; set; }
 
     }
 }

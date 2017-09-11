@@ -259,7 +259,7 @@ namespace FunctionApp4
             //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            TEMPFromFunctionGettingContainerInformation createdGetListBody = new TEMPFromFunctionGettingContainerInformation
+            ContainerInformationModel createdGetListBody = new ContainerInformationModel
             {
                 //TO WORK WITH A FIXED ASSET/CONTAINER NAME - USE THE FOLLOWING
                 //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
