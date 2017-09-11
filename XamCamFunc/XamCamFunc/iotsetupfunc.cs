@@ -16,9 +16,7 @@ namespace XamCamFunc
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddDevice/{id}")]HttpRequestMessage req, string id, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-
-            //(req.Method == HttpMethod.Post)
-
+            
             var res = await DeviceManager.Instance.AddDeviceAsync(id);
       
             // Fetching the name from the path parameter in the request URL
