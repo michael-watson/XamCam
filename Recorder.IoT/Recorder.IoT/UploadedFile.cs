@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Recorder.IoT
 {
@@ -15,6 +15,7 @@ namespace Recorder.IoT
 
             FileName = $"{DeviceInfo.Instance.Id}-{DateTime.UtcNow.Ticks}.wmv";
         }
+
         public string Title { get; set; }
         public string FileName { get; set; }
         public byte[] File { get; set; }
