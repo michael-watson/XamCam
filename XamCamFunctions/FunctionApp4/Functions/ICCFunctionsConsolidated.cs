@@ -30,14 +30,6 @@ namespace FunctionApp4
         static string ClientID = "8d631792-ed10-46aa-bd09-b8ca1641bc6f";
         static string RequestedResource = "https://rest.media.azure.net";
 
-
-        //static FunctionApp4.DataModels.CreateAccessPolicy.D ReturnedCreateAccessPolicyDObject { get; set; }
-        //static string ReturnedCreateAnAssetPolicyId { get; set; }
-        //static FunctionApp4.DataModels.CreateLocator.D ReturnedCreateLocatorDObject { get; set; }
-        //static string ReturnedCreateLocatorId { get; set; }
-        //static string ReturnedBaseUri { get; set; }
-        //static string ReturnedContentAccessComponent { get; set; }
-
         [FunctionName("MPVGetAzureADAuthTokenConsolidated")]
         public static async Task<HttpResponseMessage> MPVRunGetAzureADTokenConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
@@ -254,7 +246,7 @@ namespace FunctionApp4
 
 
             ////////////////////////////////////////////////////////////////////////////////
-            // Get the list of items - temporary
+            // GET AND RETURN THE LIST OF ITMES IN BLOB 
             ////////////////////////////////////////////////////////////////////////////////
 
             if (httpClient.DefaultRequestHeaders != null)
@@ -269,12 +261,13 @@ namespace FunctionApp4
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
             TEMPFromFunctionGettingContainerInformation createdGetListBody = new TEMPFromFunctionGettingContainerInformation
             {
-                //TEST TO WORK WITH A FIXED ASSET
+                //TO WORK WITH A FIXED ASSET/CONTAINER NAME - USE THE FOLLOWING
                 //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
                 ContainerName = containerName
+                
 
             };
-
+            
             string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
             getTheListOfItemsRequest.Content = new StringContent(myGetListOfBlobsjsonString, Encoding.UTF8, "application/json");
 
@@ -283,7 +276,7 @@ namespace FunctionApp4
 
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
             var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
-            string myString2 = "2";
+            
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
             var myListOfBlobsResults =
                 Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
@@ -297,22 +290,21 @@ namespace FunctionApp4
 
         //UPLOAD TO A SPECIFIC CONTAINER
         //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-        //NEXT STEP WILL BE TO GET IT INTO A COSMOS DB
 
         [FunctionName("MVPPostItemToSpecifiedBlobContainer")]
         public static async Task<HttpResponseMessage> MVPRunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
             ///////////////////////////////////
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
 
-            //THIS REQUIRES CONFIGURATION FILE
+            //METHOD 1: CREATION VIA CONFIGURATION FILE
             //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
+            //METHOD 2: CREATION VIA BLOB URL AND KEY
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
@@ -330,12 +322,10 @@ namespace FunctionApp4
             //to everyone, you can set the container to be public using the following code:
             container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            // Retrieve reference to a blob named "myblob".
+            // Retrieve reference to a blob, use the file name of your choice
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
 
-            //IN CASE YOU NEED TO SET THE MEDIA TYPE
-            //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
-
+            //Uload the file from a ByteArray
             blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
             ////////////////////////////////////////////////////////
@@ -346,35 +336,12 @@ namespace FunctionApp4
             //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
 
             return postFileInCreatedBlob;
-
         }
-
-
-
+        
 
         [FunctionName("MVPGetVideosConsolidated")]
         public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-
-            //GET AN EMAIL ADDRESS AND TOKEN (SALTED)
-            //var mobileClient = await req.Content.ReadAsAsync<MobileClientInformation>();
-
-            //GET NAME OF CONTAINER 
-            //var containerNameForAccountResponse = await client.SendAsync(MyHTTPRequest); 
-
-            ////EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            //var stringAccountInfoFromCosmosDBResult = await containerNameForAccountResponse.Content.ReadAsStringAsync();
-
-            ////DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            ////var resultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.UploadFileToBlobStorage.RootObject>(stringAccountInfoFromCosmosDBResult);
-
-            ////var dObjectResults = resultObject.TheContainer; 
-            ////this should look like ASSET-f93jur0sdfj-sdfoejfe-seifje
-
-            //GET THE CONTAINER
-            //var TEMPmobileClientAccountInfo = await req.Content.ReadAsAsync<TEMPFromFunctionGettingContainerInformation>();
-            //var nameOfContainerForAccount = TEMPmobileClientAccountInfo.ContainerName;
-
             string nameOfContainerForAccount = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a"; 
 
             // Retrieve storage account from connection string.
@@ -401,7 +368,6 @@ namespace FunctionApp4
 
 
                     };
-                    //string tempString = blob.Uri.ToString();
                     listOfBlobs.Add(temp);
                     Console.WriteLine("Block blob of length {0}: {1}", blob.Properties.Length, blob.Uri);
 
@@ -419,71 +385,14 @@ namespace FunctionApp4
                 }
             }
 
-            //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK!
+            //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK
             log.Info("Partial Return List with One Object processed a request.");
             string jsonResult = JsonConvert.SerializeObject(listOfBlobs);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
         }
-
-
-
-        //VERSION 3
-        //DOES WORK - CREATED A COSMOS DB COMPATIBLE VERSION OF OBJECT WITHOUT JSSON PROPERTY TAGS
-
-        [FunctionName("MPVPostToCosmosObjectTwo")]
-        public static async Task<HttpResponseMessage> MPVRunPostToCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(myUploadedFile);
-            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
-            return httpRM;
-
-        }
-
-
-        [FunctionName("MPVDeleteDataFromCosmosObjectTwo")]
-        public static async Task<HttpResponseMessage> MPVRunDeleteDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "delete", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.DeleteCosmosDogAsync(myUploadedFile);
-            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
-            return httpRM;
-
-        }
-
-        [FunctionName("MPVGetDataFromCosmosObjectTwo")]
-        public static async Task<HttpResponseMessage> MPVRunGetDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "get", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByIdAsync(myUploadedFile.id.ToString());
-
-            string jsonResult = JsonConvert.SerializeObject(listofThings);
-            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
-            httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
-
-            return httpRM;
-        }
-
-        [FunctionName("MPVGetDataFromCosmosObjectTwoFilterByEmail")]
-        public static async Task<HttpResponseMessage> MPVRunGetDataFromCosmosObjectTwoFilterByEmail([HttpTrigger(AuthorizationLevel.Anonymous, "post", "get", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            //string email = "accountemail@xamarin.com";
-
-            var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            var listofThings = await FunctionApp4
-                .CosmosDB
-                .CosmosDBServiceTwo
-                .GetCosmosDogByEmailAsync(myUploadedFile.email);
-
-            string jsonResult = JsonConvert.SerializeObject(listofThings);
-            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
-            httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
-
-            return httpRM;
-        }
-
+        
     }
 
 }

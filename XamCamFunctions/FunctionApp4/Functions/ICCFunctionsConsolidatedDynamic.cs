@@ -1,5 +1,4 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,6 +20,14 @@ using System.Collections.Generic;
 
 namespace FunctionApp4
 {
+    // NOTE:THIS IS THE GROUND WORK FOR DYNAMIC ADDING OF ACCOUNTS INTO COSMOSDB
+    // ACCOUNTS VIA EMAILS + CONTAINERS ARE READ THROUGH COSMOSDB
+
+    //NOTE TO IAN / WATSON - please look and focus on ICC Functions Consolidated
+    // for now
+
+
+
     public static class ICCFunctionsConsolidatedDynamic
     {
         //CONSTANTS NEEDED FOR AZURE AD
