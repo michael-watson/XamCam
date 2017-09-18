@@ -124,6 +124,7 @@ namespace Recorder.IoT
 
                     if (postResult.IsSuccessStatusCode)
                     {
+                        //Stub if we want to do handle post result
 
                     }
 

@@ -40,8 +40,9 @@ namespace Recorder.IoT
 
         private DeviceInfo()
         {
-            Id = GetId();
             var deviceInformation = new EasClientDeviceInformation();
+
+            Id = GetId();
             Model = deviceInformation.SystemProductName;
             Manufracturer = deviceInformation.SystemManufacturer;
             Name = deviceInformation.FriendlyName;
