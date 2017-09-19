@@ -9,9 +9,9 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.Documents.Client;
 
-using FunctionApp4.DataModels;
+using XamCamFunctions.DataModels;
 
-namespace FunctionApp4.CosmosDB
+namespace XamCamFunctions.CosmosDB
 {
     class CosmosDBMediaFiles
     {

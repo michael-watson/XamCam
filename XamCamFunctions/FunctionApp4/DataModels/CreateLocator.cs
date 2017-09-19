@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FunctionApp4.DataModels.CreateLocator
+namespace XamCamFunctions.DataModels.CreateLocator
 {
     class CreateLocatorBody
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FunctionApp4.DataModels.CreateAccessPolicy
+namespace XamCamFunctions.DataModels.CreateAccessPolicy
 {
     class CreateAccessPolicyBody
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FunctionApp4.DataModels
+namespace XamCamFunctions.DataModels
 {
     public class UploadedFile
     {

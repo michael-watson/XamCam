@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FunctionApp4
+namespace XamCamFunctions
 {
     public static class Constants
     {

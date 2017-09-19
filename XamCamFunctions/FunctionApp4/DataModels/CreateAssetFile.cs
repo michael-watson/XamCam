@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FunctionApp4.DataModels.CreateAssetFile
+namespace XamCamFunctions.DataModels.CreateAssetFile
 {
     public class CreateAssetFileBody
     {
