@@ -287,7 +287,7 @@ namespace FunctionApp4
                 blobContainer = containerName
             };
 
-            await FunctionApp4.CosmosDB.CosmosDBService.PostCosmosDogAsync(newlyCreatedXamCamAccountTwo);
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(newlyCreatedXamCamAccountTwo);
 
 
 
@@ -370,7 +370,7 @@ namespace FunctionApp4
             //GET THE ACCOUNTSTRING
             // DO IT HERE FIRST AND THEN CREATE A FUNCTION THAT ADD IT TO THE QUERY STRING
 
-            var listofThings = await FunctionApp4.CosmosDB.CosmosDBService.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
             var firstXamAccountTwo = listofThings.First();
             string containerName = firstXamAccountTwo.blobContainer;
 
@@ -444,7 +444,7 @@ namespace FunctionApp4
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
             string emailFromUploadedFile = myUploadedFile.Email;
 
-            var listofThings = await FunctionApp4.CosmosDB.CosmosDBService.GetCosmosDogByEmailAsync(emailFromUploadedFile);
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByEmailAsync(emailFromUploadedFile);
             var firstXamAccountTwo = listofThings.First();
             string nameOfContainerForAccount = firstXamAccountTwo.blobContainer;
             // {
@@ -511,7 +511,7 @@ namespace FunctionApp4
         public static async Task<HttpResponseMessage> RunPostToCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            await FunctionApp4.CosmosDB.CosmosDBService.PostCosmosDogAsync(myUploadedFile);
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.PostCosmosDogAsync(myUploadedFile);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
 
@@ -522,7 +522,7 @@ namespace FunctionApp4
         public static async Task<HttpResponseMessage> RunDeleteDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "delete", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            await FunctionApp4.CosmosDB.CosmosDBService.DeleteCosmosDogAsync(myUploadedFile);
+            await FunctionApp4.CosmosDB.CosmosDBServiceTwo.DeleteCosmosDogAsync(myUploadedFile);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
 
@@ -532,7 +532,7 @@ namespace FunctionApp4
         public static async Task<HttpResponseMessage> RunGetDataFromCosmosObjectTwo([HttpTrigger(AuthorizationLevel.Anonymous, "post", "get", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
-            var listofThings = await FunctionApp4.CosmosDB.CosmosDBService.GetCosmosDogByIdAsync(myUploadedFile.id.ToString());
+            var listofThings = await FunctionApp4.CosmosDB.CosmosDBServiceTwo.GetCosmosDogByIdAsync(myUploadedFile.id.ToString());
 
             string jsonResult = JsonConvert.SerializeObject(listofThings);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
@@ -549,7 +549,7 @@ namespace FunctionApp4
             var myUploadedFile = await req.Content.ReadAsAsync<XamCamAccountTwo>();
             var listofThings = await FunctionApp4
                 .CosmosDB
-                .CosmosDBService
+                .CosmosDBServiceTwo
                 .GetCosmosDogByEmailAsync(myUploadedFile.email);
             
             string jsonResult = JsonConvert.SerializeObject(listofThings);
