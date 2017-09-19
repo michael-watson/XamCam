@@ -17,18 +17,10 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 using FunctionApp4.DataModels;
 
-//using System.Linq;
-//using System.Security.Cryptography;
-//using System.Globalization;
-//using Microsoft.WindowsAzure;
-//using System.Web.Http;
-//using Microsoft.Azure;
 namespace FunctionApp4
 {
     public static class ICCFunctionsConsolidated
     {
-//        CopyStream(input, file);
-
         //CONSTANTS NEEDED FOR AZURE AD
         static string tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
         static string GrantType = "client_credentials";
@@ -39,7 +31,6 @@ namespace FunctionApp4
         [FunctionName("MPVGetAzureADAuthTokenConsolidated")]
         public static async Task<HttpResponseMessage> MPVRunGetAzureADTokenConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-           
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
             HttpClient httpClient = new HttpClient();
@@ -59,7 +50,6 @@ namespace FunctionApp4
             ////////////////////////////////////////////////////////////////////////////////
             // PostCreateAnAsset
             ////////////////////////////////////////////////////////////////////////////////
-
 
             if (httpClient.DefaultRequestHeaders != null)
             {
@@ -119,7 +109,6 @@ namespace FunctionApp4
                 Name = "TestVideo.mp4",
                 //ParentAssetId = "nb:cid:UUID:498c1cac-fe58-4099-9c72-32cfde165f01"
                 ParentAssetId = myPostCreateAssetRequestdObjectResultsResultId
-
             };
 
             string myPostCreateAnAssetFilejsonBody = JsonConvert.SerializeObject(createdAssetFileBody);
@@ -181,8 +170,7 @@ namespace FunctionApp4
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
-
-
+            
             //  Bearer Token
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
@@ -236,38 +224,41 @@ namespace FunctionApp4
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
 
-            //THIS REQUIRES CONFIGURATION FILE
+            //ALTERNATIVE INSTANTIATION VIA CONFIGURATION FILE
             //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            // Retrieve a reference to a container.
+            // RETRIEVE REFERENCE TO CONTAINER
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
-            // Create the container if it doesn't already exist.
+            // CREATE CONTAINER IF IT DOES NOT EXIST
             container.CreateIfNotExists();
 
-            //By default, the new container is private, 
-            //meaning that you must specify your storage access key to download blobs 
-            //from this container.If you want to make the files within the container available 
-            //to everyone, you can set the container to be public using the following code:
+            //DEFAULT BEHAVIOR MAKES BLOCKS PRVIATE (YOU MUST SPECIFIC STORAGE
+            //ACCESS KEYS TO DOWNLOAD BLBOS FROM THE CONTAINER.
+            //MAKE FILES AVAILABLE TO PUBLIC VIA THE FOLLOWING CODE.
             container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            // Retrieve reference to a blob named "myblob".
+            //RETRIEVE REFERENCE TO BLOB BY FILENAME
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
 
             //IN CASE YOU NEED TO SET THE MEDIA TYPE
             //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
 
+            //UPLOAD THE BYTE ARRAY
             blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
             ///////////////////////////////////
-            ///// UPDATE THE ASSET FILE WITH ANY PROPERTIES
+            ///// OPTIONAL: UPDATE THE ASSET FILE WITH ANY PROPERTIES
             //////////////////////////////////
 
-            
+            ///////////////////////////////////
+            ///// OPTIONAL: ENCODE SOURCE
+            //////////////////////////////////
+
             ///////////////////////////////////
             ///// DELETE THE LOCATOR
             //////////////////////////////////
@@ -287,7 +278,7 @@ namespace FunctionApp4
 
 
             //CREATE HTTP REQUEST
-            HttpRequestMessage myDeleteTheLocatorAndAccessPolicyRequest = 
+            HttpRequestMessage myDeleteLocatorRequest = 
                 new HttpRequestMessage
                 (
                     HttpMethod.Delete,
@@ -296,8 +287,8 @@ namespace FunctionApp4
                 );
            
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myDeleteTheLocatorAndAccessPolicyReponseMessage = 
-                await httpClient.SendAsync(myDeleteTheLocatorAndAccessPolicyRequest);
+            HttpResponseMessage myDeleteTheLocatorReponseMessage = 
+                await httpClient.SendAsync(myDeleteLocatorRequest);
 
             ///////////////////////////////////
             ///// DELETE THE ASSET FILE
@@ -322,7 +313,7 @@ namespace FunctionApp4
                 (
                     HttpMethod.Delete,
                     String.Format("{0}", finalAccessPolicyId)
-                //                    String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators(\'{0}\')", firstLocator )
+//String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators(\'{0}\')", firstLocator )
                 );
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE

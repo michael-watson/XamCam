@@ -1,21 +1,14 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 namespace FunctionApp4.DataModels.CreateAnAsset
 {
-    //class CreateAnAsset
-    //{
-    //}
-
     public class CreateAnAssetBody
     {
         public string Name { get; set; }
         public string Options { get; set; }
-
     }
 
     public class HttpsXamcammediaserviceRestv2WestusMediaAzureNetApiMetadataWindowsAzureMediaServicesPublish
@@ -28,7 +21,7 @@ namespace FunctionApp4.DataModels.CreateAnAsset
     {
         [JsonProperty("https://xamcammediaservice.restv2.westus.media.azure.net/api/$metadata#WindowsAzureMediaServices.Publish")]
         public List<HttpsXamcammediaserviceRestv2WestusMediaAzureNetApiMetadataWindowsAzureMediaServicesPublish> WindowsAzureMediaServicesPublish { get; set; }
-}
+    }
 
     public class Metadata
     {
@@ -134,5 +127,4 @@ namespace FunctionApp4.DataModels.CreateAnAsset
     {
         public D d { get; set; }
     }
-
 }

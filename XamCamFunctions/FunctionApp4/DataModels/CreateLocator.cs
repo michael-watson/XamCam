@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels.CreateLocator
 {
-    //class CreateLocator
-    //{
-    //}
-
     class CreateLocatorBody
     {
-   //"AccessPolicyId":"nb:pid:UUID:e10a3717-cd60-417b-8c8f-6de9157e769b",
-   //"AssetId":"nb:cid:UUID:e7c7ce9e-c127-43ea-8457-4d81f4852a29",
-   //"StartTime":"2017-08-15T23:25:53",
-   //"Type":1
-
         public string AccessPolicyId { get; set; }
         public string AssetId { get; set; }
         public DateTime StartTime { get; set; }
@@ -71,9 +58,4 @@ namespace FunctionApp4.DataModels.CreateLocator
     {
         public D d { get; set; }
     }
-
-
-
-
-
 }

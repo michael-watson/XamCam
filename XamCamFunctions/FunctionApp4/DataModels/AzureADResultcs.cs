@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels
 {
@@ -15,7 +11,6 @@ namespace FunctionApp4.DataModels
         public string not_before { get; set; }
         public string resource { get; set; }
         public string access_token { get; set; }
-
     }
 }
 

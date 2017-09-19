@@ -1,11 +1,6 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -14,15 +9,12 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.Documents.Client;
 
-using FunctionApp4;
 using FunctionApp4.DataModels;
-//using ASampleApp.Models;
 
 namespace FunctionApp4.CosmosDB
 {
     class CosmosDBMediaFiles
     {
-
         //DBS - Collections - Documents
         static readonly string DatabaseId = "XamCam";
         static readonly string CollectionId = "XamCamAccounts3";
@@ -39,7 +31,6 @@ namespace FunctionApp4.CosmosDB
             MyListOfAccounts = new List<MediaAssetsWithMetaData>();
             try
             {
-
                 var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
                                             .AsDocumentQuery();
                 while (query.HasMoreResults)
@@ -68,7 +59,6 @@ namespace FunctionApp4.CosmosDB
             returnedListCosmosDog.Add(result);
 
             return returnedListCosmosDog;
-
         }
 
         //GET
@@ -77,7 +67,6 @@ namespace FunctionApp4.CosmosDB
             MyListOfAccountsByEmail = new List<MediaAssetsWithMetaData>();
             try
             {
-
                 var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
                     (UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
                     .Where(f => f.email == inputEmail)
@@ -95,15 +84,12 @@ namespace FunctionApp4.CosmosDB
             return MyListOfAccountsByEmail;
         }
 
-
         //POST
         public static async Task PostCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
         {
             await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
-
         }
-
-
+        
         //PUT
         public static async Task PutCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
         {
@@ -115,14 +101,6 @@ namespace FunctionApp4.CosmosDB
         {
             await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
         }
-
-
-
-
-
-
-
-
     }
 }
 

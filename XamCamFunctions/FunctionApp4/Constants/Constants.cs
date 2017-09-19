@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunctionApp4
 {
@@ -14,6 +10,5 @@ namespace FunctionApp4
         //COSMOS DB STRING
         public const string CosmosDBEndPoint = "https://xamcamcosmosdb.documents.azure.com:443/";
         public const string CosmosDBMyKey = "mMyIRtdLejDrhTkpBBgKBXyZyzMCi02sU0xajBwygaQHHndxTC1VYvxHygB0EoDtqBbJEtmIRLxBTAVKVtzg1g==";
-
     }
 }
