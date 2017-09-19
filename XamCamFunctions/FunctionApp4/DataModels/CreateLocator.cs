@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels.CreateLocator
 {
-    class CreateLocator
-    {
-    }
+    //class CreateLocator
+    //{
+    //}
 
     class CreateLocatorBody
     {

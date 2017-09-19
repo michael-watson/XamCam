@@ -6,11 +6,13 @@
 
 //namespace FunctionApp4.DataModels
 //{
-//    class MediaAssetsInBlobContainer
+//    public class D
 //    {
-//        public string MediaAssetUri { get; set; }
-
-//        //public string MediaAssetName { get; set; }
-
+//        public List<string> EntitySets { get; set; }
 //    }
+
+//    //public class RootObject
+//    //{
+//    //    public D d { get; set; }
+//    //}
 //}

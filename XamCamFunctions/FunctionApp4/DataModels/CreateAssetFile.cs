@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels.CreateAssetFile
 {
-    class CreateAssetFile
-    {
+    //class CreateAssetFile
+    //{
 
 
-    }
+    //}
 
     public class CreateAssetFileBody
     {

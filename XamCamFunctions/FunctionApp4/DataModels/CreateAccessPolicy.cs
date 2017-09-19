@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels.CreateAccessPolicy
 {
-    class CreateAccessPolicy
-    {
-    }
+    //class CreateAccessPolicy
+    //{
+    //}
 
     class CreateAccessPolicyBody
     {

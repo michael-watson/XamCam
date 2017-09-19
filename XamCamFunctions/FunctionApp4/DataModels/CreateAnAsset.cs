@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace FunctionApp4.DataModels.CreateAnAsset
 {
-    class CreateAnAsset
-    {
-    }
+    //class CreateAnAsset
+    //{
+    //}
 
     public class CreateAnAssetBody
     {

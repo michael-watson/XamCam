@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FunctionApp4
+namespace FunctionApp4.DataModels
 {
     public class AzureADResult
     {

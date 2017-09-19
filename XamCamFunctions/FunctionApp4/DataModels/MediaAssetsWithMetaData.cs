@@ -8,9 +8,9 @@ namespace FunctionApp4.DataModels
 {
     class MediaAssetsWithMetaData
     {
-        //PROPERTIES ARE NOT TRANSFOMRED BY JSONPROPERTY TAGS
-        //PROPERTIES ARE KEPT LOWERCASE TO KEEP COSMOS DB PROPERTIES LOWERCASE
 
+        //PROPERTIES ARE KEPT LOWERCASE TO KEEP COSMOS DB PROPERTIES LOWERCASE
+        //PROPERTIES ARE NOT TRANSFOMRED BY JSONPROPERTY TAGS BY COSMOSDB SDK
         public string id { get; set; }
         public string mediaAssetUri { get; set; }
   

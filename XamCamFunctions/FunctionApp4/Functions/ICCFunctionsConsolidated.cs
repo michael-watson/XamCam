@@ -1,27 +1,28 @@
-﻿
-using System.Linq;
+﻿using System;
 using System.Net;
+using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+using Newtonsoft.Json;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using System.Text;
-using System;
-using Newtonsoft.Json;
-using FunctionApp4.DataModels;
-using System.Security.Cryptography;
-using System.Globalization;
-using FunctionApp4.DataModels.UploadFileToBlobStorage;
-using Microsoft.WindowsAzure;
+
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Azure;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Net;
-using System.Text.RegularExpressions;
 
+using FunctionApp4.DataModels;
+
+//using System.Linq;
+//using System.Security.Cryptography;
+//using System.Globalization;
+//using Microsoft.WindowsAzure;
+//using System.Web.Http;
+//using Microsoft.Azure;
 namespace FunctionApp4
 {
     public static class ICCFunctionsConsolidated
@@ -327,10 +328,7 @@ namespace FunctionApp4
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myDeleteAccessPolicyResponseMessage =
                 await httpClient.SendAsync(myDeleteAccessPolicyRequest);
-
-            //TEST PURPOSES ONLY
-            //return myDeleteAccessPolicyResponseMessage;
-
+           
             ////////////////////////////////////////////////////////////////////////////////
             // PostCreateAccessPolicy
             ////////////////////////////////////////////////////////////////////////////////
@@ -433,11 +431,6 @@ namespace FunctionApp4
             var myPostCreateLocatordObjectResults2 = myPostCreateLocatorresultObject2.d;
             var myPostCreateLocatorlocatorResults2 = myPostCreateLocatordObjectResults2.Id;
 
-            //const string assetIDSearchString2 = "blob.core.windows.net/";
-            //var indexOfContainerNameStart2 = myPostCreateLocatordObjectResults.BaseUri.IndexOf(assetIDSearchString) + assetIDSearchString.Length;
-            //var containerName2 = myPostCreateLocatordObjectResults2.BaseUri.Substring(indexOfContainerNameStart);
-
-            //string firstLocator2 = myPostCreateLocatordObjectResults2.__metadata.uri;
 
             var firstHalfLocatorAMS = myPostCreateLocatorresultObject2.d.BaseUri;
 
@@ -447,18 +440,13 @@ namespace FunctionApp4
 
             string newLocator = String.Format("{0}/{1}{2}",firstHalfLocatorAMS ,uploadFileName, myContentAccessComponent );
             
-            //return myPostCreateLocatorResponseMessage2;
-
+      
 
             ////////////////////////////////////////////////////////////////////////////////
             //  SAVE TO COSMOS DB
             ////////////////////////////////////////////////////////////////////////////////
 
-            // I WANT TO SAVE THE NEW LOCATOR
-            // THE NAME OF THE FILE
-            // AN IDENTIFER user-identifier
-
-
+   
             MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData ()
             {
                 id = Guid.NewGuid().ToString(),
@@ -480,94 +468,95 @@ namespace FunctionApp4
             // GET AND RETURN THE LIST OF ITMES IN BLOB 
             ////////////////////////////////////////////////////////////////////////////////
 
-            if (httpClient.DefaultRequestHeaders != null)
-            {
-                httpClient.DefaultRequestHeaders.Clear();
-            }
+            //if (httpClient.DefaultRequestHeaders != null)
+            //{
+            //    httpClient.DefaultRequestHeaders.Clear();
+            //}
 
-            //CREATE HTTP REQUEST
-            HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/MVPGetVideosConsolidated"));
-            //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
+            ////CREATE HTTP REQUEST
+            //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/MVPGetVideosConsolidated"));
+            ////HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
 
-            //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            ContainerInformationModel createdGetListBody = new ContainerInformationModel
-            {
-                //TO WORK WITH A FIXED ASSET/CONTAINER NAME - USE THE FOLLOWING
-                //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
-                ContainerName = containerName
+            ////ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
+            //ContainerInformationModel createdGetListBody = new ContainerInformationModel
+            //{
+            //    //TO WORK WITH A FIXED ASSET/CONTAINER NAME - USE THE FOLLOWING
+            //    //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
+            //    ContainerName = containerName
 
 
-            };
+            //};
 
-            string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
-            getTheListOfItemsRequest.Content = new StringContent(myGetListOfBlobsjsonString, Encoding.UTF8, "application/json");
+            //string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
+            //getTheListOfItemsRequest.Content = new StringContent(myGetListOfBlobsjsonString, Encoding.UTF8, "application/json");
 
-            //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myGetListResponseMessage = await httpClient.SendAsync(getTheListOfItemsRequest);
+            ////SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
+            //HttpResponseMessage myGetListResponseMessage = await httpClient.SendAsync(getTheListOfItemsRequest);
 
-            //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
+            ////EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
+            //var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
 
-            //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myListOfBlobsResults =
-                Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
-                (myListOfBlobsHttpResult);
+            ////DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
+            //var myListOfBlobsResults =
+            //    Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
+            //    (myListOfBlobsHttpResult);
 
-            var myListOfBlobs = myListOfBlobsResults;
+            //var myListOfBlobs = myListOfBlobsResults;
 
-            return myPostCreateLocatorResponseMessage;
+            //return myPostCreateLocatorResponseMessage;
             
         }
 
+       
         //UPLOAD TO A SPECIFIC CONTAINER
         //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
 
-        [FunctionName("MVPPostItemToSpecifiedBlobContainer")]
-        public static async Task<HttpResponseMessage> MVPRunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
+        //[FunctionName("MVPPostItemToSpecifiedBlobContainer")]
+        //public static async Task<HttpResponseMessage> MVPRunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        //{
+        //    var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
-            ///////////////////////////////////
-            ///// UPLOAD TO BLOB STORAGE
-            //////////////////////////////////
+        //    ///////////////////////////////////
+        //    ///// UPLOAD TO BLOB STORAGE
+        //    //////////////////////////////////
 
-            //METHOD 1: CREATION VIA CONFIGURATION FILE
-            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-            //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+        //    //METHOD 1: CREATION VIA CONFIGURATION FILE
+        //    //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+        //    //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            //METHOD 2: CREATION VIA BLOB URL AND KEY
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+        //    //METHOD 2: CREATION VIA BLOB URL AND KEY
+        //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+        //    CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
+        //    string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
 
-            // Retrieve a reference to a container.
-            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+        //    // Retrieve a reference to a container.
+        //    CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
-            // Create the container if it doesn't already exist.
-            container.CreateIfNotExists();
+        //    // Create the container if it doesn't already exist.
+        //    container.CreateIfNotExists();
 
-            //By default, the new container is private, 
-            //meaning that you must specify your storage access key to download blobs 
-            //from this container.If you want to make the files within the container available 
-            //to everyone, you can set the container to be public using the following code:
-            container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+        //    //By default, the new container is private, 
+        //    //meaning that you must specify your storage access key to download blobs 
+        //    //from this container.If you want to make the files within the container available 
+        //    //to everyone, you can set the container to be public using the following code:
+        //    container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            // Retrieve reference to a blob, use the file name of your choice
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
+        //    // Retrieve reference to a blob, use the file name of your choice
+        //    CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
 
-            //Uload the file from a ByteArray
-            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
+        //    //Uload the file from a ByteArray
+        //    blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
-            ////////////////////////////////////////////////////////
-            //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            ////////////////////////////////////////////////////////
+        //    ////////////////////////////////////////////////////////
+        //    //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
+        //    ////////////////////////////////////////////////////////
 
-            HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);
-            //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
+        //    HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);
+        //    //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
 
-            return postFileInCreatedBlob;
-        }
+        //    return postFileInCreatedBlob;
+        //}
 
         //[FunctionName("MVPGetVideosConsolidated")]
         //public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
