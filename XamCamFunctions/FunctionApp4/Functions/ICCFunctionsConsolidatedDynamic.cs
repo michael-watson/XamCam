@@ -450,8 +450,7 @@ namespace FunctionApp4
             // {
             //     "Email": "accountToMakeVideo2@xamarin.com", "AccountType": "Existing"
             //}
-
-
+            
             //var nameOfContainerForAccount
 
             // Retrieve storage account from connection string.

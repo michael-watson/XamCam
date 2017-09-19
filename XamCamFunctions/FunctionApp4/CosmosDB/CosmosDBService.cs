@@ -24,8 +24,7 @@ namespace FunctionApp4.CosmosDB
     {
         //DBS - Collections - Documents
         static readonly string DatabaseId = "XamCam";
-        static readonly string CollectionId = "XamCamAccounts2";
-
+        static readonly string CollectionId = "XamCamAccounts3";
 
         //CLIENT
         static readonly DocumentClient myDocumentClient = new DocumentClient(new Uri(Constants.CosmosDBEndPoint), Constants.CosmosDBMyKey);

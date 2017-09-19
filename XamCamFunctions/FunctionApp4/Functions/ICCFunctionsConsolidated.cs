@@ -38,9 +38,7 @@ namespace FunctionApp4
         [FunctionName("MPVGetAzureADAuthTokenConsolidated")]
         public static async Task<HttpResponseMessage> MPVRunGetAzureADTokenConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-
-             
-
+           
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
             HttpClient httpClient = new HttpClient();
@@ -232,10 +230,7 @@ namespace FunctionApp4
             string htmlSafeFirstAssetId = rgx.Replace(preFirstAssetId, replacement);
 
             var finalAccessPolicyId = String.Format("{0}AccessPolicies('{1}')", shortFirstLocator,htmlSafeFirstAssetId);
-            
-
-
-
+           
             ///////////////////////////////////
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
@@ -267,15 +262,11 @@ namespace FunctionApp4
 
             blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
-            //TESTONLY
-            //return myPostCreateLocatorResponseMessage;
-
             ///////////////////////////////////
-            ///// UPDATE THE ASSET FILE
+            ///// UPDATE THE ASSET FILE WITH ANY PROPERTIES
             //////////////////////////////////
 
-
-
+            
             ///////////////////////////////////
             ///// DELETE THE LOCATOR
             //////////////////////////////////
@@ -323,8 +314,7 @@ namespace FunctionApp4
             httpClient.DefaultRequestHeaders.Add("MaxDataServiceVersion", "3.0");
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.11");
-
-
+            
             //CREATE HTTP REQUEST
             HttpRequestMessage myDeleteAccessPolicyRequest =
                 new HttpRequestMessage
@@ -337,8 +327,6 @@ namespace FunctionApp4
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myDeleteAccessPolicyResponseMessage =
                 await httpClient.SendAsync(myDeleteAccessPolicyRequest);
-
-            string hi = "1";
 
             //TEST PURPOSES ONLY
             //return myDeleteAccessPolicyResponseMessage;
@@ -458,13 +446,36 @@ namespace FunctionApp4
             var myContentAccessComponent = myPostCreateLocatorresultObject2.d.ContentAccessComponent;
 
             string newLocator = String.Format("{0}/{1}{2}",firstHalfLocatorAMS ,uploadFileName, myContentAccessComponent );
-                
-
-
-
+            
             return myPostCreateLocatorResponseMessage2;
 
 
+            ////////////////////////////////////////////////////////////////////////////////
+            //  SAVE TO COSMOS DB
+            ////////////////////////////////////////////////////////////////////////////////
+
+            // I WANT TO SAVE THE NEW LOCATOR
+            // THE NAME OF THE FILE
+            // AN IDENTIFER user-identifier
+
+
+            MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData ()
+            {
+                id = Guid.NewGuid().ToString(),
+                email = "user@xamarin.com",
+                mediaAssetUri = newLocator,
+                title = myUploadedFile.Title,
+                fileName = myUploadedFile.FileName,
+                uploadedAt = myUploadedFile.UploadedAt
+            };
+            
+            await FunctionApp4.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
+            var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+            return httpRM;
+
+
+            ////////////////////////////////////////////////////////////////////////////////
+            //COMMENT OUT AND DELETE FROM HERE BELOW
             ////////////////////////////////////////////////////////////////////////////////
             // GET AND RETURN THE LIST OF ITMES IN BLOB 
             ////////////////////////////////////////////////////////////////////////////////
@@ -505,9 +516,7 @@ namespace FunctionApp4
             var myListOfBlobs = myListOfBlobsResults;
 
             return myPostCreateLocatorResponseMessage;
-
-
-
+            
         }
 
         //UPLOAD TO A SPECIFIC CONTAINER
@@ -560,56 +569,73 @@ namespace FunctionApp4
             return postFileInCreatedBlob;
         }
 
+        //[FunctionName("MVPGetVideosConsolidated")]
+        //public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
+        //{
+        //    string nameOfContainerForAccount = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
 
+        //    // Retrieve storage account from connection string.
+        //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+
+        //    // Create the blob client.
+        //    CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+        //    // Retrieve reference to a previously created container.
+        //    CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
+
+        //    List<MediaAssetsInBlobContainer> listOfBlobs = new List<MediaAssetsInBlobContainer>();
+
+        //    // Loop over items within the container and output the length and URI.
+        //    foreach (IListBlobItem item in container.ListBlobs(null, true))
+        //    {
+        //        if (item.GetType() == typeof(CloudBlockBlob))
+        //        {
+        //            CloudBlockBlob blob = (CloudBlockBlob)item;
+        //            var temp = new MediaAssetsInBlobContainer()
+        //            {
+        //                MediaAssetUri = blob.Uri.ToString(),
+        //                MediaAssetName = blob.Name.ToString()
+
+
+        //            };
+        //            listOfBlobs.Add(temp);
+        //            Console.WriteLine("Block blob of length {0}: {1}", blob.Properties.Length, blob.Uri);
+
+        //        }
+        //        else if (item.GetType() == typeof(CloudPageBlob))
+        //        {
+        //            CloudPageBlob pageBlob = (CloudPageBlob)item;
+        //            Console.WriteLine("Page blob of length {0}: {1}", pageBlob.Properties.Length, pageBlob.Uri);
+
+        //        }
+        //        else if (item.GetType() == typeof(CloudBlobDirectory))
+        //        {
+        //            CloudBlobDirectory directory = (CloudBlobDirectory)item;
+        //            Console.WriteLine("Directory: {0}", directory.Uri);
+        //        }
+        //    }
+
+        //    //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK
+        //    log.Info("Partial Return List with One Object processed a request.");
+        //    string jsonResult = JsonConvert.SerializeObject(listOfBlobs);
+        //    var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
+        //    httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
+        //    return httpRM;
+        //}
+        
         [FunctionName("MVPGetVideosConsolidated")]
         public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            string nameOfContainerForAccount = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-
-            // Retrieve storage account from connection string.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
-
-            // Create the blob client.
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            // Retrieve reference to a previously created container.
-            CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
-
-            List<MediaAssetsInBlobContainer> listOfBlobs = new List<MediaAssetsInBlobContainer>();
-
-            // Loop over items within the container and output the length and URI.
-            foreach (IListBlobItem item in container.ListBlobs(null, true))
-            {
-                if (item.GetType() == typeof(CloudBlockBlob))
-                {
-                    CloudBlockBlob blob = (CloudBlockBlob)item;
-                    var temp = new MediaAssetsInBlobContainer()
-                    {
-                        MediaAssetUri = blob.Uri.ToString(),
-                        MediaAssetName = blob.Name.ToString()
-
-
-                    };
-                    listOfBlobs.Add(temp);
-                    Console.WriteLine("Block blob of length {0}: {1}", blob.Properties.Length, blob.Uri);
-
-                }
-                else if (item.GetType() == typeof(CloudPageBlob))
-                {
-                    CloudPageBlob pageBlob = (CloudPageBlob)item;
-                    Console.WriteLine("Page blob of length {0}: {1}", pageBlob.Properties.Length, pageBlob.Uri);
-
-                }
-                else if (item.GetType() == typeof(CloudBlobDirectory))
-                {
-                    CloudBlobDirectory directory = (CloudBlobDirectory)item;
-                    Console.WriteLine("Directory: {0}", directory.Uri);
-                }
-            }
-
+        { 
+        // Alternative
+        // public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MVPGetVideosConsolidated/{email}")]HttpRequestMessage req, string email, TraceWriter log)
+        // Remove string email = "user@xamarin.com";
+            string email = "user@xamarin.com";
+            
+            List<MediaAssetsWithMetaData> listOfVideos = new List<MediaAssetsWithMetaData>();
+            listOfVideos = await FunctionApp4.CosmosDB.CosmosDBMediaFiles.GetCosmosDogByEmailAsync(email);
+            
             //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK
-            log.Info("Partial Return List with One Object processed a request.");
-            string jsonResult = JsonConvert.SerializeObject(listOfBlobs);
+            string jsonResult = JsonConvert.SerializeObject(listOfVideos);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
