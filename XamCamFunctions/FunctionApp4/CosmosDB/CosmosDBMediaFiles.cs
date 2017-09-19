@@ -107,7 +107,7 @@ namespace FunctionApp4.CosmosDB
         //PUT
         public static async Task PutCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
         {
-            await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aXamCamAccountTwo);
+            await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
         }
 
         //DELETE

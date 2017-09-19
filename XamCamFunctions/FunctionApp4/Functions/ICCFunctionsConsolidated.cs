@@ -447,7 +447,7 @@ namespace FunctionApp4
 
             string newLocator = String.Format("{0}/{1}{2}",firstHalfLocatorAMS ,uploadFileName, myContentAccessComponent );
             
-            return myPostCreateLocatorResponseMessage2;
+            //return myPostCreateLocatorResponseMessage2;
 
 
             ////////////////////////////////////////////////////////////////////////////////
