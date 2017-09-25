@@ -11,8 +11,9 @@ namespace XamCamFunc
 {
     public static class DeleteDeviceFunction
     {
-        [FunctionName("DeleteDeviceFunction")]
-        async public static Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "delete", "put", Route = "DeleteDevice/{id}")]HttpRequestMessage req, string id, TraceWriter log)
+        [FunctionName("DeleteDevice")]
+
+        async public static Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "delete", "put", Route = "DeleteDevice/id/{id}")]HttpRequestMessage req, string id, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

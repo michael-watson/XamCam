@@ -13,7 +13,7 @@ namespace XamCamFunc
     {
         [FunctionName("AddDevice")]
 
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddDevice/{id}")]HttpRequestMessage req, string id, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddDevice/id/{id}")]HttpRequestMessage req, string id, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
