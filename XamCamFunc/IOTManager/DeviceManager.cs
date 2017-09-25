@@ -102,9 +102,17 @@ namespace IOTManager
         /// </summary>
         /// <param name="deviceId"></param>
         /// <returns></returns>
-        public async Task RemoveDeviceAsync(string deviceId)
+        public async Task<bool> RemoveDeviceAsync(string deviceId)
         {
-            await _registryManager.RemoveDeviceAsync(deviceId);
+            try
+            {
+                await _registryManager.RemoveDeviceAsync(deviceId);
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
         }
 
     }

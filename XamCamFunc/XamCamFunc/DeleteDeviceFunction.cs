@@ -22,10 +22,15 @@ namespace XamCamFunc
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
             }
 
-            await DeviceManager.Instance.RemoveDeviceAsync(id);
-
-            // Fetching the name from the path parameter in the request URL
-            return req.CreateResponse(HttpStatusCode.OK, "Removed Device with Device Id: " + id);
+            var res = await DeviceManager.Instance.RemoveDeviceAsync(id);
+            if (res)
+            {
+                return req.CreateResponse(HttpStatusCode.OK, "Removed Device with Device Id: " + id);
+            }
+            else
+            {
+                return req.CreateErrorResponse(HttpStatusCode.BadRequest, $"Device with Id: {id} not found.");
+            }
         }
     }
 }
