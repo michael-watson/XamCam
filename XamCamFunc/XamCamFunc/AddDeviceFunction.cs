@@ -9,18 +9,28 @@ using System.Threading.Tasks;
 
 namespace XamCamFunc
 {
-    public static class iotsetupfunc
+    public static class AddDeviceFunction
     {
         [FunctionName("AddDevice")]
 
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddDevice/{id}")]HttpRequestMessage req, string id, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            
+
+            if (string.IsNullOrEmpty(id))
+            {
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
+            }
+
             var res = await DeviceManager.Instance.AddDeviceAsync(id);
-      
-            // Fetching the name from the path parameter in the request URL
+
+            if (string.IsNullOrEmpty(res))
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "There was an error with your request, please check the service logs or try again");
+            }
+
             return req.CreateResponse(HttpStatusCode.OK, res);
+            
         }
     }
 }
