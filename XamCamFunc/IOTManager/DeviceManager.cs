@@ -1,8 +1,8 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+
 
 namespace IOTManager
 {
@@ -12,19 +12,13 @@ namespace IOTManager
         RegistryManager _registryManager;
         static DeviceManager _instance;
 
-        public static DeviceManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new DeviceManager();
-                return _instance;
-            }
-        }
+        //Singleton implementation
+        public static DeviceManager Instance =>
+            _instance ?? (_instance = new DeviceManager());
 
         DeviceManager()
         {
-            if(_registryManager == null)
+            if (_registryManager == null)
             {
                 _registryManager = RegistryManager.CreateFromConnectionString(Constants.IotHubConfig.connectionString);
             }
@@ -38,6 +32,7 @@ namespace IOTManager
         public async Task<string> AddDeviceAsync(string deviceId)
         {
             Device device;
+
             try
             {
                 var d = new Device(deviceId) { Status = DeviceStatus.Enabled };
@@ -47,6 +42,7 @@ namespace IOTManager
             {
                 device = await _registryManager?.GetDeviceAsync(deviceId);
             }
+
             var connectionString = $"HostName={Constants.IotHubConfig.HostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
 
             return connectionString;
@@ -65,7 +61,7 @@ namespace IOTManager
 
             return new List<Device>(deviceList);
         }
-        
+
         public async Task RemoveDeviceAsync(string deviceId)
         {
             await _registryManager.RemoveDeviceAsync(deviceId);
