@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TabbedPage
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="ICC.Pages.HomePageFull"
+    Padding="0,20,0,0">
+
+     <ContentPage
+        Title= "Home"
+        Icon= "Home.png">
+        <ListView 
+            x:Name="listView">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout  
+                                Padding="5"
+                                Orientation="Horizontal">
+                                    <Image
+                                        Source="{Binding Image}"/>
+                                    <Label 
+                                        Text="{Binding Name}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+        </ListView>
+    </ContentPage>
+
+</TabbedPage>
