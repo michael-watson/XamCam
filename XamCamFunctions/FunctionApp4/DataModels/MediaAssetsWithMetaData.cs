@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace XamCamFunctions.DataModels
 {
@@ -10,7 +11,7 @@ namespace XamCamFunctions.DataModels
         public string mediaAssetUri { get; set; }
         public string email { get; set; }
         public string fileName { get; set; }
-        public string uploadedAt { get; set; }
+        public DateTime uploadedAt { get; set; }
         public string title { get; set; }
         public string accountType { get; set; }
     }

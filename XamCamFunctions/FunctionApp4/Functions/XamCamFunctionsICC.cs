@@ -29,10 +29,17 @@ namespace XamCamFunctions
         static string RequestedResource = "https://rest.media.azure.net";
 
         [FunctionName("PostMediaFileToAzureMediaServices")]
-        public static async Task<HttpResponseMessage> RunPostMediaFileToAzureMediaServices([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> RunPostMediaFileToAzureMediaServices([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "PostMediaFileToAzureMediaServices/{deviceId}/{videoTitle}")]HttpRequestMessage req, string deviceId, string videoTitle, TraceWriter log)
         {
-            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
+            var fileAsBytes = await req.Content.ReadAsByteArrayAsync();
+            var myUploadedFile = new UploadedFile
+            {
+                Title = videoTitle,
+                FileName = $"{deviceId}_{DateTime.UtcNow.Ticks}.mp4",
+                File = fileAsBytes,
+                UploadedAt = DateTime.UtcNow
+            };
             HttpClient httpClient = new HttpClient();
 
             //CREATE HTTP REQUEST
@@ -209,17 +216,17 @@ namespace XamCamFunctions
 
             string firstLocator = myPostCreateLocatordObjectResults.__metadata.uri;
             string preFirstAssetId = myPostCreateLocatordObjectResults.AccessPolicyId;
-            
+
             var indexOfLocatorWord = firstLocator.IndexOf("Locator");
-            string shortFirstLocator = firstLocator.Substring(0,indexOfLocatorWord);
-            
+            string shortFirstLocator = firstLocator.Substring(0, indexOfLocatorWord);
+
             string pattern = ":";
             string replacement = "%3A";
             Regex rgx = new Regex(pattern);
             string htmlSafeFirstAssetId = rgx.Replace(preFirstAssetId, replacement);
 
-            var finalAccessPolicyId = String.Format("{0}AccessPolicies('{1}')", shortFirstLocator,htmlSafeFirstAssetId);
-           
+            var finalAccessPolicyId = String.Format("{0}AccessPolicies('{1}')", shortFirstLocator, htmlSafeFirstAssetId);
+
             ///////////////////////////////////
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
@@ -267,25 +274,25 @@ namespace XamCamFunctions
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
-            
+
             //  Bearer Token
-            httpClient.DefaultRequestHeaders.Authorization = 
+            httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "1.0");
             httpClient.DefaultRequestHeaders.Add("MaxDataServiceVersion", "3.0");
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.11");
-            
+
             //CREATE HTTP REQUEST
-            HttpRequestMessage myDeleteLocatorRequest = 
+            HttpRequestMessage myDeleteLocatorRequest =
                 new HttpRequestMessage
                 (
                     HttpMethod.Delete,
                     String.Format("{0}", firstLocator)
                 );
-           
+
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myDeleteTheLocatorReponseMessage = 
+            HttpResponseMessage myDeleteTheLocatorReponseMessage =
                 await httpClient.SendAsync(myDeleteLocatorRequest);
 
             ///////////////////////////////////
@@ -304,7 +311,7 @@ namespace XamCamFunctions
             httpClient.DefaultRequestHeaders.Add("MaxDataServiceVersion", "3.0");
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.11");
-            
+
             //CREATE HTTP REQUEST
             HttpRequestMessage myDeleteAccessPolicyRequest =
                 new HttpRequestMessage
@@ -316,7 +323,7 @@ namespace XamCamFunctions
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myDeleteAccessPolicyResponseMessage =
                 await httpClient.SendAsync(myDeleteAccessPolicyRequest);
-           
+
             ////////////////////////////////////////////////////////////////////////////////
             // PostCreateAccessPolicy
             ////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +332,7 @@ namespace XamCamFunctions
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
-            
+
             //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
@@ -333,33 +340,35 @@ namespace XamCamFunctions
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
 
             //CREATE HTTP REQUEST
-            HttpRequestMessage myPostCreateAccessPolicyRequest2 = 
+            HttpRequestMessage myPostCreateAccessPolicyRequest2 =
                 new HttpRequestMessage
                 (
-                    HttpMethod.Post, 
+                    HttpMethod.Post,
                     String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/AccessPolicies")
                 );
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody2 = 
+            XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody2 =
                 new XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody
                 {
-                    Name = "DownloadPolicy", DurationInMinutes = "144000", Permissions = "1"
+                    Name = "DownloadPolicy",
+                    DurationInMinutes = "144000",
+                    Permissions = "1"
                 };
             string myPostCreateAccessPolicyjsonBody2 = JsonConvert.SerializeObject(createdAccessPolicyBody2);
             myPostCreateAccessPolicyRequest2.Content =
-                new StringContent (myPostCreateAccessPolicyjsonBody2, Encoding.UTF8, "application/json");
-            
+                new StringContent(myPostCreateAccessPolicyjsonBody2, Encoding.UTF8, "application/json");
+
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myPostCreateAccessPolicyResponseMessage2 = 
+            HttpResponseMessage myPostCreateAccessPolicyResponseMessage2 =
                 await httpClient.SendAsync(myPostCreateAccessPolicyRequest2);
-            
+
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var myPostCreateAccessPolicystringResult2 = 
+            var myPostCreateAccessPolicystringResult2 =
                 myPostCreateAccessPolicyResponseMessage2.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateAccessPolicyresultObject2 = 
+            var myPostCreateAccessPolicyresultObject2 =
                 Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateAccessPolicy.RootObject>(myPostCreateAccessPolicystringResult2);
 
             var myPostCreateAccessPolicydObjectResults2 = myPostCreateAccessPolicyresultObject2.d;
@@ -381,11 +390,11 @@ namespace XamCamFunctions
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
 
             //CREATE HTTP REQUEST
-            HttpRequestMessage myPostCreateLocatorRequest2 = 
-                new HttpRequestMessage (HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators"));
+            HttpRequestMessage myPostCreateLocatorRequest2 =
+                new HttpRequestMessage(HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody2 = 
+            XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody2 =
                 new XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody
                 {
                     AccessPolicyId = myPostCreateAccessPolicyaccessPolicyIdResults2,
@@ -394,19 +403,19 @@ namespace XamCamFunctions
                     Type = 1
                 };
             string myPostCreateLocatorjsonBody2 = JsonConvert.SerializeObject(createdLocatorBody2);
-            myPostCreateLocatorRequest2.Content = 
+            myPostCreateLocatorRequest2.Content =
                 new StringContent(myPostCreateLocatorjsonBody2, Encoding.UTF8, "application/json");
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myPostCreateLocatorResponseMessage2 = 
+            HttpResponseMessage myPostCreateLocatorResponseMessage2 =
                 await httpClient.SendAsync(myPostCreateLocatorRequest2);
 
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var myPostCreateLocatorstringResult2 = 
+            var myPostCreateLocatorstringResult2 =
                 myPostCreateLocatorResponseMessage2.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateLocatorresultObject2 = 
+            var myPostCreateLocatorresultObject2 =
                 Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateLocator.RootObject>
                 (myPostCreateLocatorstringResult2);
 
@@ -416,13 +425,13 @@ namespace XamCamFunctions
             var firstHalfLocatorAMS = myPostCreateLocatorresultObject2.d.BaseUri;
             var uploadFileName = myUploadedFile.FileName;
             var myContentAccessComponent = myPostCreateLocatorresultObject2.d.ContentAccessComponent;
-            string newLocator = String.Format("{0}/{1}{2}",firstHalfLocatorAMS ,uploadFileName, myContentAccessComponent );
+            string newLocator = String.Format("{0}/{1}{2}", firstHalfLocatorAMS, uploadFileName, myContentAccessComponent);
 
             ////////////////////////////////////////////////////////////////////////////////
             //  SAVE TO COSMOS DB
             ////////////////////////////////////////////////////////////////////////////////
-            
-            MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData ()
+
+            MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData()
             {
                 id = Guid.NewGuid().ToString(),
                 email = "user@xamarin.com",
@@ -431,25 +440,25 @@ namespace XamCamFunctions
                 fileName = myUploadedFile.FileName,
                 uploadedAt = myUploadedFile.UploadedAt
             };
-            
+
             await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
         }
-        
+
         [FunctionName("GetMediaAssets")]
         public static async Task<HttpResponseMessage> RunGetMediaAssets([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
-        { 
-        // ALTERNATIVE ALLOWING PASSING PARAMETER IN URL
-        // public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MVPGetVideosConsolidated/{email}")]HttpRequestMessage req, string email, TraceWriter log)
-        // Remove string email = "user@xamarin.com";
+        {
+            // ALTERNATIVE ALLOWING PASSING PARAMETER IN URL
+            // public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MVPGetVideosConsolidated/{email}")]HttpRequestMessage req, string email, TraceWriter log)
+            // Remove string email = "user@xamarin.com";
 
             string email = "user@xamarin.com";
             List<MediaAssetsWithMetaData> listOfVideos = new List<MediaAssetsWithMetaData>();
 
             //LIST OF MEDIA FILES FROM COSMOS DB
             listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.GetCosmosDogByEmailAsync(email);
-            
+
             //ADD LIST TO JSON AND SEND RESPONSE MESSAGE BACK
             string jsonResult = JsonConvert.SerializeObject(listOfVideos);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
