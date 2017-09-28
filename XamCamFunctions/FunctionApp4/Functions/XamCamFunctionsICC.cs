@@ -1,33 +1,26 @@
-﻿
-using System.Linq;
+﻿using System;
 using System.Net;
+using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+using Newtonsoft.Json;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using System.Text;
-using System;
-using Newtonsoft.Json;
-using FunctionApp4.DataModels;
-using System.Security.Cryptography;
-using System.Globalization;
-using FunctionApp4.DataModels.UploadFileToBlobStorage;
-using Microsoft.WindowsAzure;
+
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Azure;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Net;
-using System.Text.RegularExpressions;
 
-namespace FunctionApp4
+using XamCamFunctions.DataModels;
+
+namespace XamCamFunctions
 {
-    public static class ICCFunctionsConsolidated
+    public static class XamCamFunctionsICC
     {
-//        CopyStream(input, file);
-
         //CONSTANTS NEEDED FOR AZURE AD
         static string tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
         static string GrantType = "client_credentials";
@@ -35,10 +28,9 @@ namespace FunctionApp4
         static string ClientID = "8d631792-ed10-46aa-bd09-b8ca1641bc6f";
         static string RequestedResource = "https://rest.media.azure.net";
 
-        [FunctionName("MPVGetAzureADAuthTokenConsolidated")]
-        public static async Task<HttpResponseMessage> MPVRunGetAzureADTokenConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        [FunctionName("PostMediaFileToAzureMediaServices")]
+        public static async Task<HttpResponseMessage> RunPostMediaFileToAzureMediaServices([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-           
             var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
 
             HttpClient httpClient = new HttpClient();
@@ -59,13 +51,12 @@ namespace FunctionApp4
             // PostCreateAnAsset
             ////////////////////////////////////////////////////////////////////////////////
 
-
             if (httpClient.DefaultRequestHeaders != null)
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-            //  Bearer Token
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "3.0");
@@ -75,7 +66,7 @@ namespace FunctionApp4
             HttpRequestMessage myPostCreateAssetRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Assets"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateAnAsset.CreateAnAssetBody createAnAssetBody = new FunctionApp4.DataModels.CreateAnAsset.CreateAnAssetBody { Name = "TestAsset7", Options = "0" };
+            XamCamFunctions.DataModels.CreateAnAsset.CreateAnAssetBody createAnAssetBody = new XamCamFunctions.DataModels.CreateAnAsset.CreateAnAssetBody { Name = "TestAsset7", Options = "0" };
             string PostCreateAnAssetjsonBody = JsonConvert.SerializeObject(createAnAssetBody);
             myPostCreateAssetRequest.Content = new StringContent(PostCreateAnAssetjsonBody, Encoding.UTF8, "application/json");
 
@@ -86,7 +77,7 @@ namespace FunctionApp4
             var PostCreateAssetStringResult = await myPostCreateAssetResponseMessage.Content.ReadAsStringAsync();
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateAssetResponseMessageResultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateAnAsset.RootObject>(PostCreateAssetStringResult);
+            var myPostCreateAssetResponseMessageResultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateAnAsset.RootObject>(PostCreateAssetStringResult);
 
             var myPostCreateAssetRequestdObjectResults = myPostCreateAssetResponseMessageResultObject.d;
             var myPostCreateAssetRequestdObjectResultsResultId = myPostCreateAssetRequestdObjectResults.Id;
@@ -100,7 +91,7 @@ namespace FunctionApp4
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-            //  Bearer Token
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "3.0");
@@ -110,7 +101,7 @@ namespace FunctionApp4
             HttpRequestMessage myPostCreateAnAssetFileRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Files"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateAssetFile.CreateAssetFileBody createdAssetFileBody = new FunctionApp4.DataModels.CreateAssetFile.CreateAssetFileBody
+            XamCamFunctions.DataModels.CreateAssetFile.CreateAssetFileBody createdAssetFileBody = new XamCamFunctions.DataModels.CreateAssetFile.CreateAssetFileBody
             {
                 IsEncrypted = "false",
                 IsPrimary = "true",
@@ -118,7 +109,6 @@ namespace FunctionApp4
                 Name = "TestVideo.mp4",
                 //ParentAssetId = "nb:cid:UUID:498c1cac-fe58-4099-9c72-32cfde165f01"
                 ParentAssetId = myPostCreateAssetRequestdObjectResultsResultId
-
             };
 
             string myPostCreateAnAssetFilejsonBody = JsonConvert.SerializeObject(createdAssetFileBody);
@@ -131,7 +121,7 @@ namespace FunctionApp4
             var myPostCreateAnAssetFileResponseMessagestringResult = myPostCreateAnAssetFileResponseMessage.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateAnAssetFileResponseMessageresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateAssetFile.RootObject>(myPostCreateAnAssetFileResponseMessagestringResult);
+            var myPostCreateAnAssetFileResponseMessageresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateAssetFile.RootObject>(myPostCreateAnAssetFileResponseMessagestringResult);
 
             var myPostCreateAnAssetFiledObjectResults = myPostCreateAnAssetFileResponseMessageresultObject.d;
             var myPostCreateAnAssetFilecreateAssetFileId = myPostCreateAnAssetFiledObjectResults.Id;
@@ -145,7 +135,7 @@ namespace FunctionApp4
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-            //  Bearer Token
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "1.0");
@@ -155,7 +145,7 @@ namespace FunctionApp4
             HttpRequestMessage myPostCreateAccessPolicyRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/AccessPolicies"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody = new FunctionApp4.DataModels.CreateAccessPolicy.CreateAccessPolicyBody { Name = "NewUploadPolicy", DurationInMinutes = "440", Permissions = "2" };
+            XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody = new XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody { Name = "NewUploadPolicy", DurationInMinutes = "440", Permissions = "2" };
             string myPostCreateAccessPolicyjsonBody = JsonConvert.SerializeObject(createdAccessPolicyBody);
             myPostCreateAccessPolicyRequest.Content = new StringContent(myPostCreateAccessPolicyjsonBody, Encoding.UTF8, "application/json");
 
@@ -167,7 +157,7 @@ namespace FunctionApp4
             var myPostCreateAccessPolicystringResult = myPostCreateAccessPolicyResponseMessage.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateAccessPolicyresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateAccessPolicy.RootObject>(myPostCreateAccessPolicystringResult);
+            var myPostCreateAccessPolicyresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateAccessPolicy.RootObject>(myPostCreateAccessPolicystringResult);
 
             var myPostCreateAccessPolicydObjectResults = myPostCreateAccessPolicyresultObject.d;
             var myPostCreateAccessPolicyaccessPolicyIdResults = myPostCreateAccessPolicydObjectResults.Id;
@@ -181,8 +171,7 @@ namespace FunctionApp4
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-
-            //  Bearer Token
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "1.0");
@@ -192,7 +181,7 @@ namespace FunctionApp4
             HttpRequestMessage myPostCreateLocatorRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody = new FunctionApp4.DataModels.CreateLocator.CreateLocatorBody
+            XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody = new XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody
             {
                 AccessPolicyId = myPostCreateAccessPolicyaccessPolicyIdResults,
                 AssetId = myPostCreateAssetRequestdObjectResultsResultId,
@@ -209,7 +198,7 @@ namespace FunctionApp4
             var myPostCreateLocatorstringResult = myPostCreateLocatorResponseMessage.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myPostCreateLocatorresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateLocator.RootObject>(myPostCreateLocatorstringResult);
+            var myPostCreateLocatorresultObject = Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateLocator.RootObject>(myPostCreateLocatorstringResult);
 
             var myPostCreateLocatordObjectResults = myPostCreateLocatorresultObject.d;
             var myPostCreateLocatorlocatorResults = myPostCreateLocatordObjectResults.Id;
@@ -235,38 +224,41 @@ namespace FunctionApp4
             ///// UPLOAD TO BLOB STORAGE
             //////////////////////////////////
 
-            //THIS REQUIRES CONFIGURATION FILE
+            //ALTERNATIVE INSTANTIATION VIA CONFIGURATION FILE
             //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
-            // Retrieve a reference to a container.
+            // RETRIEVE REFERENCE TO CONTAINER
             CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
-            // Create the container if it doesn't already exist.
+            // CREATE CONTAINER IF IT DOES NOT EXIST
             container.CreateIfNotExists();
 
-            //By default, the new container is private, 
-            //meaning that you must specify your storage access key to download blobs 
-            //from this container.If you want to make the files within the container available 
-            //to everyone, you can set the container to be public using the following code:
+            //DEFAULT BEHAVIOR MAKES BLOCKS PRVIATE (YOU MUST USE SPECIFIC STORAGE
+            //ACCESS KEYS TO DOWNLOAD BLBOS FROM THE CONTAINER.)
+            //MAKE FILES AVAILABLE TO PUBLIC VIA THE FOLLOWING CODE:
             container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-            // Retrieve reference to a blob named "myblob".
+            //RETRIEVE REFERENCE TO BLOB BY FILENAME
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
 
             //IN CASE YOU NEED TO SET THE MEDIA TYPE
             //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
 
+            //UPLOAD THE BYTE ARRAY
             blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
             ///////////////////////////////////
-            ///// UPDATE THE ASSET FILE WITH ANY PROPERTIES
+            ///// OPTIONAL: UPDATE THE ASSET FILE WITH ANY PROPERTIES
             //////////////////////////////////
 
-            
+            ///////////////////////////////////
+            ///// OPTIONAL: ENCODE SOURCE
+            //////////////////////////////////
+
             ///////////////////////////////////
             ///// DELETE THE LOCATOR
             //////////////////////////////////
@@ -283,20 +275,18 @@ namespace FunctionApp4
             httpClient.DefaultRequestHeaders.Add("MaxDataServiceVersion", "3.0");
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.11");
-
-
+            
             //CREATE HTTP REQUEST
-            HttpRequestMessage myDeleteTheLocatorAndAccessPolicyRequest = 
+            HttpRequestMessage myDeleteLocatorRequest = 
                 new HttpRequestMessage
                 (
                     HttpMethod.Delete,
                     String.Format("{0}", firstLocator)
-//                    String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators(\'{0}\')", firstLocator )
                 );
            
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myDeleteTheLocatorAndAccessPolicyReponseMessage = 
-                await httpClient.SendAsync(myDeleteTheLocatorAndAccessPolicyRequest);
+            HttpResponseMessage myDeleteTheLocatorReponseMessage = 
+                await httpClient.SendAsync(myDeleteLocatorRequest);
 
             ///////////////////////////////////
             ///// DELETE THE ASSET FILE
@@ -321,16 +311,12 @@ namespace FunctionApp4
                 (
                     HttpMethod.Delete,
                     String.Format("{0}", finalAccessPolicyId)
-                //                    String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators(\'{0}\')", firstLocator )
                 );
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myDeleteAccessPolicyResponseMessage =
                 await httpClient.SendAsync(myDeleteAccessPolicyRequest);
-
-            //TEST PURPOSES ONLY
-            //return myDeleteAccessPolicyResponseMessage;
-
+           
             ////////////////////////////////////////////////////////////////////////////////
             // PostCreateAccessPolicy
             ////////////////////////////////////////////////////////////////////////////////
@@ -339,9 +325,8 @@ namespace FunctionApp4
             {
                 httpClient.DefaultRequestHeaders.Clear();
             }
-
-
-            //  Bearer Token
+            
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "1.0");
@@ -356,32 +341,29 @@ namespace FunctionApp4
                 );
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody2 = 
-                new FunctionApp4.DataModels.CreateAccessPolicy.CreateAccessPolicyBody
-                { Name = "DownloadPolicy", DurationInMinutes = "144000", Permissions = "1" };
+            XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody createdAccessPolicyBody2 = 
+                new XamCamFunctions.DataModels.CreateAccessPolicy.CreateAccessPolicyBody
+                {
+                    Name = "DownloadPolicy", DurationInMinutes = "144000", Permissions = "1"
+                };
             string myPostCreateAccessPolicyjsonBody2 = JsonConvert.SerializeObject(createdAccessPolicyBody2);
             myPostCreateAccessPolicyRequest2.Content =
-                new StringContent
-                (
-                    myPostCreateAccessPolicyjsonBody2, Encoding.UTF8, "application/json"
-                );
-
-
+                new StringContent (myPostCreateAccessPolicyjsonBody2, Encoding.UTF8, "application/json");
+            
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myPostCreateAccessPolicyResponseMessage2 = await httpClient.SendAsync(myPostCreateAccessPolicyRequest2);
-
-        
+            HttpResponseMessage myPostCreateAccessPolicyResponseMessage2 = 
+                await httpClient.SendAsync(myPostCreateAccessPolicyRequest2);
+            
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var myPostCreateAccessPolicystringResult2 = myPostCreateAccessPolicyResponseMessage2.Content.ReadAsStringAsync().Result;
+            var myPostCreateAccessPolicystringResult2 = 
+                myPostCreateAccessPolicyResponseMessage2.Content.ReadAsStringAsync().Result;
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
             var myPostCreateAccessPolicyresultObject2 = 
-                Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateAccessPolicy.RootObject>(myPostCreateAccessPolicystringResult2);
+                Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateAccessPolicy.RootObject>(myPostCreateAccessPolicystringResult2);
 
             var myPostCreateAccessPolicydObjectResults2 = myPostCreateAccessPolicyresultObject2.d;
             var myPostCreateAccessPolicyaccessPolicyIdResults2 = myPostCreateAccessPolicydObjectResults2.Id;
-
-            //return myPostCreateAccessPolicyResponseMessage2;
 
             ////////////////////////////////////////////////////////////////////////////////
             // PostCreateLocator
@@ -392,8 +374,7 @@ namespace FunctionApp4
                 httpClient.DefaultRequestHeaders.Clear();
             }
 
-
-            //  Bearer Token
+            //  BEARER TOKEN AND HEADERS
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureADToken);
             httpClient.DefaultRequestHeaders.Add("x-ms-version", "2.15");
             httpClient.DefaultRequestHeaders.Add("DataServiceVersion", "1.0");
@@ -401,21 +382,20 @@ namespace FunctionApp4
 
             //CREATE HTTP REQUEST
             HttpRequestMessage myPostCreateLocatorRequest2 = 
-                new HttpRequestMessage(
-                    HttpMethod.Post, 
-                    String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators"));
+                new HttpRequestMessage (HttpMethod.Post, String.Format("https://xamcammediaservice.restv2.westus.media.azure.net/api/Locators"));
 
             //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            FunctionApp4.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody2 = 
-                new FunctionApp4.DataModels.CreateLocator.CreateLocatorBody
-            {
-                AccessPolicyId = myPostCreateAccessPolicyaccessPolicyIdResults2,
-                AssetId = myPostCreateAssetRequestdObjectResultsResultId,
-                StartTime = DateTime.Now,
-                Type = 1
-            };
+            XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody createdLocatorBody2 = 
+                new XamCamFunctions.DataModels.CreateLocator.CreateLocatorBody
+                {
+                    AccessPolicyId = myPostCreateAccessPolicyaccessPolicyIdResults2,
+                    AssetId = myPostCreateAssetRequestdObjectResultsResultId,
+                    StartTime = DateTime.Now,
+                    Type = 1
+                };
             string myPostCreateLocatorjsonBody2 = JsonConvert.SerializeObject(createdLocatorBody2);
-            myPostCreateLocatorRequest2.Content = new StringContent(myPostCreateLocatorjsonBody2, Encoding.UTF8, "application/json");
+            myPostCreateLocatorRequest2.Content = 
+                new StringContent(myPostCreateLocatorjsonBody2, Encoding.UTF8, "application/json");
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myPostCreateLocatorResponseMessage2 = 
@@ -427,38 +407,21 @@ namespace FunctionApp4
 
             //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
             var myPostCreateLocatorresultObject2 = 
-                Newtonsoft.Json.JsonConvert.DeserializeObject<FunctionApp4.DataModels.CreateLocator.RootObject>
+                Newtonsoft.Json.JsonConvert.DeserializeObject<XamCamFunctions.DataModels.CreateLocator.RootObject>
                 (myPostCreateLocatorstringResult2);
 
             var myPostCreateLocatordObjectResults2 = myPostCreateLocatorresultObject2.d;
             var myPostCreateLocatorlocatorResults2 = myPostCreateLocatordObjectResults2.Id;
 
-            //const string assetIDSearchString2 = "blob.core.windows.net/";
-            //var indexOfContainerNameStart2 = myPostCreateLocatordObjectResults.BaseUri.IndexOf(assetIDSearchString) + assetIDSearchString.Length;
-            //var containerName2 = myPostCreateLocatordObjectResults2.BaseUri.Substring(indexOfContainerNameStart);
-
-            //string firstLocator2 = myPostCreateLocatordObjectResults2.__metadata.uri;
-
             var firstHalfLocatorAMS = myPostCreateLocatorresultObject2.d.BaseUri;
-
             var uploadFileName = myUploadedFile.FileName;
-
             var myContentAccessComponent = myPostCreateLocatorresultObject2.d.ContentAccessComponent;
-
             string newLocator = String.Format("{0}/{1}{2}",firstHalfLocatorAMS ,uploadFileName, myContentAccessComponent );
-            
-            //return myPostCreateLocatorResponseMessage2;
-
 
             ////////////////////////////////////////////////////////////////////////////////
             //  SAVE TO COSMOS DB
             ////////////////////////////////////////////////////////////////////////////////
-
-            // I WANT TO SAVE THE NEW LOCATOR
-            // THE NAME OF THE FILE
-            // AN IDENTIFER user-identifier
-
-
+            
             MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData ()
             {
                 id = Guid.NewGuid().ToString(),
@@ -469,178 +432,29 @@ namespace FunctionApp4
                 uploadedAt = myUploadedFile.UploadedAt
             };
             
-            await FunctionApp4.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
+            await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
-
-
-            ////////////////////////////////////////////////////////////////////////////////
-            //COMMENT OUT AND DELETE FROM HERE BELOW
-            ////////////////////////////////////////////////////////////////////////////////
-            // GET AND RETURN THE LIST OF ITMES IN BLOB 
-            ////////////////////////////////////////////////////////////////////////////////
-
-            if (httpClient.DefaultRequestHeaders != null)
-            {
-                httpClient.DefaultRequestHeaders.Clear();
-            }
-
-            //CREATE HTTP REQUEST
-            HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://localhost:7071/api/MVPGetVideosConsolidated"));
-            //HttpRequestMessage getTheListOfItemsRequest = new HttpRequestMessage(HttpMethod.Post, String.Format("http://iccfunction.azurewebsites.net/api/GetVideosConsolidated"));
-
-            //ASSEMBLE THE CONTENT OF THE REQUEST INCLUDING JSON BODY FOR REQUEST
-            ContainerInformationModel createdGetListBody = new ContainerInformationModel
-            {
-                //TO WORK WITH A FIXED ASSET/CONTAINER NAME - USE THE FOLLOWING
-                //ContainerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a" 
-                ContainerName = containerName
-
-
-            };
-
-            string myGetListOfBlobsjsonString = JsonConvert.SerializeObject(createdGetListBody);
-            getTheListOfItemsRequest.Content = new StringContent(myGetListOfBlobsjsonString, Encoding.UTF8, "application/json");
-
-            //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            HttpResponseMessage myGetListResponseMessage = await httpClient.SendAsync(getTheListOfItemsRequest);
-
-            //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
-            var myListOfBlobsHttpResult = myGetListResponseMessage.Content.ReadAsStringAsync().Result;
-
-            //DESERIALIZE RESPONSE FROM HTTP RESPONSE MESSAGE (JSON->OBJECT)
-            var myListOfBlobsResults =
-                Newtonsoft.Json.JsonConvert.DeserializeObject<List<FunctionApp4.DataModels.ReturnedListOfBlogs.RootObject>>
-                (myListOfBlobsHttpResult);
-
-            var myListOfBlobs = myListOfBlobsResults;
-
-            return myPostCreateLocatorResponseMessage;
-            
         }
-
-        //UPLOAD TO A SPECIFIC CONTAINER
-        //string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-
-        [FunctionName("MVPPostItemToSpecifiedBlobContainer")]
-        public static async Task<HttpResponseMessage> MVPRunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
-        {
-            var myUploadedFile = await req.Content.ReadAsAsync<UploadedFile>();
-
-            ///////////////////////////////////
-            ///// UPLOAD TO BLOB STORAGE
-            //////////////////////////////////
-
-            //METHOD 1: CREATION VIA CONFIGURATION FILE
-            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-            //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            //METHOD 2: CREATION VIA BLOB URL AND KEY
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-            string containerName = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-
-            // Retrieve a reference to a container.
-            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
-
-            // Create the container if it doesn't already exist.
-            container.CreateIfNotExists();
-
-            //By default, the new container is private, 
-            //meaning that you must specify your storage access key to download blobs 
-            //from this container.If you want to make the files within the container available 
-            //to everyone, you can set the container to be public using the following code:
-            container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-
-            // Retrieve reference to a blob, use the file name of your choice
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
-
-            //Uload the file from a ByteArray
-            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
-
-            ////////////////////////////////////////////////////////
-            //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
-            ////////////////////////////////////////////////////////
-
-            HttpResponseMessage postFileInCreatedBlob = new HttpResponseMessage(HttpStatusCode.OK);
-            //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
-
-            return postFileInCreatedBlob;
-        }
-
-        //[FunctionName("MVPGetVideosConsolidated")]
-        //public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
-        //{
-        //    string nameOfContainerForAccount = "asset-6c8510d9-7c8b-4dca-b7df-332739ce809a";
-
-        //    // Retrieve storage account from connection string.
-        //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
-
-        //    // Create the blob client.
-        //    CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-        //    // Retrieve reference to a previously created container.
-        //    CloudBlobContainer container = blobClient.GetContainerReference(nameOfContainerForAccount);
-
-        //    List<MediaAssetsInBlobContainer> listOfBlobs = new List<MediaAssetsInBlobContainer>();
-
-        //    // Loop over items within the container and output the length and URI.
-        //    foreach (IListBlobItem item in container.ListBlobs(null, true))
-        //    {
-        //        if (item.GetType() == typeof(CloudBlockBlob))
-        //        {
-        //            CloudBlockBlob blob = (CloudBlockBlob)item;
-        //            var temp = new MediaAssetsInBlobContainer()
-        //            {
-        //                MediaAssetUri = blob.Uri.ToString(),
-        //                MediaAssetName = blob.Name.ToString()
-
-
-        //            };
-        //            listOfBlobs.Add(temp);
-        //            Console.WriteLine("Block blob of length {0}: {1}", blob.Properties.Length, blob.Uri);
-
-        //        }
-        //        else if (item.GetType() == typeof(CloudPageBlob))
-        //        {
-        //            CloudPageBlob pageBlob = (CloudPageBlob)item;
-        //            Console.WriteLine("Page blob of length {0}: {1}", pageBlob.Properties.Length, pageBlob.Uri);
-
-        //        }
-        //        else if (item.GetType() == typeof(CloudBlobDirectory))
-        //        {
-        //            CloudBlobDirectory directory = (CloudBlobDirectory)item;
-        //            Console.WriteLine("Directory: {0}", directory.Uri);
-        //        }
-        //    }
-
-        //    //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK
-        //    log.Info("Partial Return List with One Object processed a request.");
-        //    string jsonResult = JsonConvert.SerializeObject(listOfBlobs);
-        //    var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
-        //    httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
-        //    return httpRM;
-        //}
         
-        [FunctionName("MVPGetVideosConsolidated")]
-        public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
+        [FunctionName("GetMediaAssets")]
+        public static async Task<HttpResponseMessage> RunGetMediaAssets([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
         { 
-        // Alternative
+        // ALTERNATIVE ALLOWING PASSING PARAMETER IN URL
         // public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MVPGetVideosConsolidated/{email}")]HttpRequestMessage req, string email, TraceWriter log)
         // Remove string email = "user@xamarin.com";
+
             string email = "user@xamarin.com";
-            
             List<MediaAssetsWithMetaData> listOfVideos = new List<MediaAssetsWithMetaData>();
-            listOfVideos = await FunctionApp4.CosmosDB.CosmosDBMediaFiles.GetCosmosDogByEmailAsync(email);
+
+            //LIST OF MEDIA FILES FROM COSMOS DB
+            listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.GetCosmosDogByEmailAsync(email);
             
-            //TAKE THE LIST AND THEN ADD IT TO JSON AND SEND IT BACK
+            //ADD LIST TO JSON AND SEND RESPONSE MESSAGE BACK
             string jsonResult = JsonConvert.SerializeObject(listOfVideos);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
         }
-
     }
-
 }

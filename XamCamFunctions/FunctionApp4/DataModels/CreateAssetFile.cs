@@ -1,30 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FunctionApp4.DataModels.CreateAssetFile
+namespace XamCamFunctions.DataModels.CreateAssetFile
 {
-    class CreateAssetFile
-    {
-
-
-    }
-
     public class CreateAssetFileBody
     {
         public string IsEncrypted { get; set; }
         public string IsPrimary { get; set; }
-
         public string MimeType { get; set; }
-
         public string Name { get; set; }
-
         public string ParentAssetId { get; set;}
-
     }
-
 
     public class Metadata
     {
@@ -57,13 +42,4 @@ namespace FunctionApp4.DataModels.CreateAssetFile
     {
         public D d { get; set; }
     }
-
-
-
-
-
-
-
-
-
 }

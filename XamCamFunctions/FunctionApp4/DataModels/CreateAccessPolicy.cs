@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FunctionApp4.DataModels.CreateAccessPolicy
+namespace XamCamFunctions.DataModels.CreateAccessPolicy
 {
-    class CreateAccessPolicy
-    {
-    }
-
     class CreateAccessPolicyBody
     {
         public string Name { get; set; }
@@ -39,8 +31,4 @@ namespace FunctionApp4.DataModels.CreateAccessPolicy
     {
         public D d { get; set; }
     }
-
-
-
-
 }
