@@ -11,7 +11,7 @@ functionality of the IoT device.
 
 Setting up Mobile Center is completely optional. If you'd like to use it, you can set it up by following the steps listed below. However, if you'd rather skip this step for now, simply leave the two values of AppSecret as empty strings.
 
-Register for new a Mobile Center account (or login using GitHub, Microsoft, or an existing Mobile Center account)
-Create a new app for both iOS and Android
-In PrivateKeys.cs set the two values of AppSecret your new iOS and Android app's respective App Secrets.
+    * Register for new a Mobile Center account (or login using GitHub, Microsoft, or an existing Mobile Center account)
+    * Create a new app for both iOS and Android
+    * In PrivateKeys.cs set the two values of AppSecret your new iOS and Android app's respective App Secrets.
 
