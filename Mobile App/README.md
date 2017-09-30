@@ -9,9 +9,9 @@ functionality of the IoT device.
 # Visual Studio Mobile Center
 [Mobile Center](https://www.visualstudio.com/vs/mobile-center/) is the next generation of [HockeyApp](https://www.hockeyapp.net/), [Xamarin Test Cloud](https://testcloud.xamarin.com/login), [Xamarin Insights](https://www.xamarin.com/insights), and a plethora of new services like automated builds. It is a single platform to manage all aspects of continuous integration and continuous deployment, including build, test, distribution, crash reporting, and analytics.
 
-Setting up Mobile Center is completely optional. If you'd like to use it, you can set it up by following the steps listed below. However, if you'd rather skip this step for now, simply leave the two values of AppSecret as empty strings.
+##### Setting up Mobile Center is simple:
 
-    * Register for new a Mobile Center account (or login using GitHub, Microsoft, or an existing Mobile Center account)
-    * Create a new app for both iOS and Android
-    * In PrivateKeys.cs set the two values of AppSecret your new iOS and Android app's respective App Secrets.
+  * [Register](https://mobile.azure.com/) for new a Mobile Center account (or [login](https://mobile.azure.com/) using GitHub, Microsoft, or an existing Mobile Center account)
+  * [Create a new app](https://mobile.azure.com/apps/create) for both iOS and Android
+  * In ```PrivateKeys.cs``` set the two values of ```AppSecret``` your new iOS and Android app's respective App Secrets.
 
