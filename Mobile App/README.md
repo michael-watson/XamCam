@@ -16,7 +16,7 @@ If needed, here is more information on setting up [Azure Functions.](https://doc
 # Visual Studio Mobile Center
 [Mobile Center](https://www.visualstudio.com/vs/mobile-center/) is the next generation of [HockeyApp](https://www.hockeyapp.net/), [Xamarin Test Cloud](https://testcloud.xamarin.com/login), [Xamarin Insights](https://www.xamarin.com/insights), and a plethora of new services like automated builds. It is a single platform to manage all aspects of continuous integration and continuous deployment, including build, test, distribution, crash reporting, and analytics.
 
-##### Setting up Mobile Center is simple:
+### Setting up Mobile Center is simple:
 
   * [Register](https://mobile.azure.com/) for new a Mobile Center account (or [login](https://mobile.azure.com/) using GitHub, Microsoft, or an existing Mobile Center account)
   * [Create a new app](https://mobile.azure.com/apps/create) for both iOS and Android
