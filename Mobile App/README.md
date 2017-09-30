@@ -2,8 +2,7 @@
 XamCam is a mobile application that will enable users to control a remote WiFi camera for recording purposes. 
 
 ## Description 
-A **Win 10 UWP application**, a Raspberry Pi 3 running **IoT Core** in our case, will record the video content and upload to **Azure Media Services** through an **Azure Function**. The media content will be optimized through Azure Media Services and easily accessible with a bitrate that is responsive to the users internet connection. The **Xamarin.Forms mobile application** will stream the video content from Azure Media Services while also being able to control the recording
-functionality of the IoT device.
+A [Win 10 UWP application](https://docs.microsoft.com/en-us/windows/uwp/get-started/whats-a-uwp), a Raspberry Pi 3 running [IoT Core](https://developer.microsoft.com/en-us/windows/iot) in our case, will record the video content and upload to [Azure Media Services](https://azure.microsoft.com/en-us/services/media-services/) through an [Azure Function](https://azure.microsoft.com/en-us/services/functions/). The media content will be optimized through Azure Media Services and easily accessible with a bitrate that is responsive to the users internet connection. The [Xamarin.Forms](https://www.xamarin.com/forms) mobile application will stream the video content from Azure Media Services while also being able to control the recording functionality of the IoT device.
 
 # Getting Started
 
