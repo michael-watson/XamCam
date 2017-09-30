@@ -21,7 +21,6 @@ namespace ICC.Pages
 		ContentView clickContainer;
 
 		static double videoProgress = 0;
-		static CancellationTokenSource fadeCancelSource = new CancellationTokenSource();
 
 		public NativeVideoPlayerPage(string url)
 		{
