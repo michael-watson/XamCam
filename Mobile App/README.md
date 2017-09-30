@@ -10,7 +10,7 @@ functionality of the IoT device.
 ## Setup AppConstants.cs
 There is a ```AppConstants.cs``` file in the Constants directory located at Xamam/XamCam/Constants that contains the **Azure Functions** Url.
 
-It is imperative to change this ```FunctionGetUrl``` to **your Azure Function** before you run the application.
+It is imperative to change this ```FunctionGetUrl``` to **your Azure Function Url** before you run the application.
 
 If needed, here is more information on setting up [Azure Functions.](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 
