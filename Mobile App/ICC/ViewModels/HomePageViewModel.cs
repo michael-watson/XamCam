@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Xamarin.Forms;
 
 using ICC.Models;
+using ICC.Constants;
 
 namespace ICC.ViewModels
 {
@@ -32,7 +33,7 @@ namespace ICC.ViewModels
 
 			try
 			{
-				var url = "http://iccfunction.azurewebsites.net/api/GetMediaAssets";
+                var url = AppConstants.FunctionGetUrl;
 				var response = await client.GetAsync(url);
 
 				if (response.IsSuccessStatusCode)
