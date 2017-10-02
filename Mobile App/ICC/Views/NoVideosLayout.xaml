@@ -8,13 +8,20 @@
         AbsoluteLayout.LayoutBounds="0,0,1,0.55" 
         AbsoluteLayout.LayoutFlags="All"/>
 
-    <Image
+   <!-- <Image
         HorizontalOptions="Center" VerticalOptions="Center"
         AbsoluteLayout.LayoutBounds="0, 0, 1, 0.55" AbsoluteLayout.LayoutFlags="All"
         WidthRequest= "300" HeightRequest= "360"
         BackgroundColor="#A8DADC"
         Aspect="AspectFit"
-        Source="XamCamLogo.png" />
+        Source="XamCamLogo.png" />-->
+
+    <Label
+        Text= "XamCam"
+        FontSize= "70"
+        HorizontalOptions="Center" VerticalOptions= "Center"
+        AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All"
+        WidthRequest= "300" HeightRequest= "360" />
 
     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
      AbsoluteLayout.LayoutBounds="0,0,1,1" />

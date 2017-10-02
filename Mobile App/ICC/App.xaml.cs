@@ -17,7 +17,9 @@ namespace ICC
 		{
 			InitializeComponent();
 
-			MainPage = new NavigationPage(new HomePage());
+            MainPage = new NavigationPage(new HomePage());
+
+            //MainPage = NoVideosLayout();
 		}
 
 		protected override void OnStart()
