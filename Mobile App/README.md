@@ -22,8 +22,8 @@ If needed, here is more information on setting up [Azure Functions.](https://doc
   * [Create a new app](https://mobile.azure.com/apps/create) for both iOS and Android
   * In ```PrivateKeys.cs``` set the two values of ```AppSecret``` your new iOS and Android app's respective App Secrets.
 
-## Setting up Mobile Center
-This app uses Mobile Center for Continuous Integration and Continuous Deployment, by taking advantage of the functionality provided by each of the following Services:
+## Setting up Services in Mobile Center
+This app uses [Mobile Center](https://www.visualstudio.com/vs/mobile-center/) for Continuous Integration and Continuous Deployment, by taking advantage of the functionality provided by each of the following Services:
 
 ## Build
 
