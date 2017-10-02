@@ -465,5 +465,98 @@ namespace XamCamFunctions
             httpRM.Content = new StringContent(jsonResult, System.Text.Encoding.UTF8, "application/json");
             return httpRM;
         }
+
+        [FunctionName("PostMediaAssetToSpecifiedBlobContainer")]
+        public static async Task<HttpResponseMessage> MVPRunPostItemToSpecifiedBlobContainer([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "PostMediaAssetToSpecifiedBlobContainer/{deviceId}/{videoTitle}")]HttpRequestMessage req, string deviceId, string videoTitle, TraceWriter log)
+        {
+
+            var fileAsBytes = await req.Content.ReadAsByteArrayAsync();
+            var myUploadedFile = new UploadedFile
+            {
+                Title = videoTitle,
+                FileName = $"{deviceId}_{DateTime.UtcNow.Ticks}.mp4",
+                File = fileAsBytes,
+                UploadedAt = DateTime.UtcNow
+            };
+
+            ///////////////////////////////////
+            ///// UPLOAD TO BLOB STORAGE
+            //////////////////////////////////
+
+            //THIS REQUIRES CONFIGURATION FILE
+            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            //CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.BlobURLAndKey);
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            string containerName = "mediaassetblobcontainer20170928";
+
+            // Retrieve a reference to a container.
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            // Create the container if it doesn't already exist.
+            container.CreateIfNotExists();
+
+            //By default, the new container is private, 
+            //meaning that you must specify your storage access key to download blobs 
+            //from this container.If you want to make the files within the container available 
+            //to everyone, you can set the container to be public using the following code:
+
+            var perm = new BlobContainerPermissions();
+            perm.PublicAccess = BlobContainerPublicAccessType.Blob;
+            container.SetPermissions(perm);
+
+            //container.SetPermissions(new BlobContainerPermissions
+            //{
+            //    PublicAccess = BlobContainerPublicAccessType.Blob
+            //});
+
+            // Retrieve reference to a blob named "myblob".
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(myUploadedFile.FileName);
+
+            //IN CASE YOU NEED TO SET THE MEDIA TYPE
+            //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
+
+            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
+
+            try
+            {
+                ////////////////////////////////////////////////////////
+                //UPLOAD FILE FROM BYTE ARRAY
+                ////////////////////////////////////////////////////////
+
+                blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
+
+                ////////////////////////////////////////////////////////
+                //SEND HTTP RESPONSE MESSAGE
+                ////////////////////////////////////////////////////////
+
+                //HttpResponseMessage postFileInCreatedBlob2 = new HttpResponseMessage(HttpStatusCode.OK, "success");
+                //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
+
+                return req.CreateResponse<string>(HttpStatusCode.OK, "success");
+
+            }
+
+            catch (Exception ex)
+            {
+                log.Error($"ERROR copying blobs to target output: {ex.Message}");
+
+                ////////////////////////////////////////////////////////
+                //SEND HTTP RESPONSE MESSAGE
+                ////////////////////////////////////////////////////////
+
+                HttpResponseMessage errorInCreatingBlob = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                var errorMessage = "Function did not upload to blob container.";
+                errorInCreatingBlob.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "application/json");
+                return errorInCreatingBlob;
+
+            }
+
+
+
+        }
+
     }
 }

@@ -14,5 +14,6 @@ namespace XamCamFunctions.DataModels
         public DateTime uploadedAt { get; set; }
         public string title { get; set; }
         public string accountType { get; set; }
+        
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.Documents.Client;
 
 using XamCamFunctions.DataModels;
+using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace XamCamFunctions.CosmosDB
 {
@@ -89,7 +90,13 @@ namespace XamCamFunctions.CosmosDB
         {
             await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
         }
-        
+
+        //POST
+        public static async Task PostCosmosAssetAsync(IAsset asset)
+        {
+            await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), asset);
+        }
+
         //PUT
         public static async Task PutCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
         {
