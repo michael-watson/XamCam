@@ -11,6 +11,8 @@ There is a ```AppConstants.cs``` file in the Constants directory located at Xama
 
 It is imperative to change this ```FunctionGetUrl``` to **your Azure Function Url** before you run the application.
 
+![alt text](https://github.com/michael-watson/XamCam/blob/mobile-app/Mobile%20App/Images/FunctionsURL.gif)
+
 If needed, here is more information on setting up [Azure Functions.](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 
 # Visual Studio Mobile Center
