@@ -14,10 +14,6 @@ namespace XamCamFunctions.DataModels
         public DateTime uploadedAt { get; set; }
         public string title { get; set; }
         public string accountType { get; set; }
-
-        public string hLS { get; set; }
-        public string smoothStreaming { get; set; }
-        public string mPEGDash { get; set; }
-
+        
     }
 }

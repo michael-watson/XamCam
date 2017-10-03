@@ -361,8 +361,8 @@ namespace XamCamFunctions
 
             //SEND HTTP REQUEST AND RECEIVE HTTP RESPONSE MESSAGE
             HttpResponseMessage myPostCreateAccessPolicyResponseMessage2 =
-
                 await httpClient.SendAsync(myPostCreateAccessPolicyRequest2);
+
             //EXTRACT RESPONSE FROM HTTP RESPONSE MESSAGE
             var myPostCreateAccessPolicystringResult2 =
                 myPostCreateAccessPolicyResponseMessage2.Content.ReadAsStringAsync().Result;
@@ -431,7 +431,17 @@ namespace XamCamFunctions
             //  SAVE TO COSMOS DB
             ////////////////////////////////////////////////////////////////////////////////
 
-     
+            MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData()
+            {
+                id = Guid.NewGuid().ToString(),
+                email = "user@xamarin.com",
+                mediaAssetUri = newLocator,
+                title = myUploadedFile.Title,
+                fileName = myUploadedFile.FileName,
+                uploadedAt = myUploadedFile.UploadedAt
+            };
+
+            await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
         }
@@ -518,22 +528,6 @@ namespace XamCamFunctions
 
                 blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
 
-                //////////////////////////////////////////////////////
-                /////////  SAVE TO COSMOS DB
-                //////////////////////////////////////////////////////
-                
-                MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData()
-                {
-                    id = Guid.NewGuid().ToString(),
-                    email = "user@xamarin.com",
-                    //mediaAssetUri = newLocator,
-                    title = myUploadedFile.Title,
-                    fileName = myUploadedFile.FileName,
-                    uploadedAt = myUploadedFile.UploadedAt
-                };
-
-                await CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
-
                 ////////////////////////////////////////////////////////
                 //SEND HTTP RESPONSE MESSAGE
                 ////////////////////////////////////////////////////////
@@ -542,7 +536,7 @@ namespace XamCamFunctions
                 //httpRM.Content = new StringContent(jsonObject, System.Text.Encoding.UTF8, "application/json");
 
                 return req.CreateResponse<string>(HttpStatusCode.OK, "success");
-                
+
             }
 
             catch (Exception ex)

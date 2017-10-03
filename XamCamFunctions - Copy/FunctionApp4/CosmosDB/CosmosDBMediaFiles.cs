@@ -14,6 +14,7 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace XamCamFunctions.CosmosDB
 {
+<<<<<<< HEAD
     class CosmosDBMediaFiles
     {
         //DBS - Collections - Documents
@@ -60,29 +61,6 @@ namespace XamCamFunctions.CosmosDB
             returnedListCosmosDog.Add(result);
 
             return returnedListCosmosDog;
-        }
-
-        //GET
-        public static async Task<MediaAssetsWithMetaData> GetCosmosDogByFileNameAsync(string inputFilename)
-        {
-            var MyListOfAccountsByFilename = new List<MediaAssetsWithMetaData>();
-            try
-            {
-                var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
-                    (UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-                    .Where(f => f.fileName == inputFilename)
-                    .AsDocumentQuery();
-
-                while (query.HasMoreResults)
-                {
-                    MyListOfAccountsByEmail.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-                }
-            }
-            catch (DocumentClientException ex)
-            {
-                Debug.WriteLine("Error: ", ex.Message);
-            }
-            return MyListOfAccountsByFilename.FirstOrDefault();
         }
 
         //GET
@@ -135,93 +113,97 @@ namespace XamCamFunctions.CosmosDB
 }
 
 
-	//class CosmosDBMediaFiles
-	//{
-	//	//DBS - Collections - Documents
-	//	static readonly string DatabaseId = "XamCam";
-	//	static readonly string CollectionId = "XamCamAccounts3";
 
-	//	//CLIENT
-	//	static readonly DocumentClient myDocumentClient = new DocumentClient(new Uri(Constants.CosmosDBEndPoint), Constants.CosmosDBMyKey);
+ 
+=======
+	class CosmosDBMediaFiles
+	{
+		//DBS - Collections - Documents
+		static readonly string DatabaseId = "XamCam";
+		static readonly string CollectionId = "XamCamAccounts3";
 
-	//	public static List<MediaAssetsWithMetaData> MyListOfAccounts;
-	//	public static List<MediaAssetsWithMetaData> MyListOfAccountsByEmail;
+		//CLIENT
+		static readonly DocumentClient myDocumentClient = new DocumentClient(new Uri(Constants.CosmosDBEndPoint), Constants.CosmosDBMyKey);
 
-	//	//GETALL
-	//	public static async Task<List<MediaAssetsWithMetaData>> GetAllCosmosDogs()
-	//	{
-	//		MyListOfAccounts = new List<MediaAssetsWithMetaData>();
-	//		try
-	//		{
-	//			var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-	//										.AsDocumentQuery();
-	//			while (query.HasMoreResults)
-	//			{
-	//				MyListOfAccounts.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-	//			}
-	//		}
-	//		catch (DocumentClientException ex)
-	//		{
-	//			Debug.WriteLine("Error: ", ex.Message);
-	//		}
-	//		return MyListOfAccounts;
-	//	}
+		public static List<MediaAssetsWithMetaData> MyListOfAccounts;
+		public static List<MediaAssetsWithMetaData> MyListOfAccountsByEmail;
 
-	//	//GET
-	//	public static async Task<List<MediaAssetsWithMetaData>> GetCosmosDogByIdAsync(string id)
-	//	{
-	//		var result = await myDocumentClient.ReadDocumentAsync<MediaAssetsWithMetaData>(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
+		//GETALL
+		public static async Task<List<MediaAssetsWithMetaData>> GetAllCosmosDogs()
+		{
+			MyListOfAccounts = new List<MediaAssetsWithMetaData>();
+			try
+			{
+				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+											.AsDocumentQuery();
+				while (query.HasMoreResults)
+				{
+					MyListOfAccounts.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
+				}
+			}
+			catch (DocumentClientException ex)
+			{
+				Debug.WriteLine("Error: ", ex.Message);
+			}
+			return MyListOfAccounts;
+		}
 
-	//		if (result.StatusCode != System.Net.HttpStatusCode.OK)
-	//		{
-	//			return null;
-	//		}
+		//GET
+		public static async Task<List<MediaAssetsWithMetaData>> GetCosmosDogByIdAsync(string id)
+		{
+			var result = await myDocumentClient.ReadDocumentAsync<MediaAssetsWithMetaData>(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
 
-	//		List<MediaAssetsWithMetaData> returnedListCosmosDog = new List<MediaAssetsWithMetaData>();
-	//		returnedListCosmosDog.Add(result);
+			if (result.StatusCode != System.Net.HttpStatusCode.OK)
+			{
+				return null;
+			}
 
-	//		return returnedListCosmosDog;
-	//	}
+			List<MediaAssetsWithMetaData> returnedListCosmosDog = new List<MediaAssetsWithMetaData>();
+			returnedListCosmosDog.Add(result);
 
-	//	//GET
-	//	public static async Task<List<MediaAssetsWithMetaData>> GetCosmosDogByEmailAsync(string inputEmail)
-	//	{
-	//		MyListOfAccountsByEmail = new List<MediaAssetsWithMetaData>();
-	//		try
-	//		{
-	//			var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
-	//				(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-	//				.Where(f => f.email == inputEmail)
-	//				.AsDocumentQuery();
+			return returnedListCosmosDog;
+		}
 
-	//			while (query.HasMoreResults)
-	//			{
-	//				MyListOfAccountsByEmail.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-	//			}
-	//		}
-	//		catch (DocumentClientException ex)
-	//		{
-	//			Debug.WriteLine("Error: ", ex.Message);
-	//		}
-	//		return MyListOfAccountsByEmail;
-	//	}
+		//GET
+		public static async Task<List<MediaAssetsWithMetaData>> GetCosmosDogByEmailAsync(string inputEmail)
+		{
+			MyListOfAccountsByEmail = new List<MediaAssetsWithMetaData>();
+			try
+			{
+				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
+					(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+					.Where(f => f.email == inputEmail)
+					.AsDocumentQuery();
 
-	//	//POST
-	//	public static async Task PostCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
-	//	{
-	//		await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
-	//	}
+				while (query.HasMoreResults)
+				{
+					MyListOfAccountsByEmail.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
+				}
+			}
+			catch (DocumentClientException ex)
+			{
+				Debug.WriteLine("Error: ", ex.Message);
+			}
+			return MyListOfAccountsByEmail;
+		}
 
-	//	//PUT
-	//	public static async Task PutCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
-	//	{
-	//		await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
-	//	}
+		//POST
+		public static async Task PostCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+		{
+			await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
+		}
 
-	//	//DELETE
-	//	public static async Task DeleteCosmosDogAsync(MediaAssetsWithMetaData deleteMediaAssetsWithMetaData)
-	//	{
-	//		await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
-	//	}
-	//}
-//}
+		//PUT
+		public static async Task PutCosmosDogAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+		{
+			await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
+		}
+
+		//DELETE
+		public static async Task DeleteCosmosDogAsync(MediaAssetsWithMetaData deleteMediaAssetsWithMetaData)
+		{
+			await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
+		}
+	}
+}
+>>>>>>> cc98350b5dd74caf78d58ce4727214df4a932854

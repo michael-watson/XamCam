@@ -97,7 +97,7 @@ namespace XamCamFunctions.Functions
 
                 byte[] keyBytes = Convert.FromBase64String(Constants.WebHookSigningKey);
 
-                var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "FunctionWebHook2").FirstOrDefault();
+                var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "FunctionWebHook1").FirstOrDefault();
 
                 //var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "NewXamCamWebHook").FirstOrDefault();
                 INotificationEndPoint endpoint = null;
@@ -108,7 +108,7 @@ namespace XamCamFunctions.Functions
                 }
                 else
                 {
-                    endpoint = _context.NotificationEndPoints.Create("FunctionWebHook2",
+                    endpoint = _context.NotificationEndPoints.Create("FunctionWebHook1",
                     // = _context.NotificationEndPoints.Create("NewXamCamWebHook",
 
                         NotificationEndPointType.WebHook, Constants.WebHookEndpoint, keyBytes);
@@ -279,9 +279,9 @@ namespace XamCamFunctions.Functions
         static string _webHookEndpoint = Constants.WebHookEndpoint;
         static string _signingKey = Constants.WebHookSigningKey;
 
-       [FunctionName("NewXamCamWebHookTwo")]
+       [FunctionName("NewXamCamWebHook")]
         //public static async Task<HttpResponseMessage> RunNewXamCamWebHook(HttpRequestMessage req, TraceWriter log)
-        public static async Task<HttpResponseMessage> RunNewXamCamWebHookTwo([HttpTrigger(WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> RunNewXamCamWebHook([HttpTrigger(WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
            
        {
             log.Info($"C# HTTP trigger function processed a request. RequestUri={req.RequestUri}");
@@ -321,32 +321,6 @@ namespace XamCamFunctions.Functions
                             {
                                 string urlForClientStreaming = PublishAndBuildStreamingURLs(msg.Properties["JobId"]);
                                 log.Info($"URL to the manifest for client streaming using HLS protocol: {urlForClientStreaming}");
-
-                                //DO THE C# STRING MANIPULATION GET BOTH SMOOTH STREAMING AND MPEG DASH
-                                var indexOfHLS = urlForClientStreaming.IndexOf("(format=m3u8-aapl)");
-                                var smoothStreamingURL = urlForClientStreaming.Substring(0, indexOfHLS);
-                                var theMPEGDashURL = ($"({smoothStreamingURL}(format=mpd-time-csf)");
-
-                                //GET THE FILENAME FROM THE MANIFEST URL
-
-                                var numberOfLettersInAMSUrlWithSlash = Constants.AMSUrlWithSlash.Length;
-                                var smoothStreamingURLWithoutAMSUrlWithSlash = smoothStreamingURL.Substring(numberOfLettersInAMSUrlWithSlash, smoothStreamingURL.Length - numberOfLettersInAMSUrlWithSlash);
-                                var indexOfFirstSlash = smoothStreamingURLWithoutAMSUrlWithSlash.IndexOf("/");
-                                var fileNameWithISM = smoothStreamingURLWithoutAMSUrlWithSlash.Substring(indexOfFirstSlash, smoothStreamingURLWithoutAMSUrlWithSlash.Length - indexOfFirstSlash);
-                                var indexOfISM = fileNameWithISM.IndexOf(".ism");
-                                var fileNameWithoutISM = fileNameWithISM.Substring(0, indexOfISM);
-                                var filename = ($"{fileNameWithoutISM}.mp4");
-
-                                //FIND OBJECT BASED ON SAME NAME OF FILE IN COSMOS DB AND ADD THE NEW URLS
-                                var relevantDocumentFromBlobUpload = await CosmosDB.CosmosDBMediaFiles.GetCosmosDogByFileNameAsync(filename);
-
-                                relevantDocumentFromBlobUpload.hLS = urlForClientStreaming;
-                                relevantDocumentFromBlobUpload.smoothStreaming = smoothStreamingURL;
-                                relevantDocumentFromBlobUpload.mPEGDash = theMPEGDashURL;
-                                relevantDocumentFromBlobUpload.mediaAssetUri = smoothStreamingURL;
-
-                                await CosmosDB.CosmosDBMediaFiles.PutCosmosDogAsync(relevantDocumentFromBlobUpload);
-                                
                             }
                         }
 
