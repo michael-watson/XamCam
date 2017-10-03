@@ -17,9 +17,10 @@
         Source="XamCamLogo.png" />-->
 
     <Label
+        Margin="69"
         Text= "XamCam"
-        FontSize= "70"
-        HorizontalOptions="Center" VerticalOptions= "Center"
+        FontSize= "60"
+        HorizontalOptions="CenterAndExpand" VerticalOptions= "Center"
         AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All"
         WidthRequest= "300" HeightRequest= "360" />
 
