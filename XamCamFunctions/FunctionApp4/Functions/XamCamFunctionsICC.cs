@@ -431,7 +431,18 @@ namespace XamCamFunctions
             //  SAVE TO COSMOS DB
             ////////////////////////////////////////////////////////////////////////////////
 
-     
+            MediaAssetsWithMetaData uploadMediaAssetsWithMetaData = new MediaAssetsWithMetaData()
+            {
+                id = Guid.NewGuid().ToString(),
+                email = "user@xamarin.com",
+                mediaAssetUri = newLocator,
+                title = myUploadedFile.Title,
+                fileName = myUploadedFile.FileName,
+                uploadedAt = myUploadedFile.UploadedAt
+            };
+
+            await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
+
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
         }
