@@ -441,7 +441,7 @@ namespace XamCamFunctions
                 uploadedAt = myUploadedFile.UploadedAt
             };
 
-            await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
+            await XamCamFunctions.CosmosDB.CosmosDBService.PostMediaAssetAsync(uploadMediaAssetsWithMetaData);
 
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
@@ -458,7 +458,7 @@ namespace XamCamFunctions
             List<MediaAssetsWithMetaData> listOfVideos = new List<MediaAssetsWithMetaData>();
 
             //LIST OF MEDIA FILES FROM COSMOS DB
-            listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBMediaFiles.GetCosmosDogByEmailAsync(email);
+            listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBService.GetAllMediaAssetsByEmailAsync(email);
 
             //ADD LIST TO JSON AND SEND RESPONSE MESSAGE BACK
             string jsonResult = JsonConvert.SerializeObject(listOfVideos);
@@ -519,8 +519,6 @@ namespace XamCamFunctions
             //IN CASE YOU NEED TO SET THE MEDIA TYPE
             //https://stackoverflow.com/questions/24621664/uploading-blockblob-and-setting-contenttype
 
-            blockBlob.UploadFromByteArray(myUploadedFile.File, 0, myUploadedFile.File.Length);
-
             try
             {
                 ////////////////////////////////////////////////////////
@@ -543,7 +541,7 @@ namespace XamCamFunctions
                     uploadedAt = myUploadedFile.UploadedAt
                 };
 
-                await CosmosDB.CosmosDBMediaFiles.PostCosmosDogAsync(uploadMediaAssetsWithMetaData);
+                await CosmosDB.CosmosDBService.PostMediaAssetAsync(uploadMediaAssetsWithMetaData);
 
                 ////////////////////////////////////////////////////////
                 //SEND HTTP RESPONSE MESSAGE

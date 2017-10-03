@@ -338,14 +338,14 @@ namespace XamCamFunctions.Functions
                                 var filename = ($"{fileNameWithoutISM}.mp4");
 
                                 //FIND OBJECT BASED ON SAME NAME OF FILE IN COSMOS DB AND ADD THE NEW URLS
-                                var relevantDocumentFromBlobUpload = await CosmosDB.CosmosDBMediaFiles.GetCosmosDogByFileNameAsync(filename);
+                                var relevantDocumentFromBlobUpload = await CosmosDB.CosmosDBService.GetMediaFileByFileNameAsync(filename);
 
                                 relevantDocumentFromBlobUpload.hLS = urlForClientStreaming;
                                 relevantDocumentFromBlobUpload.smoothStreaming = smoothStreamingURL;
                                 relevantDocumentFromBlobUpload.mPEGDash = theMPEGDashURL;
                                 relevantDocumentFromBlobUpload.mediaAssetUri = smoothStreamingURL;
 
-                                await CosmosDB.CosmosDBMediaFiles.PutCosmosDogAsync(relevantDocumentFromBlobUpload);
+                                await CosmosDB.CosmosDBService.PutMediaAssetAsync(relevantDocumentFromBlobUpload);
                                 
                             }
                         }
