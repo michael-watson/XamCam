@@ -11,7 +11,12 @@ namespace ICC.Pages
 		NoVideosLayout noVideoLayout = new NoVideosLayout();
 		VideosListLayout videosListLayout = new VideosListLayout();
 
-		public HomePage()
+        void Handle_Activated(object sender, System.EventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public HomePage()
 		{
 			InitializeComponent();
 
