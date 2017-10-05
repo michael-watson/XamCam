@@ -40,6 +40,9 @@
     <EmbeddedResource Include="Pages\NativeVideoPlayerPageXaml.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Pages\DevicesPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -67,6 +70,9 @@
     </Compile>
     <Compile Include="ViewModels\NativeVideoPlayerViewModel.cs" />
     <Compile Include="Constants\AppConstants.cs" />
+    <Compile Include="Pages\DevicesPage.xaml.cs">
+      <DependentUpon>DevicesPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\" />
