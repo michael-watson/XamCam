@@ -33,21 +33,8 @@ using System.Security.Cryptography;
 
 namespace XamCamFunctions.Functions
 {
-    public static class CopyBlobToAMS
+    public static class BlobTriggerCopyBlobToAMS
     {
-        ////CONSTANTS NEEDED FOR AZURE AD
-        //static string tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
-        //static string GrantType = "client_credentials";
-        //static string ClientSecret = "HTUFvSAT2C8002nQA1FPfKEpUZkIUTxRRyDFaORVa38=";
-        //static string ClientID = "8d631792-ed10-46aa-bd09-b8ca1641bc6f";
-        //static string RequestedResource = "https://rest.media.azure.net";
-        //static string MediaServiceRestEndpoint = "https://xamcammediaservice.restv2.westus.media.azure.net/api/";
-
-        ////BLOB STORAGE ACCOUNT
-        //static string _storaSgeAccountName = "xamcamstorage";
-        //static string _storageAccountKey = "N0cfqGOzaWIkSUNfiUxodYEmD1yHLAFexLw6YG8hg2368MBho3MsiC6BLbeoyfjUodNjOzax1vZEGDprHrK3aQ==";
-
-///////////////////        
         static readonly string _AADTenantDomain = Constants.tenantId;
         static readonly string _RESTAPIEndpoint = Constants.MediaServiceRestEndpoint;
         static readonly string _mediaservicesClientId = Constants.ClientID;
@@ -58,10 +45,6 @@ namespace XamCamFunctions.Functions
         private static CloudStorageAccount _destinationStorageAccount = null;
 
         [FunctionName("CopyBlobToAMS")]
-        ////DELETE 3 lines LINE
-        //public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
-        //{
-        //    string name = "myname";
         public async static void RunBlobTrigger([BlobTrigger("mediaassetblobcontainer20170928/{name}", Connection = "AzureWebJobsStorage")]Stream myBlob, string name, TraceWriter log)
         {
             // NOTE that the variables {fileName} here come from the path setting in function.json
@@ -83,9 +66,7 @@ namespace XamCamFunctions.Functions
                 AzureAdTokenProvider tokenProvider = new AzureAdTokenProvider(tokenCredentials);
 
                 _context = new CloudMediaContext(new Uri(_RESTAPIEndpoint), tokenProvider);
-                    
-                    
-
+                
                 string createdURI = $"https://xamcamstorage.blob.core.windows.net/mediaassetblobcontainer20170928/{name}";
 
                 CloudBlockBlob uploadedBlob = new CloudBlockBlob(new Uri(createdURI));
@@ -161,9 +142,6 @@ namespace XamCamFunctions.Functions
                 log.Info($"StackTrace : {ex.StackTrace}");
                 throw ex;
             }
-
-            ////DELETE THIS LINE
-            //return req.CreateResponse(HttpStatusCode.OK, "delete this line");
         }
    
 
@@ -194,7 +172,6 @@ namespace XamCamFunctions.Functions
                 log.Info($"ERROR : {ex.Message}");
                 throw ex;
             }
-
             return newAsset;
         }
 
@@ -343,10 +320,8 @@ namespace XamCamFunctions.Functions
                                 relevantDocumentFromBlobUpload.mediaAssetUri = smoothStreamingURL;
 
                                 await CosmosDB.CosmosDBService.PutMediaAssetAsync(relevantDocumentFromBlobUpload);
-                                
                             }
                         }
-
                         return req.CreateResponse(HttpStatusCode.OK, string.Empty);
                     }
                     else
@@ -361,7 +336,6 @@ namespace XamCamFunctions.Functions
                     return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyWebHookRequestSignature failed.");
                 }
             }
-
             return req.CreateResponse(HttpStatusCode.BadRequest, "Generic Error.");
         }
 
@@ -391,7 +365,6 @@ namespace XamCamFunctions.Functions
             // in streaming media clients. 
             string urlForClientStreaming = originLocator.Path + manifestFile.Name + "/manifest" + "(format=m3u8-aapl)";
             return urlForClientStreaming;
-
         }
 
         private static bool VerifyWebHookRequestSignature(byte[] data, string actualValue, byte[] verificationKey)
@@ -436,7 +409,6 @@ namespace XamCamFunctions.Functions
                 log.Info($"VerifyHeaders hit exception {e}");
                 headersVerified = false;
             }
-
             return headersVerified;
         }
 
@@ -462,7 +434,6 @@ namespace XamCamFunctions.Functions
                 content[output++] = HexLookup[d / 0x10];
                 content[output++] = HexLookup[d % 0x10];
             }
-
             return new string(content);
         }
 
@@ -484,20 +455,5 @@ namespace XamCamFunctions.Functions
             public DateTime TimeStamp { get; set; }
             public IDictionary<string, string> Properties { get; set; }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }
