@@ -13,13 +13,13 @@
     Title= "Videos"
     Icon = "camera.png">
 
-    <!--<ContentPage.ToolbarItems>
+    <ContentPage.ToolbarItems>
         <ToolbarItem 
             Name="DevicesButton" 
             Order="Primary" 
             Text="Devices" 
             Priority="0" 
             Activated="onDevicesClicked"/>
-    </ContentPage.ToolbarItems>-->
+    </ContentPage.ToolbarItems>
 
 </localPages:BaseContentPage>

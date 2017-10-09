@@ -23,10 +23,10 @@ namespace ICC.Pages
 			Content = noVideoLayout;
 		}
 
-        //async void onDevicesClicked(object sender, System.EventArgs e)
-        //{
-        //    await Navigation.PushAsync(new DevicesPage());
-        //}
+        async void onDevicesClicked(object sender, System.EventArgs e)
+        {
+            await Navigation.PushAsync(new DevicesPage());
+        }
 
         protected override async void OnAppearing()
 		{

@@ -49,7 +49,8 @@ namespace ICC.iOS
 				using (var assetGenerator = AVAssetImageGenerator.FromAsset(asset))
 				{
 					var image = assetGenerator.CopyCGImageAtTime(new CMTime(0, 1), out outputTime, out error);
-					Device.BeginInvokeOnMainThread(() => ((UIImageView)Control).Image = new UIImage(image));
+                    if(image != null)
+                        Device.BeginInvokeOnMainThread(() => ((UIImageView)Control).Image = new UIImage(image));
 				}
 			}
 			else
