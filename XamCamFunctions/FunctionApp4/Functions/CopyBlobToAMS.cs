@@ -98,7 +98,6 @@ namespace XamCamFunctions.Functions
                 byte[] keyBytes = Convert.FromBase64String(Constants.WebHookSigningKey);
 
                 var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "FunctionWebHook2").FirstOrDefault();
-
                 //var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "NewXamCamWebHook").FirstOrDefault();
                 INotificationEndPoint endpoint = null;
                 if (existingEndpoint != null)
@@ -109,14 +108,13 @@ namespace XamCamFunctions.Functions
                 else
                 {
                     endpoint = _context.NotificationEndPoints.Create("FunctionWebHook2",
+                        NotificationEndPointType.WebHook, Constants.WebHookEndpoint, keyBytes);
+
                     // = _context.NotificationEndPoints.Create("NewXamCamWebHook",
 
-                        NotificationEndPointType.WebHook, Constants.WebHookEndpoint, keyBytes);
                     Console.WriteLine("Notification Endpoint Created with Key : {0}", keyBytes.ToString());
                 }
-
-
-
+                
                 // Declare a new encoding job with the Standard encoder
                 IJob job = _context.Jobs.Create("Azure Function - MES Job");
 
@@ -205,6 +203,7 @@ namespace XamCamFunctions.Functions
         /// </summary>
         /// <param name="blob">The specified blob.</param>
         /// <returns>The new asset.</returns>
+        /// 
         public static async Task<IAsset> CreateAssetFromBlobAsync(CloudBlockBlob blob, string assetName, TraceWriter log)
         {
             //Get a reference to the storage account that is associated with the Media Services account. 
@@ -268,11 +267,9 @@ namespace XamCamFunctions.Functions
         }
 
         //////////////////////////////////////////////////////////
-        /// <summary>
-        /// WEBHOOK
-        /// </summary>
-        ///         //////////////////////////////////////////////////////////
-        ///         
+        /// WEBHOOK CALLED AFTER THE PROCESSING TASK IS COMPLETED
+        //////////////////////////////////////////////////////////
+
         internal const string SignatureHeaderKey = "sha256";
         internal const string SignatureHeaderValueTemplate = SignatureHeaderKey + "={0}";
 
@@ -325,14 +322,14 @@ namespace XamCamFunctions.Functions
                                 //DO THE C# STRING MANIPULATION GET BOTH SMOOTH STREAMING AND MPEG DASH
                                 var indexOfHLS = urlForClientStreaming.IndexOf("(format=m3u8-aapl)");
                                 var smoothStreamingURL = urlForClientStreaming.Substring(0, indexOfHLS);
-                                var theMPEGDashURL = ($"({smoothStreamingURL}(format=mpd-time-csf)");
+                                var theMPEGDashURL = ($"{smoothStreamingURL}(format=mpd-time-csf)");
 
                                 //GET THE FILENAME FROM THE MANIFEST URL
 
                                 var numberOfLettersInAMSUrlWithSlash = Constants.AMSUrlWithSlash.Length;
                                 var smoothStreamingURLWithoutAMSUrlWithSlash = smoothStreamingURL.Substring(numberOfLettersInAMSUrlWithSlash, smoothStreamingURL.Length - numberOfLettersInAMSUrlWithSlash);
                                 var indexOfFirstSlash = smoothStreamingURLWithoutAMSUrlWithSlash.IndexOf("/");
-                                var fileNameWithISM = smoothStreamingURLWithoutAMSUrlWithSlash.Substring(indexOfFirstSlash, smoothStreamingURLWithoutAMSUrlWithSlash.Length - indexOfFirstSlash);
+                                var fileNameWithISM = smoothStreamingURLWithoutAMSUrlWithSlash.Substring(indexOfFirstSlash + 1, smoothStreamingURLWithoutAMSUrlWithSlash.Length - indexOfFirstSlash - 1);
                                 var indexOfISM = fileNameWithISM.IndexOf(".ism");
                                 var fileNameWithoutISM = fileNameWithISM.Substring(0, indexOfISM);
                                 var filename = ($"{fileNameWithoutISM}.mp4");
