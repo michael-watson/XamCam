@@ -3,6 +3,9 @@ using ICC.Pages;
 using ICC.Views;
 using Plugin.MediaManager.Forms;
 using Xamarin.Forms.Xaml;
+using Microsoft.Azure.Mobile;
+using Microsoft.Azure.Mobile.Analytics;
+using Microsoft.Azure.Mobile.Crashes;
 
 namespace ICC
 {
@@ -19,14 +22,15 @@ namespace ICC
 
 			InitializeComponent();
 
-			MainPage = new NavigationPage(new HomePage());
-
-			//MainPage = NoVideosLayout();
+            MainPage = new NavigationPage(new HomePage());
 		}
 
 		protected override void OnStart()
 		{
-			// Handle when your app starts
+			MobileCenter.Start("ios=396c3eac-7bc8-44de-b507-41a7e87707b3;" +
+				   "uwp={Your UWP App secret here};" +
+				   "android={android=a86ad258-90d3-4c91-b091-bd739613e6e7;}",
+				   typeof(Analytics), typeof(Crashes));
 		}
 
 		protected override void OnSleep()

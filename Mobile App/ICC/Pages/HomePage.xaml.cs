@@ -11,14 +11,24 @@ namespace ICC.Pages
 		NoVideosLayout noVideoLayout = new NoVideosLayout();
 		VideosListLayout videosListLayout = new VideosListLayout();
 
-		public HomePage()
+        //void Handle_Activated(object sender, System.EventArgs e)
+        //{
+        //    //throw new NotImplementedException();
+        //}
+
+        public HomePage()
 		{
 			InitializeComponent();
 
 			Content = noVideoLayout;
 		}
 
-		protected override async void OnAppearing()
+        async void onDevicesClicked(object sender, System.EventArgs e)
+        {
+            await Navigation.PushAsync(new DevicesPage());
+        }
+
+        protected override async void OnAppearing()
 		{
 			base.OnAppearing();
 

@@ -1,4 +1,5 @@
-﻿namespace ICC.Models
+﻿
+namespace ICC.Models
 {
 	public class VideoData
 	{

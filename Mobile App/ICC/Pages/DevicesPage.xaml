@@ -2,10 +2,9 @@
 <ContentPage 
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-    x:Class="ICC.NativeVideoPlayerPageXaml">
-	<ContentPage.Content>
-        <Grid x:Name="gridLayout">
-            
-        </Grid>
-	</ContentPage.Content>
+    x:Class="ICC.Pages.DevicesPage">
+
+    <ListView>
+
+    </ListView>
 </ContentPage>
