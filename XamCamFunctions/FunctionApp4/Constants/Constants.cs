@@ -22,11 +22,12 @@ namespace XamCamFunctions
 
         //BLOB STORAGE ACCOUNT
         public static string StorageAccountName = "xamcamstorage";
-        public static string StorageAccountKey = Environment.GetEnvironmentVariable("StorageAccountKey"); 
+        public static string StorageAccountKey = Environment.GetEnvironmentVariable("StorageAccountKey");
+        public static string BlobStorageAccountConnection = Environment.GetEnvironmentVariable("BlobStorageAccountConnection");
 
         //WEBHOOK AND SIGNING KEY
-        public static string WebHookEndpoint = Environment.GetEnvironmentVariable("WebHookEndpoint"); //THIS CHANGED "https://iccfunction.azurewebsites.net/api/NewXamCamWebHookTwo?code=B3UrvGdZAdzhhcR1sTCw2KS2a6UlWageW6jnJAXx9MwS2jN9C6rK2A==&clientId=default";
-        public static string WebHookSigningKey = Environment.GetEnvironmentVariable("WebHookSigningKey"); // THIS CHANGED "B3UrvGdZAdzhhcR1sTCw2KS2a6UlWageW6jnJAXx9MwS2jN9C6rK2A==";
+        public static string WebHookEndpoint = Environment.GetEnvironmentVariable("WebHookEndpoint"); 
+        public static string WebHookSigningKey = Environment.GetEnvironmentVariable("WebHookSigningKey"); 
 
         //AMS CONSTANTS WITH URL
         public static string AMSUrlWithSlash = "http://xamcammediaservice.streaming.mediaservices.windows.net/";
