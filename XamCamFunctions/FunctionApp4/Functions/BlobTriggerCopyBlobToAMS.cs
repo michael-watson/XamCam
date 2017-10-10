@@ -78,8 +78,7 @@ namespace XamCamFunctions.Functions
 
                 byte[] keyBytes = Convert.FromBase64String(Constants.WebHookSigningKey);
 
-                var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "FunctionWebHook2").FirstOrDefault();
-                //var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "NewXamCamWebHook").FirstOrDefault();
+                var existingEndpoint = _context.NotificationEndPoints.Where(e => e.Name == "FunctionWebHook3").FirstOrDefault();
                 INotificationEndPoint endpoint = null;
                 if (existingEndpoint != null)
                 {
@@ -88,7 +87,7 @@ namespace XamCamFunctions.Functions
                 }
                 else
                 {
-                    endpoint = _context.NotificationEndPoints.Create("FunctionWebHook2",
+                    endpoint = _context.NotificationEndPoints.Create("FunctionWebHook3",
                         NotificationEndPointType.WebHook, Constants.WebHookEndpoint, keyBytes);
 
                     // = _context.NotificationEndPoints.Create("NewXamCamWebHook",
@@ -253,9 +252,9 @@ namespace XamCamFunctions.Functions
         static string _webHookEndpoint = Constants.WebHookEndpoint;
         static string _signingKey = Constants.WebHookSigningKey;
 
-       [FunctionName("NewXamCamWebHookTwo")]
+       [FunctionName("NewXamCamWebHookThree")]
         //public static async Task<HttpResponseMessage> RunNewXamCamWebHook(HttpRequestMessage req, TraceWriter log)
-        public static async Task<HttpResponseMessage> RunNewXamCamWebHookTwo([HttpTrigger(WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> RunNewXamCamWebHookThree([HttpTrigger(WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
            
        {
             log.Info($"C# HTTP trigger function processed a request. RequestUri={req.RequestUri}");

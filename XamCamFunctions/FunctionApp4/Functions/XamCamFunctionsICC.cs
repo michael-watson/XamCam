@@ -26,13 +26,16 @@ namespace XamCamFunctions
         {
             // ALTERNATIVE ALLOWING PASSING PARAMETER IN URL
             // public static async Task<HttpResponseMessage> MVPRunGetVideosConsolidated([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MVPGetVideosConsolidated/{email}")]HttpRequestMessage req, string email, TraceWriter log)
-            // Remove string email = "user@xamarin.com";
+            // & Remove string email = "user@xamarin.com";
 
-            string email = "user@xamarin.com";
+            // FILTERING FUNCTIONALITY (WHEN USE CASE DICTATES FILTERING BY ACCOUNTS OR EMAILS)
+            // string email = "user@xamarin.com";
+            // listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBService.GetAllMediaAssetsByEmailAsync(email);
+
             List<MediaAssetsWithMetaData> listOfVideos = new List<MediaAssetsWithMetaData>();
 
             //LIST OF MEDIA FILES FROM COSMOS DB
-            listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBService.GetAllMediaAssetsByEmailAsync(email);
+            listOfVideos = await XamCamFunctions.CosmosDB.CosmosDBService.GetAllMediaAssetsWithMediaAssetUrl();
 
             //ADD LIST TO JSON AND SEND RESPONSE MESSAGE BACK
             string jsonResult = JsonConvert.SerializeObject(listOfVideos);

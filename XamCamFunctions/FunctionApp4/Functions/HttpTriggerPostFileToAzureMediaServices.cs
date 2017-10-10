@@ -446,13 +446,5 @@ namespace XamCamFunctions.Functions
             var httpRM = new HttpResponseMessage(HttpStatusCode.OK);
             return httpRM;
         }
-
-
-
-
-
-
-
-
     }
 }

@@ -44,6 +44,30 @@ namespace XamCamFunctions.CosmosDB
         }
 
         //GET
+        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsWithMediaAssetUrl()
+        {
+            var myListOfAccountsWithMediaAssetUrl = new List<MediaAssetsWithMetaData>();
+            try
+            {
+                var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
+                    (UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(f => f.mediaAssetUri != null)
+                    .AsDocumentQuery();
+
+                while (query.HasMoreResults)
+                {
+                    myListOfAccountsWithMediaAssetUrl.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
+                }
+            }
+            catch (DocumentClientException ex)
+            {
+                Debug.WriteLine("Error: ", ex.Message);
+            }
+            return myListOfAccountsWithMediaAssetUrl;
+        }
+
+
+        //GET
         public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsByIdAsync(string id)
         {
             var result = await myDocumentClient.ReadDocumentAsync<MediaAssetsWithMetaData>(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
