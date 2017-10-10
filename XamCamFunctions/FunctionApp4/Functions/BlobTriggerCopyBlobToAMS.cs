@@ -47,6 +47,13 @@ namespace XamCamFunctions.Functions
         [FunctionName("CopyBlobToAMS")]
         public async static void RunBlobTrigger([BlobTrigger("mediaassetblobcontainer20170928/{name}", Connection = "AzureWebJobsStorage")]Stream myBlob, string name, TraceWriter log)
         {
+            //#error 
+            //uncomment error tag to ensure that developer adds appropriate strings in Azure Function or local.settings.json
+ 
+            //SETUP NOTE 
+            //When running locally add full blob storage connection string to local.settings.json with key "AzureWebJobsStorage" 
+            //When running on cloud - make sure that in the Azure Portal - under your Function > Application Settings to add an environmental variable with key "AzureWebJobsStorage" with the full blob storage connection string
+
             // NOTE that the variables {fileName} here come from the path setting in function.json
             // and are passed into the  Run method signature above. We can use this to make decisions on what type of file
             // was dropped into the input container for the function. 
