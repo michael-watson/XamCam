@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -8,6 +7,7 @@ using Plugin.MediaManager;
 using Plugin.MediaManager.Forms;
 using Plugin.MediaManager.Abstractions.Enums;
 using Plugin.MediaManager.Abstractions.EventArguments;
+using System.Xml;
 
 namespace ICC.Pages
 {
@@ -19,6 +19,7 @@ namespace ICC.Pages
 		VideoView videoView;
 		Label transcriptLabel;
 		ContentView clickContainer;
+		uint fadeDuration = 0;
 
 		static double videoProgress = 0;
 
@@ -28,7 +29,8 @@ namespace ICC.Pages
 
 			videoView = new VideoView
 			{
-				Source = url
+				Source = url,
+				AspectMode = VideoAspectMode.None
 			};
 			transcriptLabel = new Label
 			{
@@ -85,6 +87,16 @@ namespace ICC.Pages
 			playButton.SetBinding(Button.ImageProperty, nameof(NativeVideoPlayerViewModel.ButtonImageSource));
 
 			Content = grid;
+
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fadeDuration = 1000;
+					break;
+				case Device.Android:
+					fadeDuration = 500;
+					break;
+			}
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -126,20 +138,38 @@ namespace ICC.Pages
 			ViewExtensions.CancelAnimations(progressBar);
 		}
 
-		void userResetFade(object sender, EventArgs e) => resetFade();
+		void userResetFade(object sender, EventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("User Reset Fade");
+
+			if (CrossMediaManager.Current.VideoPlayer.Status != MediaPlayerStatus.Paused)
+				resetFade();
+			else
+				resetFade(false);
+		}
 
 		void videoViewProgressChanged(object sender, PlayingChangedEventArgs e)
 		{
 			//Need to cached video progress to prevent infinite loop when user drags Slider
-			videoProgress = e.Progress;
+			videoProgress = Math.Round(e.Progress, 2);
+
+			System.Diagnostics.Debug.WriteLine($"Progress bar changed: {e.Progress}");
 
 			Device.BeginInvokeOnMainThread(() => progressBar.Value = videoProgress);
 		}
 
 		async void progressBarValueChanged(object sender, ValueChangedEventArgs e)
 		{
-			if (e.NewValue == videoProgress)
+			var newValue = Math.Round(e.NewValue, 2);
+			if (newValue == videoProgress)
+			{
+				System.Diagnostics.Debug.WriteLine($"e.NewValue is equal to videoProgress: {newValue}");
 				return;
+			}
+
+			System.Diagnostics.Debug.WriteLine($"e.NewValue is not equal to videoProgress");
+			System.Diagnostics.Debug.WriteLine($"Current value: {newValue}");
+			System.Diagnostics.Debug.WriteLine($"videoProgress value: {videoProgress}");
 
 			videoProgress = e.NewValue;
 
@@ -157,17 +187,18 @@ namespace ICC.Pages
 
 		async Task resetFade(bool restartFade = true)
 		{
-			Device.BeginInvokeOnMainThread(() =>
+			Device.BeginInvokeOnMainThread(async () =>
 			{
 				progressBar.Opacity = 1;
 				playButton.Opacity = 1;
 
+				clickContainer.Opacity = 0;
 				clickContainer.BackgroundColor = Color.Black;
-				clickContainer.FadeTo(0.6);
+				ViewExtensions.CancelAnimations(clickContainer);
+				await clickContainer.FadeTo(0.6, fadeDuration);
 			});
 
 			ViewExtensions.CancelAnimations(progressBar);
-			ViewExtensions.CancelAnimations(clickContainer);
 			ViewExtensions.CancelAnimations(playButton);
 
 			if (restartFade)
@@ -176,8 +207,17 @@ namespace ICC.Pages
 
 		async Task beginToFadeSlider()
 		{
-			int fadeDelay = 1000;
-			uint fadeDuration = 1000;
+			int fadeDelay = 0;
+
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fadeDelay = 1000;
+					break;
+				case Device.Android:
+					fadeDelay = 1500;
+					break;
+			}
 
 			try
 			{
@@ -190,19 +230,16 @@ namespace ICC.Pages
 							playButton.FadeTo(0, fadeDuration),
 							progressBar.FadeTo(0, fadeDuration),
 							clickContainer.FadeTo(0, fadeDuration));
+
+						if (CrossMediaManager.Current.VideoPlayer.Status != MediaPlayerStatus.Paused)
+						{
+							clickContainer.BackgroundColor = Color.Transparent;
+							clickContainer.Opacity = 1;
+						}
 					});
 			}
 			catch (TaskCanceledException)
 			{
-			}
-			finally
-			{
-				if (CrossMediaManager.Current.VideoPlayer.Status != MediaPlayerStatus.Paused)
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						clickContainer.BackgroundColor = Color.Transparent;
-						clickContainer.FadeTo(1, 1);
-					});
 			}
 		}
 

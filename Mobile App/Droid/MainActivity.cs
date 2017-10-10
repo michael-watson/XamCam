@@ -22,16 +22,13 @@ namespace ICC.Droid
 
 			base.OnCreate(bundle);
 
+			VideoViewRenderer.Init();
 			global::Xamarin.Forms.Forms.Init(this, bundle);
 
 			var density = Resources.DisplayMetrics.Density;
 
-			//App.ScreenWidth = (double)UIScreen.MainScreen.Bounds.Width;
-			//App.ScreenHeight = (double)UIScreen.MainScreen.Bounds.Height;
-
-
-
-			VideoViewRenderer.Init();
+			App.ScreenWidth = (double)((Resources.DisplayMetrics.WidthPixels - 0.5f) / density);
+			App.ScreenHeight = (double)((Resources.DisplayMetrics.HeightPixels - 0.5f) / density);
 
 			LoadApplication(new App());
 		}

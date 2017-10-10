@@ -15,11 +15,13 @@ namespace ICC
 
 		public App()
 		{
+			var workaround = typeof(VideoView);
+
 			InitializeComponent();
 
-            MainPage = new NavigationPage(new HomePage());
+			MainPage = new NavigationPage(new HomePage());
 
-            //MainPage = NoVideosLayout();
+			//MainPage = NoVideosLayout();
 		}
 
 		protected override void OnStart()

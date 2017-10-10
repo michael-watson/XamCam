@@ -11,6 +11,7 @@ using Xamarin.Forms;
 
 using ICC.Models;
 using ICC.Constants;
+using System.Net.Http.Headers;
 
 namespace ICC.ViewModels
 {
@@ -31,9 +32,13 @@ namespace ICC.ViewModels
 			if (!IsBusy)
 				IsBusy = true;
 
+			client.DefaultRequestHeaders
+			  .Accept
+			  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
 			try
 			{
-                var url = AppConstants.FunctionGetUrl;
+				var url = AppConstants.FunctionGetUrl;
 				var response = await client.GetAsync(url);
 
 				if (response.IsSuccessStatusCode)

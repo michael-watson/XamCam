@@ -38,6 +38,7 @@ namespace ICC.iOS
 		void UpdateUI()
 		{
 			var formsControl = Element as VideoImagePreview;
+
 			if (formsControl == null) return;
 
 			if (!string.IsNullOrWhiteSpace(formsControl.VideoUrl))
@@ -49,7 +50,8 @@ namespace ICC.iOS
 				using (var assetGenerator = AVAssetImageGenerator.FromAsset(asset))
 				{
 					var image = assetGenerator.CopyCGImageAtTime(new CMTime(0, 1), out outputTime, out error);
-					Device.BeginInvokeOnMainThread(() => ((UIImageView)Control).Image = new UIImage(image));
+					if (image != null)
+						Control?.InvokeOnMainThread(() => ((UIImageView)Control).Image = new UIImage(image));
 				}
 			}
 			else

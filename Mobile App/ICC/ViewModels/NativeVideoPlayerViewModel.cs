@@ -6,6 +6,7 @@ using Plugin.MediaManager;
 using Plugin.MediaManager.Abstractions.Enums;
 
 using ICC.ViewModels;
+using Xamarin.Forms;
 
 namespace ICC
 {
@@ -34,11 +35,11 @@ namespace ICC
 					case MediaPlayerStatus.Paused:
 					case MediaPlayerStatus.Buffering:
 					case MediaPlayerStatus.Loading:
-						return "ic_play_arrow_white_48pt.png";
+						return "ic_play_arrow_white_48.png";
 
 					case MediaPlayerStatus.Stopped:
 					case MediaPlayerStatus.Playing:
-						return "ic_pause_white_48pt.png";
+						return "ic_pause_white_48.png";
 
 					case MediaPlayerStatus.Failed:
 						return string.Empty;
@@ -58,11 +59,11 @@ namespace ICC
 		{
 			if (CrossMediaManager.Current.VideoPlayer.Status == MediaPlayerStatus.Playing)
 			{
-				await CrossMediaManager.Current.Pause();
+				await CrossMediaManager.Current.PlaybackController.Pause();
 			}
 			else
 			{
-				await CrossMediaManager.Current.Play();
+				await CrossMediaManager.Current.PlaybackController.Play();
 			}
 
 			OnPropertyChanged(nameof(ButtonImageSource));
@@ -72,8 +73,12 @@ namespace ICC
 
 		public async Task SeekTo(double videoPercentComplete)
 		{
-			double totlaVideoSeconds = CrossMediaManager.Current.VideoPlayer.Duration.TotalSeconds;
-			double secondsToSkip = videoPercentComplete * totlaVideoSeconds;
+			double totalVideoSeconds = CrossMediaManager.Current.VideoPlayer.Duration.TotalSeconds;
+
+			if (Device.RuntimePlatform == Device.Android)
+				totalVideoSeconds = totalVideoSeconds / 1000;
+
+			double secondsToSkip = videoPercentComplete * totalVideoSeconds;
 
 			await CrossMediaManager.Current.VideoPlayer.Seek(TimeSpan.FromSeconds(secondsToSkip));
 		}

@@ -8,6 +8,7 @@ using System;
 using Android.OS;
 using System.Collections.Generic;
 using Android.Widget;
+using Android.App;
 
 [assembly: ResolutionGroupName("Xamarin")]
 [assembly: ExportEffect(typeof(VideoPreviewEffect), "VideoPreviewEffect")]
@@ -44,9 +45,11 @@ namespace ICC.Droid
 			try
 			{
 				mediaMetadataRetriever.SetDataSource(uri, new Dictionary<string, string>());
-
+				//var bitmap = mediaMetadataRetriever.GetFrameAtTime(0);
 				using (var bitmap = mediaMetadataRetriever.GetFrameAtTime(0))
-					((ImageView)Control).SetImageBitmap(bitmap);
+					(Forms.Context as Activity).RunOnUiThread(() => ((ImageView)Control).SetImageBitmap(bitmap));
+
+				//Device.BeginInvokeOnMainThread(() => ((ImageView)Control).SetImageBitmap(bitmap));
 			}
 			catch (Exception e)
 			{
