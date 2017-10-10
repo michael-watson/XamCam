@@ -90,8 +90,6 @@ namespace XamCamFunctions.Functions
                     endpoint = _context.NotificationEndPoints.Create("FunctionWebHook3",
                         NotificationEndPointType.WebHook, Constants.WebHookEndpoint, keyBytes);
 
-                    // = _context.NotificationEndPoints.Create("NewXamCamWebHook",
-
                     Console.WriteLine("Notification Endpoint Created with Key : {0}", keyBytes.ToString());
                 }
                 
