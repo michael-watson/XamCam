@@ -27,7 +27,7 @@ namespace ICC
 		{
 			MobileCenter.Start("ios=396c3eac-7bc8-44de-b507-41a7e87707b3;" +
 				   "uwp={Your UWP App secret here};" +
-				   "android={Your Android App secret here}",
+				   "android={android=a86ad258-90d3-4c91-b091-bd739613e6e7;}",
 				   typeof(Analytics), typeof(Crashes));
 		}
 
