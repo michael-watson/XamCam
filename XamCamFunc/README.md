@@ -17,8 +17,9 @@ The file Constants.cs in the IOTManager project contains a few properties that w
 
 1. Navigate to your ResourceGroup that contains the newly created IoT Hub, and click on the IoT Hub
 2. Under "Overview" - copy and paste the value for "HostName" to the <HostName> property in Constants.cs
-
+![](images/iothub)
 3. Under "Shared access policies" - click on "iothubowner" and copy the value of "Connection string—primary key" into the <ConnectionString> property in Constants.cs
+![](images/iothubkey)
 
 ### Creating our Azure Functions 
 
