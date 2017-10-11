@@ -132,9 +132,6 @@ namespace Recorder.IoT
             if (storageFile != null)
             {
                 var videoToUpload = await fileToBytesAsync(storageFile);
-                //TODO: Upload video bytes to Azure Function
-                //var uploadContent = new UploadedFile("Title Doesn't have to be unique", videoToUpload);
-
                 using (var httpClient = new HttpClient())
                 {
                     //var stringContent = JsonConvert.SerializeObject(uploadContent);
@@ -197,8 +194,6 @@ namespace Recorder.IoT
         async Task initMediaCaptureAsync()
         {
             var captureInitSettings = new Windows.Media.Capture.MediaCaptureInitializationSettings();
-            //captureInitSettings.AudioDeviceId = DeviceInfo.Instance.Id;
-            //captureInitSettings.VideoDeviceId = DeviceInfo.Instance.Id;
             captureInitSettings.StreamingCaptureMode = Windows.Media.Capture.StreamingCaptureMode.Video;
             captureInitSettings.PhotoCaptureSource = Windows.Media.Capture.PhotoCaptureSource.VideoPreview;
 
@@ -208,15 +203,8 @@ namespace Recorder.IoT
             }
 
             mediaCapture = new Windows.Media.Capture.MediaCapture();
+            await mediaCapture.InitializeAsync();
 
-            try
-            {
-                await mediaCapture.InitializeAsync();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
             // Add video stabilization effect during Live Capture
             Windows.Media.Effects.VideoEffectDefinition def = new Windows.Media.Effects.VideoEffectDefinition(Windows.Media.VideoEffects.VideoStabilization);
             await mediaCapture.AddVideoEffectAsync(def, MediaStreamType.VideoRecord);
