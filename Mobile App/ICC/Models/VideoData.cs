@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace ICC.Models
 {
 	public class VideoData
@@ -9,6 +10,7 @@ namespace ICC.Models
 		public string fileName { get; set; }
 		public object uploadedAt { get; set; }
 		public string title { get; set; }
+		public TimeSpan duration { get; set; } = TimeSpan.Zero;
 		public object accountType { get; set; }
 	}
 }
