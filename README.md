@@ -61,7 +61,7 @@ Earlier versions of VS don't support Azure Functions.
 
 2. Open the project on Visual Studio
 
-4. Open the file Constants in the folder Constants - you'll need to fill in the details here from various Azure services; we'll go step-by-step through these including 1) Azure Blob Storage, 2) Azure Cosmos DB, 3) constants needed for Azure AD from Azure AD and 4) Azure Media Services, and 5) a URL for a Azure WebHook associated with your Azure Media Services
+4. Open the file Constants in the folder Constants - you'll need to fill in the details here from various Azure services; we'll go step-by-step through these including 1) Azure Blob Storage, 2) Azure Cosmos DB, constants needed for Azure AD from 3) Azure AD and 4) Azure Media Services, and 5) a URL for a Azure WebHook associated with your Azure Media Services
 
 ### 4. Publish Function App to Azure
 
