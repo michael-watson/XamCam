@@ -58,16 +58,11 @@ Earlier versions of VS don't support Azure Functions.
 
 ### 3. Publish Function App to Azure
 
-![](https://user-images.githubusercontent.com/13558917/29254534-ad6861a6-804b-11e7-886a-bfb267546afe.png)
-
-1. In Visual Studio, right-click on XamList.Functions and select Publish
-
-![](https://user-images.githubusercontent.com/13558917/29254603-9d52477c-804c-11e7-8da5-7a8d1389e1d5.png)
+1. In Visual Studio, right-click on XamCamFunctions and select Publish
 
 2. Choose AzureFunctionApp -> Select Existing -> Publish
+![](https://user-images.githubusercontent.com/3628580/31465342-940ae0ec-ae88-11e7-840d-763e840fbc79.png)
 
-![](https://user-images.githubusercontent.com/13558917/29254618-fd69c400-804c-11e7-9ba6-97f1da527b94.png)
+3. After you are logged in, you'll see the Function App you created earlier.  Select that Functions App App and click OK 
 
-3. In the App Service window, select the Functions App we created earlier, and click OK 
-
-4. Visual Studio is now publishing the XamList.API code to your Azure API App
+4. Visual Studio is now publishing the XamCamFunctions code to your Azure Functions App
