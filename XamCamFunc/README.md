@@ -21,7 +21,11 @@ The file Constants.cs in the IOTManager project contains a few properties that w
 3. Under "Shared access policies" - click on "iothubowner" and copy the value of "Connection string—primary key" into the <ConnectionString> property in Constants.cs
 ![](images/iothubkey.png)
 
-### Creating our Azure Functions 
+### The Device Twin
+
+![](images/iothubdevices.png)
+
+![](images/devicetwin.png)
 
 
 
