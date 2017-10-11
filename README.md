@@ -22,53 +22,54 @@ General flow for creating a new branch
 
 ## Code formatting guidelines:
 
-All code should be formatted to our code guidelines. This will be considered in all pull requests and is a best practice to develop as a team. Below are the guidelines:
+All code should be formatted to our code guidelines. This will be considered in all pull requests and is a best practice to develop as a team. Please use [David Siegel's chsarp styling](https://github.com/dvdsgl/csharp-in-style)
 
-1. `using` statements should be ordered outside in, meaning that they should be ordered starting with libraries that are furthest away from your code like below:
-    ```csharp
-    using System;
-    using System.Linq;
-    using System.Collections.Generic
+# XamCam Functions
 
-    using UIKit;
-    using Coregraphics;
+## Visual Studio Requirements
 
-    using Xamarin.Forms;
-    using Xamarin.Forms.Platform.iOS;
+### Visual Studio for PC
 
-    using XamCam.UWP;
-    ```
-    Notice how the `iOS` references are before the Xamarin.Forms references. That is because the Xamarin.Forms classes are built on top of the iOS classes. We start with the `System` libhraries first because the IDEs produce this code first.
-2. Code should be bracket formatted in the following order: `private` Properties, `public` Properties, `Constructors`, `private` Methods, `public` Methods. Below is a code snippet example:
-    ```csharp
-    namespace XamCam
-    {
-	    public class MyClass 
-	    {
-            static object locker = new object ();
+This solution requires Visual Studio for PC Version 15.3 or later.
+Earlier versions of VS don't support Azure Functions.
 
-            public string Path;
-            public double Value;
-   
-            public MyClass() { }
-            public MyClass (string parameter1) 
-            {
-                ...
-            }
+### 1. Create Azure Function App
 
-            double doSomething (string r) 
-            {
-                ...
-            }
-            
-            public double GetSomething ()
-            {
-                ...
-            }
-        }
-    }
-    ```
-3. We will also be using a camel case style when creating our classes. The following applies:
-    * All `public` properties and methods should start with a capital letter
-    * All `private` properties and methods should start with a lower case letter
-    * Any following words after the first word should start with a capital letter (i.e. `doSomething`, `GetSomething`)
+![](https://user-images.githubusercontent.com/13558917/29196481-756d88bc-7de9-11e7-9d81-33c14d1077b0.png)
+
+1. In the Azure portal, click on New -> Enter `Function App` into the Search Bar -> Selected `Function App` from the search results -> Click Create
+2. Name the Function App
+3. Select Consumption for the Hosting Plan
+4. Select the your Resource Group
+5. Select the Location closest to you
+6. Click Create
+
+
+### 2. Install Visual Studio Azure Functions Extension
+
+1. Open [XamList.sln](https://github.com/brminnick/XamList/blob/master/XamList.sln) using Visual Studio for PC (Version 15.3 or later)
+
+![](https://user-images.githubusercontent.com/13558917/29254393-8a1b69e8-8049-11e7-8426-5e1d3ccb3193.png)
+
+2. Ensure the following Extensions are installed
+    - Visual Studio 2017 Tools for Azure Functions
+    - Azure Functions and Web Jobs Tools
+
+### 3. Download the source from this Github code repository
+
+1. Download the code from this Github code repository
+
+2. Open the project on Visual Studio
+
+4. Open the file Constants in the folder Constants - you'll need to fill in the details here from various Azure services; we'll go step-by-step through these including 1) Azure Blob Storage, 2) Azure Cosmos DB, constants needed for Azure AD from 3) Azure AD and 4) Azure Media Services, and 5) a URL for a Azure WebHook associated with your Azure Media Services
+
+### 4. Publish Function App to Azure
+
+1. In Visual Studio, right-click on XamCamFunctions and select Publish
+
+2. Choose AzureFunctionApp -> Select Existing -> Publish
+![](https://user-images.githubusercontent.com/3628580/31465342-940ae0ec-ae88-11e7-840d-763e840fbc79.png)
+
+3. After you are logged in, you'll see the Function App you created earlier.  Select that Functions App App and click OK 
+
+4. Visual Studio is now publishing the XamCamFunctions code to your Azure Functions App
