@@ -24,7 +24,7 @@ General flow for creating a new branch
 
 All code should be formatted to our code guidelines. This will be considered in all pull requests and is a best practice to develop as a team. Please use [David Siegel's chsarp styling](https://github.com/dvdsgl/csharp-in-style)
 
-## XamCam Functions
+# XamCam Functions
 
 ## Visual Studio Requirements
 
