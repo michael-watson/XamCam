@@ -32,17 +32,17 @@ The file Constants.cs in the IOTManager project contains a few properties that w
 ### Azure Functions API Reference
 There are 3 api endpoints defined within the functions project: 
 
-GET or POST: /api/AddDevice/id/{uniqueDeviceIdAsString}
+**GET or POST: /api/AddDevice/id/{uniqueDeviceIdAsString}**
 
 - Takes in a string parameter for the ID of the IoT device. This string has to be unique.
 
 - If device doesn't exist it creates a new one, and returns the connection string to IoTHub. If it does exist it simply returns the connection string
 
 
-PUT or DELETE: /api/DeleteDevice/id/{DeviceId}
+**PUT or DELETE: /api/DeleteDevice/id/{DeviceId}**
  - This endpoint deletes the device specified by the id if it exists
 
-GET: /api/GetDevices/{Optional ID parameter}
+**GET: /api/GetDevices/{Optional ID parameter}**
 
  - Returns a List of devices. 
  - If the deviceID parameter supplied - it returns that device
