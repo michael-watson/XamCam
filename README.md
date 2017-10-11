@@ -33,21 +33,41 @@ All code should be formatted to our code guidelines. This will be considered in 
 This solution requires Visual Studio for PC Version 15.3 or later.
 Earlier versions of VS don't support Azure Functions.
 
-### 2. Create Azure Function App
+### 1. Create Azure Function App
 
 ![](https://user-images.githubusercontent.com/13558917/29196481-756d88bc-7de9-11e7-9d81-33c14d1077b0.png)
 
 1. In the Azure portal, click on New -> Enter `Function App` into the Search Bar -> Selected `Function App` from the search results -> Click Create
-
-![](https://user-images.githubusercontent.com/13558917/29196973-ea5fb796-7dec-11e7-92d3-fda7ba5a6f6b.png)
-
 2. Name the Function App
-    - I named mine XamListFunctionApp
 3. Select Consumption for the Hosting Plan
-4. Select the XamList Resource Group
-    - We created this resource group when we made our API App, above
+4. Select the your Resource Group
 5. Select the Location closest to you
-6. Under Storage, Select Create New
-    - I named my storage "xamlistfunctionapp"
-7. Click Create
+6. Click Create
 
+
+### 2. Install Visual Studio Azure Functions Extension
+
+1. Open [XamList.sln](https://github.com/brminnick/XamList/blob/master/XamList.sln) using Visual Studio for PC (Version 15.3 or later)
+
+![](https://user-images.githubusercontent.com/13558917/29254393-8a1b69e8-8049-11e7-8426-5e1d3ccb3193.png)
+
+2. Ensure the following Extensions are installed
+    - Visual Studio 2017 Tools for Azure Functions
+    - Azure Functions and Web Jobs Tools
+    
+
+### 3. Publish Function App to Azure
+
+![](https://user-images.githubusercontent.com/13558917/29254534-ad6861a6-804b-11e7-886a-bfb267546afe.png)
+
+1. In Visual Studio, right-click on XamList.Functions and select Publish
+
+![](https://user-images.githubusercontent.com/13558917/29254603-9d52477c-804c-11e7-8da5-7a8d1389e1d5.png)
+
+2. Choose AzureFunctionApp -> Select Existing -> Publish
+
+![](https://user-images.githubusercontent.com/13558917/29254618-fd69c400-804c-11e7-9ba6-97f1da527b94.png)
+
+3. In the App Service window, select the Functions App we created earlier, and click OK 
+
+4. Visual Studio is now publishing the XamList.API code to your Azure API App
