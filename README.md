@@ -66,7 +66,7 @@ Earlier versions of VS don't support Azure Functions.
 ### 3. Create an Azure Blob Storage Account
 
 1) Create an Azure Blob Storage instance in the Azure portal
-
+![]("https://user-images.githubusercontent.com/3628580/31473163-9f245156-aea7-11e7-9042-19248f5be84d.png)
 
 ### 3. Create an Azure Cosmos DB Account
 
