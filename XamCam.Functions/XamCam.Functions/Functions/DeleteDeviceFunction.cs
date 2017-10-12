@@ -6,8 +6,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-using IOTManager;
-
 namespace XamCam.Functions
 {
 	public static class DeleteDeviceFunction
@@ -22,7 +20,7 @@ namespace XamCam.Functions
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
 			}
 
-			var res = await DeviceManager.Instance.RemoveDeviceAsync(id);
+			var res = await IoTDeviceService.Instance.RemoveDeviceAsync(id);
 			if (res)
 			{
 				return req.CreateResponse(HttpStatusCode.OK, "Removed Device with Device Id: " + id);
