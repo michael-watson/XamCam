@@ -25,11 +25,10 @@ namespace Recorder.IoT
 {
     public class CameraController
     {
-        readonly string DeviceConnectionString = "HostName=HomeCam-IoT.azure-devices.net;DeviceId=watson-rasp-pi3;SharedAccessKey=k0uO1WERfL22co55eTCGXlxhy/OyspURhZXfAVP+w2M=";
-        
         static CameraController instance;
 
-        public static CameraController Instance {
+        public static CameraController Instance
+        {
             get
             {
                 if (instance == null)
@@ -42,44 +41,66 @@ namespace Recorder.IoT
         //Recording Properties
         bool isRecording;
         bool isInitialized;
-        string recordedFileName;
+        string recordedFileName = "No name provided";
+        string recordedFileStorageName = string.Empty;
 
         //IoT Hub Device Info Properties
         Twin deviceTwin;
-        DeviceClient client;
+        HttpClient httpClient = new HttpClient();
+        DeviceClient deviceClient;
         List<DeviceInformation> deviceList;
-        
+
         //Media Capture/Profile Properties
         MediaCapture mediaCapture;
         MediaEncodingProfile profile;
 
         public async Task Initialize()
         {
-            client = DeviceClient.CreateFromConnectionString(DeviceConnectionString, TransportType.Mqtt);
-            deviceTwin = await client.GetTwinAsync();
+            try
+            {
+                var url = $"https://homecamfunction.azurewebsites.net/api/AddDevice/id/{DeviceInfo.Instance.Id}";
+                var connectionString = await httpClient.GetStringAsync(url);
+                connectionString = connectionString.Trim('"');
 
-            await client.SetMethodHandlerAsync("StartRecording", startRecordingAsync, null);
-            await client.SetMethodHandlerAsync("StopRecording", stopRecordingAsync, null);
+                deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
+                deviceTwin = await deviceClient.GetTwinAsync();
 
-            await initializeCameraAsync();
+                await deviceClient.SetMethodHandlerAsync("StartRecording", startRecordingAsync, null);
+                await deviceClient.SetMethodHandlerAsync("StopRecording", stopRecordingAsync, null);
 
-            isInitialized = true;
+                await initializeCameraAsync();
+
+                await startRecordingAsync(null, null);
+                await Task.Delay(5000);
+                await stopRecordingAsync(null, null);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+            }
+            finally
+            {
+                isInitialized = true;
+            }
         }
 
         async Task<MethodResponse> startRecordingAsync(MethodRequest methodRequest, object userContext)
         {
-            if (isRecording) 
+            if (isRecording)
                 return await Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Already Recording"), (int)HttpStatusCode.Conflict));
-            if (!isInitialized) 
+            if (!isInitialized)
                 await initializeCameraAsync();
+
+            var filename = methodRequest?.DataAsJson;
+            if (string.IsNullOrWhiteSpace(filename))
+                recordedFileName = "No name provided";
+            else
+                recordedFileName = filename;
 
             isRecording = true;
 
-            //If we want to have the mobile application set a title, we need to ge that here
-            //var jsonData = methodRequest.DataAsJson;
-
-            var storageFile = await Windows.Storage.KnownFolders.VideosLibrary.CreateFileAsync($"{DeviceInfo.Instance.Id}-{DateTime.UtcNow.Ticks}.wmv", Windows.Storage.CreationCollisionOption.GenerateUniqueName);
-            recordedFileName = storageFile.Name;
+            var storageFile = await Windows.Storage.KnownFolders.VideosLibrary.CreateFileAsync($"{DeviceInfo.Instance.Id}-{DateTime.UtcNow.Ticks}.mp4", Windows.Storage.CreationCollisionOption.GenerateUniqueName);
+            recordedFileStorageName = storageFile.Name;
 
             await mediaCapture.StartRecordToStorageFileAsync(profile, storageFile);
             await reportUpdatesAsync();
@@ -105,21 +126,22 @@ namespace Recorder.IoT
 
         async Task uploadVideoAsync()
         {
-            await client.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Started")));
+            await deviceClient.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Started")));
 
-            var storageFile = await Windows.Storage.KnownFolders.VideosLibrary.GetFileAsync(recordedFileName);
+            var storageFile = await Windows.Storage.KnownFolders.VideosLibrary.GetFileAsync(recordedFileStorageName);
             if (storageFile != null)
             {
                 var videoToUpload = await fileToBytesAsync(storageFile);
-                //TODO: Upload video bytes to Azure Function
-                var uploadContent = new UploadedFile("Title Doesn't have to be unique", videoToUpload);
-
                 using (var httpClient = new HttpClient())
                 {
-                    var stringContent = JsonConvert.SerializeObject(uploadContent);
+                    //var stringContent = JsonConvert.SerializeObject(uploadContent);
 
-                    var content = new StringContent(stringContent, Encoding.UTF8, "application/json");
-                    var postResult = await httpClient.PostAsync($"http://iccfunction.azurewebsites.net/api/MVPPostItemToSpecifiedBlobContainer", content);
+                    var title = Uri.EscapeDataString(recordedFileName);
+                    var url = $"http://iccfunction.azurewebsites.net/api/PostMediaAssetToSpecifiedBlobContainer/{DeviceInfo.Instance.Id}/{title}";
+
+                    var content = new ByteArrayContent(videoToUpload);
+                    //var content = new StringContent(stringContent, Encoding.UTF8, "application/json");
+                    var postResult = await httpClient.PostAsync(url, content);
                     var success = await postResult.Content.ReadAsStringAsync();
 
                     if (postResult.IsSuccessStatusCode)
@@ -131,26 +153,26 @@ namespace Recorder.IoT
                     System.Diagnostics.Debug.WriteLine(success);
                 }
 
-                await client.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Completed")));
+                await deviceClient.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Completed")));
             }
         }
 
         async Task reportUpdatesAsync()
         {
-            var updatedTwin = await client.GetTwinAsync();
+            var updatedTwin = await deviceClient.GetTwinAsync();
 
             if (updatedTwin != null) deviceTwin = updatedTwin;
 
             if (isRecording)
-                await client.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{DeviceInfo.Instance.Id}: Recording Started")));
+                await deviceClient.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{DeviceInfo.Instance.Id}: Recording Started")));
             else
-                await client.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{DeviceInfo.Instance.Id}: Recording Stopped")));
+                await deviceClient.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{DeviceInfo.Instance.Id}: Recording Stopped")));
 
             TwinCollection props = new TwinCollection();
             props["IsRecording"] = isRecording;
-            await client.UpdateReportedPropertiesAsync(props);
+            await deviceClient.UpdateReportedPropertiesAsync(props);
 
-            await client.UpdateReportedPropertiesAsync(JsonConvert.DeserializeObject<TwinCollection>($"{{\"IsRecording\":\"{isRecording}\"}}"));
+            await deviceClient.UpdateReportedPropertiesAsync(JsonConvert.DeserializeObject<TwinCollection>($"{{\"IsRecording\":\"{isRecording}\"}}"));
         }
 
         async Task initializeCameraAsync()
@@ -172,9 +194,7 @@ namespace Recorder.IoT
         async Task initMediaCaptureAsync()
         {
             var captureInitSettings = new Windows.Media.Capture.MediaCaptureInitializationSettings();
-            captureInitSettings.AudioDeviceId = DeviceInfo.Instance.Id;
-            captureInitSettings.VideoDeviceId = DeviceInfo.Instance.Id;
-            captureInitSettings.StreamingCaptureMode = Windows.Media.Capture.StreamingCaptureMode.AudioAndVideo;
+            captureInitSettings.StreamingCaptureMode = Windows.Media.Capture.StreamingCaptureMode.Video;
             captureInitSettings.PhotoCaptureSource = Windows.Media.Capture.PhotoCaptureSource.VideoPreview;
 
             if (deviceList.Count > 0)
@@ -183,7 +203,7 @@ namespace Recorder.IoT
             }
 
             mediaCapture = new Windows.Media.Capture.MediaCapture();
-            await mediaCapture.InitializeAsync(captureInitSettings);
+            await mediaCapture.InitializeAsync();
 
             // Add video stabilization effect during Live Capture
             Windows.Media.Effects.VideoEffectDefinition def = new Windows.Media.Effects.VideoEffectDefinition(Windows.Media.VideoEffects.VideoStabilization);
