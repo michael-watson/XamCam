@@ -53,7 +53,7 @@ namespace ICC.Pages
 			if (videoSelected == null)
 				return;
 
-			Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new NativeVideoPlayerPage(videoSelected.SmoothStreaming)));
+			Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new NativeVideoPlayerPage(videoSelected.HLS)));
 
 			((ListView)sender).SelectedItem = null;
 		}

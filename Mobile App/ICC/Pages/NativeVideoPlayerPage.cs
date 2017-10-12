@@ -27,9 +27,12 @@ namespace ICC.Pages
 		{
 			Title = "Native Video Player";
 
+			if (!url.Contains("https"))
+				url = url.Replace("http", "https");
+
 			videoView = new VideoView
 			{
-				Source = "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",//url,
+				Source = url,
 				AspectMode = VideoAspectMode.None
 			};
 			transcriptLabel = new Label
@@ -91,7 +94,7 @@ namespace ICC.Pages
 			switch (Device.RuntimePlatform)
 			{
 				case Device.iOS:
-					fadeDuration = 1000;
+					fadeDuration = 500;
 					break;
 				case Device.Android:
 					fadeDuration = 500;
@@ -119,9 +122,11 @@ namespace ICC.Pages
 
 			playButton.Clicked += togglePlaybackButtonClicked;
 			progressBar.ValueChanged += progressBarValueChanged;
+			progressBar.PropertyChanging += ProgressBar_PropertyChanging;
+			progressBar.PropertyChanged += ProgressBar_PropertyChanged;
 			CrossMediaManager.Current.PlayingChanged += videoViewProgressChanged;
 
-			ViewModel.Initialize();
+			await ViewModel.Initialize();
 			await beginToFadeSlider();
 		}
 
@@ -138,10 +143,32 @@ namespace ICC.Pages
 			ViewExtensions.CancelAnimations(progressBar);
 		}
 
+		static bool propertyCheck = false;
+
+		void ProgressBar_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			propertyCheck = false;
+
+			if (e.PropertyName == nameof(Slider.Value))
+			{
+				System.Diagnostics.Debug.WriteLine("Value Changed");
+				System.Diagnostics.Debug.WriteLine($"Property Check: {propertyCheck}");
+			}
+		}
+
+		void ProgressBar_PropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			propertyCheck = true;
+
+			if (e.PropertyName == nameof(Slider.Value))
+			{
+				System.Diagnostics.Debug.WriteLine("Values changing");
+				System.Diagnostics.Debug.WriteLine($"Property Check: {propertyCheck}");
+			}
+		}
+
 		void userResetFade(object sender, EventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("User Reset Fade");
-
 			if (CrossMediaManager.Current.VideoPlayer.Status != MediaPlayerStatus.Paused)
 				resetFade();
 			else
@@ -153,27 +180,20 @@ namespace ICC.Pages
 			//Need to cached video progress to prevent infinite loop when user drags Slider
 			videoProgress = Math.Round(e.Progress, 2);
 
-			System.Diagnostics.Debug.WriteLine($"Progress bar changed: {e.Progress}");
-
 			Device.BeginInvokeOnMainThread(() => progressBar.Value = videoProgress);
 		}
 
 		async void progressBarValueChanged(object sender, ValueChangedEventArgs e)
 		{
 			var newValue = Math.Round(e.NewValue, 2);
-			if (newValue == videoProgress)
-			{
-				System.Diagnostics.Debug.WriteLine($"e.NewValue is equal to videoProgress: {newValue}");
-				return;
-			}
-
-			System.Diagnostics.Debug.WriteLine($"e.NewValue is not equal to videoProgress");
-			System.Diagnostics.Debug.WriteLine($"Current value: {newValue}");
-			System.Diagnostics.Debug.WriteLine($"videoProgress value: {videoProgress}");
+			if (newValue == videoProgress) return;
 
 			videoProgress = e.NewValue;
 
-			resetFade();
+			System.Diagnostics.Debug.WriteLine($"Progress bar changed: {CrossMediaManager.Current.Status}");
+
+			if (!propertyCheck)
+				resetFade();
 
 			await ViewModel.SeekTo(videoProgress);
 		}
@@ -182,10 +202,10 @@ namespace ICC.Pages
 		{
 			var isPlaying = await ViewModel.TogglePlayback();
 
-			await resetFade(isPlaying);
+			resetFade(isPlaying);
 		}
 
-		async Task resetFade(bool restartFade = true)
+		void resetFade(bool restartFade = true)
 		{
 			Device.BeginInvokeOnMainThread(async () =>
 			{
@@ -196,13 +216,13 @@ namespace ICC.Pages
 				clickContainer.BackgroundColor = Color.Black;
 				ViewExtensions.CancelAnimations(clickContainer);
 				await clickContainer.FadeTo(0.6, fadeDuration);
+
+				ViewExtensions.CancelAnimations(progressBar);
+				ViewExtensions.CancelAnimations(playButton);
+
+				if (restartFade)
+					await beginToFadeSlider();
 			});
-
-			ViewExtensions.CancelAnimations(progressBar);
-			ViewExtensions.CancelAnimations(playButton);
-
-			if (restartFade)
-				await beginToFadeSlider();
 		}
 
 		async Task beginToFadeSlider()
