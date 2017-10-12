@@ -99,9 +99,9 @@ Earlier versions of VS don't support Azure Functions.
 
 2) Enter in a name, select Native as the Application Type, and type in a Redirect URI
 
-8a) Once you've registered the app take note of the account keys.  On the overview panel look for the application ID - we'll call this the Client ID in our application.  Click on the Settings, and click on Keys.  Create a Key and take a note of it as it will be called Client Secret in our application.  
+3) Once you've registered the app take note of the account keys.  On the overview panel look for the application ID - we'll call this the Client ID in our application.  Click on the Settings, and click on Keys.  Create a Key and take a note of it as it will be called Client Secret in our application.  
 
-8b)Also depending on how we choose to do our Authentication - we will need the Directory Id of our Azure Active Directory Account.  You can find this by clicking back into the general Azure Active Directory section within the Azure portal.  On the left menu bar to go Manage > Properties > DirectoryID.  Take note of the DirectoryID - this will be called tenantID in our application.
+4)Also depending on how we choose to do our Authentication - we will need the Directory Id of our Azure Active Directory Account.  You can find this by clicking back into the general Azure Active Directory section within the Azure portal.  On the left menu bar to go Manage > Properties > DirectoryID.  Take note of the DirectoryID - this will be called tenantID in our application.
 
 ### 7. Create an Azure Media Services Instance
 
@@ -116,19 +116,19 @@ Earlier versions of VS don't support Azure Functions.
 
 ### 8. Publish Function App to Azure
 
-1a.  Return to the final step in Section 3: Download the source from this Github code repository - fill in the constants as appropriate from the above steps.  Optionally, you can store these values as Key/Value pairs under your Function > Application settings preventing the need to check in sensitive values in your source control. 
+1.  Return to the final step in Section 3: Download the source from this Github code repository - fill in the constants as appropriate from the above steps.  Optionally, you can store these values as Key/Value pairs under your Function > Application settings preventing the need to check in sensitive values in your source control. 
 
-1b. For the Webhook constants, you'll need to check back into the Azure portal under your Function after you published your function. Once you complete the below steps, go to the Azure Portal and click on the function called "NewXamCamWebHookThree". 
+2. For the Webhook constants, you'll need to check back into the Azure portal under your Function after you published your function. Once you complete the below steps, go to the Azure Portal and click on the function called "NewXamCamWebHookThree". 
 
 ![](https://user-images.githubusercontent.com/3628580/31475091-a793acea-aeb3-11e7-8d45-ea87425b0e63.png)
 
 Notice on the upper-right you see </> Get function URL.  That URL will be represented in the Constants class in your code as WebHookEndpoint.  Also, the WebHookSigningKey will be the portion of that URL between the "code=" and the "&clientId=default"
 
-2. In Visual Studio, right-click on XamCamFunctions and select Publish
+3. In Visual Studio, right-click on XamCamFunctions and select Publish
 
-3. Choose AzureFunctionApp -> Select Existing -> Publish
+4. Choose AzureFunctionApp -> Select Existing -> Publish
 ![](https://user-images.githubusercontent.com/3628580/31465342-940ae0ec-ae88-11e7-840d-763e840fbc79.png)
 
-4. After you are logged in, you'll see the Function App you created earlier.  Select that Functions App App and click OK 
+5. After you are logged in, you'll see the Function App you created earlier.  Select that Functions App App and click OK 
 
-5. Visual Studio is now publishing the XamCamFunctions code to your Azure Functions App
+6. Visual Studio is now publishing the XamCamFunctions code to your Azure Functions App
