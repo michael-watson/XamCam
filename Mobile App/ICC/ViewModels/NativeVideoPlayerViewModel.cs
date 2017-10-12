@@ -50,8 +50,11 @@ namespace ICC
 			}
 		}
 
-		public void Initialize()
+		public async Task Initialize()
 		{
+			await CrossMediaManager.Current.Pause();
+			OnPropertyChanged(nameof(ButtonImageSource));
+			await CrossMediaManager.Current.Play();
 			OnPropertyChanged(nameof(ButtonImageSource));
 		}
 
