@@ -63,6 +63,33 @@ Earlier versions of VS don't support Azure Functions.
 
 4. Open the file Constants in the folder Constants - you'll need to fill in the details here from various Azure services; we'll go step-by-step through these including 1) Azure Blob Storage, 2) Azure Cosmos DB, constants needed for Azure AD from 3) Azure AD and 4) Azure Media Services, and 5) a URL for a Azure WebHook associated with your Azure Media Services
 
+### 3. Create an Azure Blob Storage Account
+
+1) Create an Azure Blob Storage instance in the Azure portal
+
+
+### 3. Create an Azure Cosmos DB Account
+
+1) Create an Azure Cosmos DB instance in the Azure Portal. 
+
+![](images/AzurePortalCosmosSearch.png)
+
+2) When entering your information, make sure you select **SQL (DocumentDB)**
+![](images/CreateCosmosOptions.png)
+
+3) Navigate to your Cosmos DB instance after it has been created
+
+4) Select **Data Explorer (Preview)** in the menu options
+
+5) Click **New Collection** in the top left corner
+
+6) Name the Database Id *Xamarin* for this example and name the Collection Id *XamCamAccount3*.  You can change these but you must make the corresponding changes in your code under XamCamFunctions > CosmosDB > CosmosDBService.cs in the DatabaseId and CollectionId fields.
+
+7) You will now see that the left menu is populated with our new database and collection. Select **XamCamAccount3** or whatever you called your collection and click on **Documents** -- it's empty now but this is where you'll see the videos you've taken from your IoT Device.
+
+
+
+
 ### 4. Publish Function App to Azure
 
 1. In Visual Studio, right-click on XamCamFunctions and select Publish
