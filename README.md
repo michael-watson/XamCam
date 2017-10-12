@@ -66,7 +66,12 @@ Earlier versions of VS don't support Azure Functions.
 ### 3. Create an Azure Blob Storage Account
 
 1) Create an Azure Blob Storage instance in the Azure portal
+![] (https://user-images.githubusercontent.com/3628580/31473265-35c4b40c-aea8-11e7-89ec-4903c214a0aa.png)
 ![](https://user-images.githubusercontent.com/3628580/31473163-9f245156-aea7-11e7-9042-19248f5be84d.png)
+
+2) Give it a unique name (it will only lowercase letter and numbers)
+
+3) Once you've created the account take note of the account keys.  Look on the left menu bar for Settings > Access Keys.  Make a note of the KEY and CONNECTION STRING for either key1 or key2
 
 ### 3. Create an Azure Cosmos DB Account
 
@@ -86,6 +91,7 @@ Earlier versions of VS don't support Azure Functions.
 
 7) You will now see that the left menu is populated with our new database and collection. Select **XamCamAccount3** or whatever you called your collection and click on **Documents** -- it's empty now but this is where you'll see the videos you've taken from your IoT Device.
 
+8) Once you've created the account take note of the account keys.  Look on the left menu bar for Settings > Keys.  Make a note of the URI, PRIMARY KEY, and PRIMARY CONNECTION STRING
 
 
 
