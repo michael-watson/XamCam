@@ -1,4 +1,4 @@
-﻿namespace XamCamFunctions.DataModels
+﻿namespace XamCam.Functions.Models
 {
 	public class AzureADResult
 	{

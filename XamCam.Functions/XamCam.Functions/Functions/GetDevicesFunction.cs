@@ -6,19 +6,16 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-using IOTManager;
-
-namespace XamCamFunc
+namespace XamCam.Functions
 {
 	public static class GetDevicesFunction
 	{
 		[FunctionName("GetDevices")]
-
 		async public static Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetDevices/{id?}")]HttpRequestMessage req, string id, TraceWriter log)
 		{
 			log.Info("C# HTTP trigger function processed a request.");
 
-			var res = await DeviceManager.Instance.GetDevicesAsync(id);
+			var res = await IoTDeviceService.Instance.GetDevicesAsync(id);
 			return req.CreateResponse(HttpStatusCode.OK, res);
 		}
 	}

@@ -5,29 +5,29 @@ using System.Collections.Generic;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
 
-using IOTManager.Models;
+using XamCam.Functions.Models;
 
-namespace IOTManager
+namespace XamCam.Functions
 {
-	public class DeviceManager
+	public class IoTDeviceService
 	{
 		//Singleton implementation
 		/// <summary>
 		/// Gets the <c cref="IOTManager.DeviceManager">DeviceManager</c> instance.
 		/// </summary>
 		/// <value>The instance.</value>
-		static DeviceManager _instance;
-		public static DeviceManager Instance =>
-			_instance ?? (_instance = new DeviceManager());
+		static IoTDeviceService _instance;
+		public static IoTDeviceService Instance =>
+			_instance ?? (_instance = new IoTDeviceService());
 
 
 		RegistryManager _registryManager;
 
-		DeviceManager()
+		IoTDeviceService()
 		{
 			if (_registryManager == null)
 			{
-				_registryManager = RegistryManager.CreateFromConnectionString(Constants.IotHubConfig.ConnectionString);
+				_registryManager = RegistryManager.CreateFromConnectionString(Constants.ConnectionString);
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace IOTManager
 				return string.Empty;
 			}
 
-			var connectionString = $"HostName={Constants.IotHubConfig.HostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
+			var connectionString = $"HostName={Constants.HostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
 			//Get
 			return connectionString;
 		}
@@ -76,7 +76,7 @@ namespace IOTManager
 			}
 			else
 			{
-				var devices = await _registryManager?.GetDevicesAsync(Constants.IotHubConfig.MAX_DEVICE_LIST);
+				var devices = await _registryManager?.GetDevicesAsync(Constants.MAX_DEVICE_LIST);
 				if (devices != null)
 					deviceList.AddRange(devices);
 			}

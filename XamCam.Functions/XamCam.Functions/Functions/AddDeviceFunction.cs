@@ -1,5 +1,4 @@
 using System.Net;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -7,9 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-using IOTManager;
-
-namespace XamCamFunc
+namespace XamCam.Functions
 {
 	public static class AddDeviceFunction
 	{
@@ -23,7 +20,7 @@ namespace XamCamFunc
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
 			}
 
-			var res = await DeviceManager.Instance.AddDeviceAsync(id);
+			var res = await IoTDeviceService.Instance.AddDeviceAsync(id);
 
 			if (string.IsNullOrEmpty(res))
 			{
