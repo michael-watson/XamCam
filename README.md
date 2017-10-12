@@ -72,7 +72,7 @@ Earlier versions of VS don't support Azure Functions.
 
 1) Create an Azure Cosmos DB instance in the Azure Portal. 
 
-![](images/AzurePortalCosmosSearch.png)
+![](https://user-images.githubusercontent.com/3628580/31473020-ebbabec0-aea6-11e7-8d4b-2108a99865c6.png)
 
 2) When entering your information, make sure you select **SQL (DocumentDB)**
 ![](images/CreateCosmosOptions.png)
