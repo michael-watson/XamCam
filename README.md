@@ -47,7 +47,7 @@ Earlier versions of VS don't support Azure Functions.
 
 ### 2. Install Visual Studio Azure Functions Extension
 
-1. Open [XamList.sln](https://github.com/brminnick/XamList/blob/master/XamList.sln) using Visual Studio for PC (Version 15.3 or later)
+1. Open using Visual Studio for PC (Version 15.3 or later)
 
 ![](https://user-images.githubusercontent.com/13558917/29254393-8a1b69e8-8049-11e7-8426-5e1d3ccb3193.png)
 
@@ -66,7 +66,7 @@ Earlier versions of VS don't support Azure Functions.
 ### 3. Create an Azure Blob Storage Account
 
 1) Create an Azure Blob Storage instance in the Azure portal
-![]("https://user-images.githubusercontent.com/3628580/31473163-9f245156-aea7-11e7-9042-19248f5be84d.png)
+![](https://user-images.githubusercontent.com/3628580/31473163-9f245156-aea7-11e7-9042-19248f5be84d.png)
 
 ### 3. Create an Azure Cosmos DB Account
 
@@ -75,7 +75,6 @@ Earlier versions of VS don't support Azure Functions.
 ![](https://user-images.githubusercontent.com/3628580/31473020-ebbabec0-aea6-11e7-8d4b-2108a99865c6.png)
 
 2) When entering your information, make sure you select **SQL (DocumentDB)**
-![](images/CreateCosmosOptions.png)
 
 3) Navigate to your Cosmos DB instance after it has been created
 
