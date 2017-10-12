@@ -31,7 +31,7 @@ using System.Net;
 using System.Security.Cryptography;
 
 
-namespace XamCamFunctions.Functions
+namespace XamCam.Functions
 {
     public static class BlobTriggerCopyBlobToAMS
     {
