@@ -29,7 +29,7 @@ namespace ICC.Pages
 
 			videoView = new VideoView
 			{
-				Source = url,
+				Source = "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",//url,
 				AspectMode = VideoAspectMode.None
 			};
 			transcriptLabel = new Label

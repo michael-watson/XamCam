@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Net.Http;
 using System.Windows.Input;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-using Newtonsoft.Json;
 
 using Xamarin.Forms;
 
 using ICC.Models;
-using ICC.Constants;
-using System.Net.Http.Headers;
+using System.Collections.Generic;
 
 namespace ICC.ViewModels
 {
@@ -20,11 +15,11 @@ namespace ICC.ViewModels
 		public HomePageViewModel()
 		{
 			RefreshCommand = new Command(async () => await GetAllVideosAsync());
+			GetAllDevicesAvailableAsync();
 		}
 
-		static HttpClient client = new HttpClient();
-
 		public ICommand RefreshCommand { get; private set; }
+		public List<CameraDevice> CamerasAvailable { get; set; } = new List<CameraDevice>();
 		public ObservableCollection<VideoData> Videos { get; set; } = new ObservableCollection<VideoData>();
 
 		public async Task GetAllVideosAsync()
@@ -32,27 +27,16 @@ namespace ICC.ViewModels
 			if (!IsBusy)
 				IsBusy = true;
 
-			client.DefaultRequestHeaders
-			  .Accept
-			  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			Videos.Clear();
 
 			try
 			{
-				var url = AppConstants.FunctionGetUrl;
-				var response = await client.GetAsync(url);
+				var intermediateList = await VideoService.Instance.GetAllVideosAsync();
 
-				if (response.IsSuccessStatusCode)
+				if (intermediateList?.Count != Videos?.Count && intermediateList.Count != 0)
 				{
-					var json = await response.Content.ReadAsStringAsync();
-					var intermediateList = JsonConvert.DeserializeObject<List<VideoData>>(json);
-
-					if (intermediateList?.Count != Videos?.Count)
-					{
-						Videos.Clear();
-
-						foreach (var video in intermediateList)
-							Videos.Add(video);
-					}
+					foreach (var video in intermediateList)
+						Videos.Add(video);
 				}
 			}
 			catch (Exception e)
@@ -62,6 +46,18 @@ namespace ICC.ViewModels
 			finally
 			{
 				IsBusy = false;
+			}
+		}
+
+		public async Task GetAllDevicesAvailableAsync()
+		{
+			try
+			{
+				CamerasAvailable = await IoTDeviceService.Instance.GetAllDevicesAsync();
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine(e.Message);
 			}
 		}
 	}

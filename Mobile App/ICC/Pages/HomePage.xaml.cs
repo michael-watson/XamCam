@@ -11,24 +11,14 @@ namespace ICC.Pages
 		NoVideosLayout noVideoLayout = new NoVideosLayout();
 		VideosListLayout videosListLayout = new VideosListLayout();
 
-        //void Handle_Activated(object sender, System.EventArgs e)
-        //{
-        //    //throw new NotImplementedException();
-        //}
-
-        public HomePage()
+		public HomePage()
 		{
 			InitializeComponent();
 
 			Content = noVideoLayout;
 		}
 
-        async void onDevicesClicked(object sender, System.EventArgs e)
-        {
-            await Navigation.PushAsync(new DevicesPage());
-        }
-
-        protected override async void OnAppearing()
+		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
 
@@ -52,13 +42,18 @@ namespace ICC.Pages
 			videosListLayout.ItemSelected -= displayVideoSelected;
 		}
 
+		async void onDevicesClicked(object sender, System.EventArgs e)
+		{
+			await Navigation.PushAsync(new DevicesPage(ViewModel.CamerasAvailable));
+		}
+
 		void displayVideoSelected(object sender, SelectedItemChangedEventArgs e)
 		{
 			var videoSelected = e.SelectedItem as VideoData;
 			if (videoSelected == null)
 				return;
 
-			Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new NativeVideoPlayerPage(videoSelected.mediaAssetUri)));
+			Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new NativeVideoPlayerPage(videoSelected.SmoothStreaming)));
 
 			((ListView)sender).SelectedItem = null;
 		}
