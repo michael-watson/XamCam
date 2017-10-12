@@ -24,6 +24,7 @@ The file Constants.cs in the IOTManager project contains a few properties that w
 ### The Device Twin
 
 ***What is the device twin?***
+
 Device twins are JSON documents that store device state information (metadata,configurations, and conditions). IoT Hub persists a device twin for each device that you connect to IoT Hub. 
 
 For more information on device twins, visit this article on [understanding device twins.](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-device-twins)
