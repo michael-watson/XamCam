@@ -14,145 +14,142 @@ using XamCam.Functions.Models;
 
 namespace XamCam.Functions
 {
-	static class CosmosDBService
-	{
-		//DBS - Collections - Documents
-		static readonly string DatabaseId = "XamCam";
-		static readonly string CollectionId = "XamCamAccounts3";
+    static class CosmosDBService
+    {
+        //DBS - Collections - Documents
+        static readonly string DatabaseId = "XamCam";
+        static readonly string CollectionId = "XamCamAccounts3";
 
-		//CLIENT
-		static readonly DocumentClient myDocumentClient = new DocumentClient(new Uri(Constants.CosmosDBEndPoint), Constants.CosmosDBMyKey);
-
-
-		//GETALL
-		public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsAsync()
-		{
-
-			var listOfAccounts = new List<MediaAssetsWithMetaData>();
-			try
-			{
-				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-											.AsDocumentQuery();
-				while (query.HasMoreResults)
-				{
-					listOfAccounts.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-				}
-			}
-			catch (DocumentClientException ex)
-			{
-				Debug.WriteLine("Error: ", ex.Message);
-			}
-			return listOfAccounts;
-		}
-
-		//GET
-		public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsWithMediaAssetUrl()
-		{
-			var myListOfAccountsWithMediaAssetUrl = new List<MediaAssetsWithMetaData>();
-			try
-			{
-				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
-					(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-					.Where(f => f.mediaAssetUri != null)
-					.AsDocumentQuery();
-
-				while (query.HasMoreResults)
-				{
-					myListOfAccountsWithMediaAssetUrl.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-				}
-			}
-			catch (DocumentClientException ex)
-			{
-				Debug.WriteLine("Error: ", ex.Message);
-			}
-			return myListOfAccountsWithMediaAssetUrl;
-		}
+        //CLIENT
+        static readonly DocumentClient myDocumentClient = new DocumentClient(new Uri(Constants.CosmosDBEndPoint), Constants.CosmosDBKey);
 
 
-		//GET
-		public static async Task<List<Document>> GetAllMediaAssetsByIdAsync(string id)
-		{
-			var result = await myDocumentClient.ReadDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
+        //GETALL
+        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsAsync()
+        {
+            var mediaAssetList = new List<MediaAssetsWithMetaData>();
 
-			if (result.StatusCode != System.Net.HttpStatusCode.OK)
-			{
-				return null;
-			}
+            try
+            {
+                var documentQuery = myDocumentClient
+                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .AsDocumentQuery();
 
-			List<Document> returnedListCosmosDog = new List<Document>();
-			returnedListCosmosDog.Add(result);
+                while (documentQuery.HasMoreResults)
+                    mediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+            }
+            catch (DocumentClientException ex)
+            {
+                Debug.WriteLine("Error: ", ex.Message);
+            }
 
-			return returnedListCosmosDog;
-		}
+            return mediaAssetList;
+        }
 
-		//GET
-		public static async Task<MediaAssetsWithMetaData> GetMediaFileByFileNameAsync(string inputFilename)
-		{
-			var listOfAccountsByFilename = new List<MediaAssetsWithMetaData>();
-			try
-			{
-				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
-					(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-					.Where(f => f.fileName == inputFilename)
-					.AsDocumentQuery();
+        //GET
+        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsWithMediaAssetUrl()
+        {
+            var mediaAssetWithUrlList = new List<MediaAssetsWithMetaData>();
 
-				while (query.HasMoreResults)
-				{
-					listOfAccountsByFilename.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-				}
-			}
-			catch (DocumentClientException ex)
-			{
-				Debug.WriteLine("Error: ", ex.Message);
-			}
-			return listOfAccountsByFilename.FirstOrDefault();
-		}
+            try
+            {
+                var documentQuery = myDocumentClient
+                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(x => x.mediaAssetUri != null)
+                    .AsDocumentQuery();
 
-		//GET
-		public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsByEmailAsync(string inputEmail)
-		{
-			var myListOfAccountsByEmail = new List<MediaAssetsWithMetaData>();
-			try
-			{
-				var query = myDocumentClient.CreateDocumentQuery<MediaAssetsWithMetaData>
-					(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-					.Where(f => f.email == inputEmail)
-					.AsDocumentQuery();
+                while (documentQuery.HasMoreResults)
+                    mediaAssetWithUrlList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+            }
+            catch (DocumentClientException ex)
+            {
+                Debug.WriteLine("Error: ", ex.Message);
+            }
 
-				while (query.HasMoreResults)
-				{
-					myListOfAccountsByEmail.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
-				}
-			}
-			catch (DocumentClientException ex)
-			{
-				Debug.WriteLine("Error: ", ex.Message);
-			}
-			return myListOfAccountsByEmail;
-		}
+            return mediaAssetWithUrlList;
+        }
 
-		//POST
-		public static async Task PostMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
-		{
-			await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
-		}
 
-		//POST
-		public static async Task PostIAssetAsync(IAsset asset)
-		{
-			await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), asset);
-		}
+        //GET
+        public static async Task<List<Document>> GetAllMediaAssetsByIdAsync(string id)
+        {
+            var resourceResponse = await myDocumentClient.ReadDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
 
-		//PUT
-		public static async Task PutMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
-		{
-			await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
-		}
+            if (resourceResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                return null;
 
-		//DELETE
-		public static async Task DeleteMediaAssetAsync(MediaAssetsWithMetaData deleteMediaAssetsWithMetaData)
-		{
-			await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
-		}
-	}
+            var mediaAssetList = new List<Document> { resourceResponse };
+
+            return mediaAssetList;
+        }
+
+        //GET
+        public static async Task<MediaAssetsWithMetaData> GetMediaFileByFileNameAsync(string inputFilename)
+        {
+            var fileNameMediaAssetList = new List<MediaAssetsWithMetaData>();
+
+            try
+            {
+                var documentQuery = myDocumentClient
+                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(x => x.fileName == inputFilename)
+                    .AsDocumentQuery();
+
+                while (documentQuery.HasMoreResults)
+                    fileNameMediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+            }
+            catch (DocumentClientException ex)
+            {
+                Debug.WriteLine("Error: ", ex.Message);
+            }
+
+            return fileNameMediaAssetList.FirstOrDefault();
+        }
+
+        //GET
+        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsByEmailAsync(string inputEmail)
+        {
+            var emailMediaAssetList = new List<MediaAssetsWithMetaData>();
+            try
+            {
+                var query = myDocumentClient
+                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(f => f.email == inputEmail)
+                    .AsDocumentQuery();
+
+                while (query.HasMoreResults)
+                    emailMediaAssetList.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
+            }
+            catch (DocumentClientException ex)
+            {
+                Debug.WriteLine("Error: ", ex.Message);
+            }
+
+            return emailMediaAssetList;
+        }
+
+        //POST
+        public static async Task PostMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+        {
+            await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
+        }
+
+        //POST
+        public static async Task PostIAssetAsync(IAsset asset)
+        {
+            await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), asset);
+        }
+
+        //PUT
+        public static async Task PutMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+        {
+            await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
+        }
+
+        //DELETE
+        public static async Task DeleteMediaAssetAsync(MediaAssetsWithMetaData deleteMediaAssetsWithMetaData)
+        {
+            await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
+        }
+    }
 }

@@ -25,10 +25,8 @@ namespace XamCam.Functions
 
 		IoTDeviceService()
 		{
-			if (_registryManager == null)
-			{
-				_registryManager = RegistryManager.CreateFromConnectionString(Constants.ConnectionString);
-			}
+            if (_registryManager == null)
+                _registryManager = RegistryManager.CreateFromConnectionString(Constants.ConnectionString);
 		}
 
 		/// <summary>
@@ -76,7 +74,7 @@ namespace XamCam.Functions
 			}
 			else
 			{
-				var devices = await _registryManager?.GetDevicesAsync(Constants.MAX_DEVICE_LIST);
+				var devices = await _registryManager?.GetDevicesAsync(Constants.MaxDeviceList);
 				if (devices != null)
 					deviceList.AddRange(devices);
 			}

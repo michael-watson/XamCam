@@ -21,7 +21,7 @@ namespace XamCam.Functions
 	class HttpTriggerPostFileToAzureMediaServices
 	{
 		//CONSTANTS NEEDED FOR AZURE AD
-		static string tenantId = Constants.tenantId;
+		static string tenantId = Constants.TenantId;
 		static string GrantType = Constants.GrantType;
 		static string ClientSecret = Constants.ClientSecret;
 		static string ClientID = Constants.ClientID;

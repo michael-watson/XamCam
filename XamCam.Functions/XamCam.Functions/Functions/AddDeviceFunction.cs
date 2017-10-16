@@ -15,19 +15,15 @@ namespace XamCam.Functions
 		{
 			log.Info("C# HTTP trigger function processed a request.");
 
-			if (string.IsNullOrEmpty(id))
-			{
+			if (string.IsNullOrWhiteSpace(id))
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
-			}
 
-			var res = await IoTDeviceService.Instance.AddDeviceAsync(id);
+            var addDeviceResult = await IoTDeviceService.Instance.AddDeviceAsync(id);
 
-			if (string.IsNullOrEmpty(res))
-			{
+			if (string.IsNullOrWhiteSpace(addDeviceResult))
 				return req.CreateResponse(HttpStatusCode.InternalServerError, "There was an error with your request, please check the service logs or try again");
-			}
 
-			return req.CreateResponse(HttpStatusCode.OK, res);
+			return req.CreateResponse(HttpStatusCode.OK, addDeviceResult);
 		}
 	}
 }
