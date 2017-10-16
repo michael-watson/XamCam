@@ -13,15 +13,15 @@ namespace XamCam.Functions
         public static readonly string CosmosDBKey = Environment.GetEnvironmentVariable("CosmosDBMyKey");
 
 		//CONSTANTS NEEDED FOR AZURE AD
-        public static readonly string TenantId = Environment.GetEnvironmentVariable("tenantId");
+        public static readonly string TenantId = Environment.GetEnvironmentVariable("TenantId");
         public static readonly string GrantType = Environment.GetEnvironmentVariable("GrantType");
         public static readonly string ClientSecret = Environment.GetEnvironmentVariable("ClientSecret");
         public static readonly string ClientID = Environment.GetEnvironmentVariable("ClientID");
 		public const string RequestedResource = "https://rest.media.azure.net";
-		public const string MediaServiceRestEndpoint = "https://xamcammediaservice.restv2.westus.media.azure.net/api/";
+        public const string MediaServiceRestEndpoint = "https://icchomecam.restv2.westus.media.azure.net/api/";
 
-		//BLOB STORAGE ACCOUNT
-		public const string StorageAccountName = "xamcamstorage";
+        //BLOB STORAGE ACCOUNT
+        public const string StorageAccountName = "xamcamstorage";
         public static readonly string StorageAccountKey = Environment.GetEnvironmentVariable("StorageAccountKey");
         public static readonly string BlobStorageAccountConnection = Environment.GetEnvironmentVariable("BlobStorageAccountConnection");
 
