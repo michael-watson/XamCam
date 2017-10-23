@@ -1,16 +1,13 @@
 using System;
-using System.Linq;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.WindowsAzure.MediaServices.Client;
-using System.IO;
-using XamCam.Functions.Models;
-using System.Text;
 
 namespace XamCam.Functions
 {

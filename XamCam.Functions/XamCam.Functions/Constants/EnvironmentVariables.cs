@@ -10,6 +10,8 @@ namespace XamCam.Functions
 
         #region CosmosDb
         public static readonly string CosmosDBConnectionString = Environment.GetEnvironmentVariable(nameof(CosmosDBConnectionString));
+        public static string CosmosDbCollectionId => typeof(MediaMetadata).Name;
+        public const string DatabaseId = "MediaMetadataDatabase";
         #endregion
 
         #region AzureAD

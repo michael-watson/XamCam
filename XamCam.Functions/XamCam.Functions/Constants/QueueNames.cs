@@ -2,6 +2,6 @@
 {
     static class QueueNames
     {
-        public const string MediaToAddToCosmosDb= "Media-To-Add-To-CosmosDb";
+        public const string MediaToAddToCosmosDb= "media-to-add-to-cosmosDb";
     }
 }

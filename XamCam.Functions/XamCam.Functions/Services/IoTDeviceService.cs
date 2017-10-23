@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
 
-using XamCam.Functions.Models;
-
 namespace XamCam.Functions
 {
 	public class IoTDeviceService
