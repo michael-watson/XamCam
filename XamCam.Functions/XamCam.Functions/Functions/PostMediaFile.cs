@@ -12,22 +12,17 @@ using System.IO;
 using XamCam.Functions.Models;
 using System.Text;
 
-namespace XamCam.Functions.Functions
+namespace XamCam.Functions
 {
+    [StorageAccount(EnvironmentVariables.StorageConnectionString)]
     public static class PostMediaFile
     {
-        static readonly string _aadTenantDomain = Constants.TenantId;
-        static readonly string _restAPIEndpoint = Constants.MediaServiceRestEndpoint;
-
-        static readonly string _mediaservicesClientId = Constants.ClientID;
-        static readonly string _mediaservicesClientSecret = Constants.ClientSecret;
-
         static CloudMediaContext _context = null;
 
         [FunctionName(nameof(PostMediaFile))]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "PostMediaFile/{deviceId}/{mediaTitle}/{mediaFileExtension}")]HttpRequestMessage req, string deviceId, string mediaTitle, string mediaFileExtension,
-            [Queue(Constants.AddToCosmosDbQueueName)] out MediaMetadata mediaMetadata,
+            [Queue(QueueNames.MediaToAddToCosmosDb)] out MediaMetadata mediaMetadata,
             TraceWriter log)
         {
             log.Info($"Webhook was triggered!");
@@ -49,7 +44,7 @@ namespace XamCam.Functions.Functions
                 return req.CreateResponse(HttpStatusCode.BadRequest, badRequestMessageStringBuilder.ToString());
             }
             
-            log.Info($"Using Azure Media Service Rest API Endpoint : {_restAPIEndpoint}");
+            log.Info($"Using Azure Media Service Rest API Endpoint : {APIEndpointUrls.MediaServiceRestEndpoint}");
 
             IAsset newAzureMediaServicesAsset = null;
 
@@ -62,13 +57,13 @@ namespace XamCam.Functions.Functions
                     UploadedAt = DateTimeOffset.UtcNow
                 };
 
-                var tokenCredentials = new AzureAdTokenCredentials(_aadTenantDomain,
-                                                                new AzureAdClientSymmetricKey(_mediaservicesClientId, _mediaservicesClientSecret),
+                var tokenCredentials = new AzureAdTokenCredentials(EnvironmentVariables.TenantId,
+                                                                new AzureAdClientSymmetricKey(EnvironmentVariables.ClientId, EnvironmentVariables.ClientSecret),
                                                                 AzureEnvironments.AzureCloudEnvironment);
 
                 var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
 
-                _context = new CloudMediaContext(new Uri(_restAPIEndpoint), tokenProvider);
+                _context = new CloudMediaContext(new Uri(APIEndpointUrls.MediaServiceRestEndpoint), tokenProvider);
 
                 log.Info("Context object created.");
 
