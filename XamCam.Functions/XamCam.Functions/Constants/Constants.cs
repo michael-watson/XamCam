@@ -35,7 +35,8 @@ namespace XamCam.Functions
 		public const string HostName = "HomeCam-IoT.azure-devices.net";
 		public const string IotHubD2CEndpoint = "messages/events";
         public static readonly string ConnectionString = Environment.GetEnvironmentVariable("IoTHubConnectionString");
-		//$"HostName={HostName};SharedAccessKeyName=iothubowner;SharedAccessKey=SF7KzXbqc+zq0l7YyVtvyQI2KR9OsGrEqzaXLWwq86c=";
 		public const int MaxDeviceList = 50;
+        
+        public const string AddToCosmosDbQueueName = "Media-To-Add-To-CosmosDb";
 	}
 }

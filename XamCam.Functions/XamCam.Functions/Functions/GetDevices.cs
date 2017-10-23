@@ -8,9 +8,9 @@ using Microsoft.Azure.WebJobs.Host;
 
 namespace XamCam.Functions
 {
-	public static class GetDevicesFunction
+	public static class GetDevices
 	{
-		[FunctionName("GetDevices")]
+		[FunctionName(nameof(GetDevices))]
 		async public static Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetDevices/{id?}")]HttpRequestMessage req, string id, TraceWriter log)
 		{
 			log.Info("C# HTTP trigger function processed a request.");

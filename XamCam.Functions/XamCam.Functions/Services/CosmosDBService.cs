@@ -25,18 +25,18 @@ namespace XamCam.Functions
 
 
         //GETALL
-        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsAsync()
+        public static async Task<List<MediaMetadata>> GetAllMediaAssetsAsync()
         {
-            var mediaAssetList = new List<MediaAssetsWithMetaData>();
+            var mediaAssetList = new List<MediaMetadata>();
 
             try
             {
                 var documentQuery = myDocumentClient
-                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .CreateDocumentQuery<MediaMetadata>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
                     .AsDocumentQuery();
 
                 while (documentQuery.HasMoreResults)
-                    mediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+                    mediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaMetadata>());
             }
             catch (DocumentClientException ex)
             {
@@ -47,19 +47,19 @@ namespace XamCam.Functions
         }
 
         //GET
-        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsWithMediaAssetUrl()
+        public static async Task<List<MediaMetadata>> GetAllMediaAssetsWithMediaAssetUrl()
         {
-            var mediaAssetWithUrlList = new List<MediaAssetsWithMetaData>();
+            var mediaAssetWithUrlList = new List<MediaMetadata>();
 
             try
             {
                 var documentQuery = myDocumentClient
-                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-                    .Where(x => x.mediaAssetUri != null)
+                    .CreateDocumentQuery<MediaMetadata>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(x => x.MediaAssetUri != null)
                     .AsDocumentQuery();
 
                 while (documentQuery.HasMoreResults)
-                    mediaAssetWithUrlList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+                    mediaAssetWithUrlList.AddRange(await documentQuery.ExecuteNextAsync<MediaMetadata>());
             }
             catch (DocumentClientException ex)
             {
@@ -84,19 +84,19 @@ namespace XamCam.Functions
         }
 
         //GET
-        public static async Task<MediaAssetsWithMetaData> GetMediaFileByFileNameAsync(string inputFilename)
+        public static async Task<MediaMetadata> GetMediaFileByFileNameAsync(string inputFilename)
         {
-            var fileNameMediaAssetList = new List<MediaAssetsWithMetaData>();
+            var fileNameMediaAssetList = new List<MediaMetadata>();
 
             try
             {
                 var documentQuery = myDocumentClient
-                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-                    .Where(x => x.fileName == inputFilename)
+                    .CreateDocumentQuery<MediaMetadata>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(x => x.FileName == inputFilename)
                     .AsDocumentQuery();
 
                 while (documentQuery.HasMoreResults)
-                    fileNameMediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaAssetsWithMetaData>());
+                    fileNameMediaAssetList.AddRange(await documentQuery.ExecuteNextAsync<MediaMetadata>());
             }
             catch (DocumentClientException ex)
             {
@@ -107,18 +107,18 @@ namespace XamCam.Functions
         }
 
         //GET
-        public static async Task<List<MediaAssetsWithMetaData>> GetAllMediaAssetsByEmailAsync(string inputEmail)
+        public static async Task<List<MediaMetadata>> GetAllMediaAssetsByEmailAsync(string inputEmail)
         {
-            var emailMediaAssetList = new List<MediaAssetsWithMetaData>();
+            var emailMediaAssetList = new List<MediaMetadata>();
             try
             {
                 var query = myDocumentClient
-                    .CreateDocumentQuery<MediaAssetsWithMetaData>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
-                    .Where(f => f.email == inputEmail)
+                    .CreateDocumentQuery<MediaMetadata>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId))
+                    .Where(f => f.Email == inputEmail)
                     .AsDocumentQuery();
 
                 while (query.HasMoreResults)
-                    emailMediaAssetList.AddRange(await query.ExecuteNextAsync<MediaAssetsWithMetaData>());
+                    emailMediaAssetList.AddRange(await query.ExecuteNextAsync<MediaMetadata>());
             }
             catch (DocumentClientException ex)
             {
@@ -129,7 +129,7 @@ namespace XamCam.Functions
         }
 
         //POST
-        public static async Task PostMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+        public static async Task PostMediaAssetAsync(MediaMetadata aMediaAssetsWithMetaData)
         {
             await myDocumentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), aMediaAssetsWithMetaData);
         }
@@ -141,15 +141,15 @@ namespace XamCam.Functions
         }
 
         //PUT
-        public static async Task PutMediaAssetAsync(MediaAssetsWithMetaData aMediaAssetsWithMetaData)
+        public static async Task PutMediaAssetAsync(MediaMetadata aMediaAssetsWithMetaData)
         {
-            await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.id), aMediaAssetsWithMetaData);
+            await myDocumentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, aMediaAssetsWithMetaData.Id), aMediaAssetsWithMetaData);
         }
 
         //DELETE
-        public static async Task DeleteMediaAssetAsync(MediaAssetsWithMetaData deleteMediaAssetsWithMetaData)
+        public static async Task DeleteMediaAssetAsync(MediaMetadata deleteMediaAssetsWithMetaData)
         {
-            await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.id));
+            await myDocumentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, deleteMediaAssetsWithMetaData.Id));
         }
     }
 }

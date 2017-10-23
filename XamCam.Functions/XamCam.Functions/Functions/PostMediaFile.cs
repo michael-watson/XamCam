@@ -9,6 +9,8 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.WindowsAzure.MediaServices.Client;
 using System.IO;
+using XamCam.Functions.Models;
+using System.Text;
 
 namespace XamCam.Functions.Functions
 {
@@ -22,27 +24,44 @@ namespace XamCam.Functions.Functions
 
         static CloudMediaContext _context = null;
 
-        [FunctionName("PostMediaFile")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "PostMediaFile/{deviceId}/{mediaTitle}/{mediaFileExtension}")]HttpRequestMessage req, string deviceId, string mediaTitle, string mediaFileExtension, TraceWriter log)
+        [FunctionName(nameof(PostMediaFile))]
+        public static HttpResponseMessage Run(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "PostMediaFile/{deviceId}/{mediaTitle}/{mediaFileExtension}")]HttpRequestMessage req, string deviceId, string mediaTitle, string mediaFileExtension,
+            [Queue(Constants.AddToCosmosDbQueueName)] out MediaMetadata mediaMetadata,
+            TraceWriter log)
         {
             log.Info($"Webhook was triggered!");
-            var mediaBlobAsByteArrary = await req.Content.ReadAsByteArrayAsync();
+            var mediaBlobAsByteArrary = req.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
 
+            var badRequestMessageStringBuilder = new StringBuilder();
             if (string.IsNullOrWhiteSpace(mediaFileExtension))
-                return req.CreateResponse(HttpStatusCode.BadRequest, "Media File Extension Empty");
+                badRequestMessageStringBuilder.AppendLine("Media File Extension Empty");
 
             if (string.IsNullOrWhiteSpace(deviceId))
-                return req.CreateResponse(HttpStatusCode.BadRequest, "Device Id Empty");
+                badRequestMessageStringBuilder.AppendLine("Device Id Empty");
 
             if (string.IsNullOrWhiteSpace(mediaTitle))
-                return req.CreateResponse(HttpStatusCode.BadRequest, "Video Title Empty");
+                badRequestMessageStringBuilder.AppendLine("Video Title Empty");
 
+            if (badRequestMessageStringBuilder.Length > 0)
+            {
+                mediaMetadata = null;
+                return req.CreateResponse(HttpStatusCode.BadRequest, badRequestMessageStringBuilder.ToString());
+            }
+            
             log.Info($"Using Azure Media Service Rest API Endpoint : {_restAPIEndpoint}");
 
             IAsset newAzureMediaServicesAsset = null;
 
             try
             {
+                mediaMetadata = new MediaMetadata
+                {
+                    FileName = $"{deviceId}_{DateTime.UtcNow.Ticks}.{mediaFileExtension}",
+                    Title = mediaTitle,
+                    UploadedAt = DateTimeOffset.UtcNow
+                };
+
                 var tokenCredentials = new AzureAdTokenCredentials(_aadTenantDomain,
                                                                 new AzureAdClientSymmetricKey(_mediaservicesClientId, _mediaservicesClientSecret),
                                                                 AzureEnvironments.AzureCloudEnvironment);
@@ -53,7 +72,7 @@ namespace XamCam.Functions.Functions
 
                 log.Info("Context object created.");
 
-                newAzureMediaServicesAsset = CreateAssetAndUploadSingleFile(AssetCreationOptions.None, mediaTitle, mediaFileExtension, mediaBlobAsByteArrary);
+                newAzureMediaServicesAsset = CreateAssetAndUploadSingleFile(AssetCreationOptions.None, mediaTitle, mediaMetadata.FileName, mediaBlobAsByteArrary, log);
 
                 log.Info("new asset created.");
 
@@ -61,6 +80,8 @@ namespace XamCam.Functions.Functions
             catch (Exception ex)
             {
                 log.Info($"Exception {ex}");
+
+                mediaMetadata = null;
                 return req.CreateResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
 
@@ -74,18 +95,18 @@ namespace XamCam.Functions.Functions
             });
         }
 
-        static public IAsset CreateAssetAndUploadSingleFile(AssetCreationOptions assetCreationOptions, string fileName, string mediaFileExtension, byte[] mediaFile)
+        static public IAsset CreateAssetAndUploadSingleFile(AssetCreationOptions assetCreationOptions, string mediaTitle, string fileName, byte[] mediaFile, TraceWriter log)
         {
-            IAsset inputAsset = _context.Assets.Create(fileName, assetCreationOptions);
+            IAsset inputAsset = _context.Assets.Create(mediaTitle, assetCreationOptions);
 
-            var assetFile = inputAsset.AssetFiles.Create($"{fileName}.{mediaFileExtension}");
+            var assetFile = inputAsset.AssetFiles.Create(fileName);
 
-            Console.WriteLine("Upload {0}", assetFile.Name);
+            log.Info($"Upload {assetFile.Name}");
 
             using (var memoryStream = new MemoryStream(mediaFile))
                 assetFile.Upload(memoryStream);
 
-            Console.WriteLine("Done uploading {0}", assetFile.Name);
+            log.Info($"Done uploading {assetFile.Name}");
 
             return inputAsset;
         }
