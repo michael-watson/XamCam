@@ -11,7 +11,7 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace XamCam.Functions
 {
-    [StorageAccount(EnvironmentVariables.StorageConnectionString)]
+    [StorageAccount(EnvironmentVariables.AzureWebJobsStorage)]
     public static class PostMediaFile
     {
         static CloudMediaContext _context = null;

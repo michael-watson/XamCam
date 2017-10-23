@@ -5,12 +5,12 @@ namespace XamCam.Functions
     static class EnvironmentVariables
     {
         #region Blob Storage
-        public const string StorageConnectionString = nameof(StorageConnectionString);
+        public const string AzureWebJobsStorage = nameof(AzureWebJobsStorage);
         #endregion
 
         #region CosmosDb
         public static readonly string CosmosDBConnectionString = Environment.GetEnvironmentVariable(nameof(CosmosDBConnectionString));
-        public static string CosmosDbCollectionId => typeof(MediaMetadata).Name;
+        public const string CosmosDbCollectionId = nameof(MediaMetadata);
         public const string DatabaseId = "MediaMetadataDatabase";
         #endregion
 
