@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AbsoluteLayout 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="XamCam.NoVideosLayout">
+
+    <BoxView Color="#A8DADC"
+        AbsoluteLayout.LayoutBounds="0,0,1,0.55" 
+        AbsoluteLayout.LayoutFlags="All"/>
+
+    <Label
+        Margin="69"
+        Text= "XamCam"
+        FontSize= "60"
+        WidthRequest= "300" HeightRequest= "360" 
+        HorizontalOptions="CenterAndExpand" VerticalOptions= "Center"
+        AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All" />
+
+    <ActivityIndicator 
+        IsRunning="{Binding IsBusy}" 
+        IsVisible="{Binding IsBusy}" 
+        AbsoluteLayout.LayoutBounds="0,0,1,1" />
+    
+    <StackLayout 
+        Padding= "40, 0" Spacing= "20"
+        AbsoluteLayout.LayoutBounds= "0, 0.9, 1, 0.3" AbsoluteLayout.LayoutFlags= "All">
+            <Label 
+            Text="You currently don't have any media." 
+            HorizontalOptions="Center" 
+            FontAttributes="Bold"
+            FontSize="15" />
+
+            <Label 
+            HorizontalOptions="Center" 
+            HorizontalTextAlignment="Center" 
+            FontSize="13"
+            Text= "Add some videos to enable you to search and playback your company's media."> 
+            </Label>
+
+            <Image 
+            HorizontalOptions="Center"
+            Source="camera.png"
+            HeightRequest="130"
+            Aspect="AspectFit" /> 
+
+    </StackLayout>
+</AbsoluteLayout>

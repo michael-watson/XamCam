@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<local:BaseContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:views= "clr-namespace:ICC.Views"
+    x:Class="XamCam.HomePage"
+
+    xmlns:local="clr-namespace:XamCam;assembly=XamCam"
+    x:TypeArguments="local:HomePageViewModel"
+    
+    Title= "Videos"
+    Icon = "camera.png">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            Name="DevicesButton" 
+            Order="Primary" 
+            Text="Devices" 
+            Priority="0" 
+            Activated="onDevicesClicked"/>
+    </ContentPage.ToolbarItems>
+
+</local:BaseContentPage>
