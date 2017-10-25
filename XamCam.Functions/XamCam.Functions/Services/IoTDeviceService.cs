@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
 
-using XamCam.Functions.Models;
-
 namespace XamCam.Functions
 {
 	public class IoTDeviceService
@@ -25,10 +23,8 @@ namespace XamCam.Functions
 
 		IoTDeviceService()
 		{
-			if (_registryManager == null)
-			{
-				_registryManager = RegistryManager.CreateFromConnectionString(Constants.ConnectionString);
-			}
+            if (_registryManager == null)
+                _registryManager = RegistryManager.CreateFromConnectionString(EnvironmentVariables.IoTHubConnectionString);
 		}
 
 		/// <summary>
@@ -55,7 +51,7 @@ namespace XamCam.Functions
 				return string.Empty;
 			}
 
-			var connectionString = $"HostName={Constants.HostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
+			var connectionString = $"HostName={IoTConstants.HostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
 			//Get
 			return connectionString;
 		}
@@ -76,7 +72,7 @@ namespace XamCam.Functions
 			}
 			else
 			{
-				var devices = await _registryManager?.GetDevicesAsync(Constants.MAX_DEVICE_LIST);
+				var devices = await _registryManager?.GetDevicesAsync(IoTConstants.MaxDeviceList);
 				if (devices != null)
 					deviceList.AddRange(devices);
 			}
@@ -90,8 +86,8 @@ namespace XamCam.Functions
 					DeviceId = device.Id,
 					GenerationId = device.GenerationId,
 					ETag = device.ETag,
-					ConnectionState = (Models.DeviceConnectionState)(int)device.ConnectionState,
-					Status = (Models.DeviceStatus)(int)device.Status,
+					ConnectionState = (DeviceConnectionState)(int)device.ConnectionState,
+					Status = (DeviceStatus)(int)device.Status,
 					StatusReason = device.StatusReason,
 					ConnectionStateUpdatedTime = device.ConnectionStateUpdatedTime,
 					StatusUpdatedTime = device.ConnectionStateUpdatedTime,

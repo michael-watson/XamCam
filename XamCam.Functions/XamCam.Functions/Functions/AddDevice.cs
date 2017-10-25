@@ -8,26 +8,22 @@ using Microsoft.Azure.WebJobs.Host;
 
 namespace XamCam.Functions
 {
-	public static class AddDeviceFunction
+	public static class AddDevice
 	{
-		[FunctionName("AddDevice")]
-		public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddDevice/id/{id}")]HttpRequestMessage req, string id, TraceWriter log)
+		[FunctionName(nameof(AddDevice))]
+		public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AddDevice/id/{id}")]HttpRequestMessage req, string id, TraceWriter log)
 		{
 			log.Info("C# HTTP trigger function processed a request.");
 
-			if (string.IsNullOrEmpty(id))
-			{
+			if (string.IsNullOrWhiteSpace(id))
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
-			}
 
-			var res = await IoTDeviceService.Instance.AddDeviceAsync(id);
+            var addDeviceResult = await IoTDeviceService.Instance.AddDeviceAsync(id);
 
-			if (string.IsNullOrEmpty(res))
-			{
+			if (string.IsNullOrWhiteSpace(addDeviceResult))
 				return req.CreateResponse(HttpStatusCode.InternalServerError, "There was an error with your request, please check the service logs or try again");
-			}
 
-			return req.CreateResponse(HttpStatusCode.OK, res);
+			return req.CreateResponse(HttpStatusCode.OK, addDeviceResult);
 		}
 	}
 }
