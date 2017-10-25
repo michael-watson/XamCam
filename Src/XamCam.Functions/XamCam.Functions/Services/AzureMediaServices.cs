@@ -9,20 +9,27 @@ namespace XamCam.Functions
 {
     static class AzureMediaServices
     {
-        const string _encoderName = "Media Encoder Standard";
-        const string _encoderPreset = "Content Adaptive Multiple Bitrate MP4";
+        #region Constant Fields
+        const string encoderName = "Media Encoder Standard";
+        const string encoderPreset = "Content Adaptive Multiple Bitrate MP4";
+        #endregion
 
+        #region Fields
         static CloudMediaContext _cloudMediaContext;
+        #endregion
 
+        #region Properties
         public static CloudMediaContext CloudMediaContext => _cloudMediaContext ??
                 (_cloudMediaContext = GetCloudMediaContext());
+        #endregion
 
+        #region Methods
         public static IAsset EncodeToAdaptiveBitrateMP4Set(IAsset asset, string outputAssetName)
         {
             var job = CloudMediaContext.Jobs.Create("Media Encoder Standard Job");
-            var processor = GetLatestMediaProcessorByName(_encoderName);
+            var processor = GetLatestMediaProcessorByName(encoderName);
 
-            var task = job.Tasks.AddNew($"Encoding {asset.Name}", processor, _encoderPreset, TaskOptions.None);
+            var task = job.Tasks.AddNew($"Encoding {asset.Name}", processor, encoderPreset, TaskOptions.None);
 
             task.InputAssets.Add(asset);
             task.OutputAssets.AddNew(outputAssetName, AssetCreationOptions.None);
@@ -49,7 +56,7 @@ namespace XamCam.Functions
             var manifestFile = asset.AssetFiles.Where(x => x.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
 
             var manifestUrl = originLocator.Path + manifestFile.Name + "/manifest";
-            manifestUrl= manifestUrl.Replace(@"http://", @"https://");
+            manifestUrl = manifestUrl.Replace(@"http://", @"https://");
 
             var hlsUrl = manifestFile + "(format=m3u8-aapl)";
             var dashUrl = manifestUrl + "(format=mpd-time-csf)";
@@ -98,5 +105,6 @@ namespace XamCam.Functions
 
             return processor ?? throw new ArgumentException(string.Format("Unknown media processor", mediaProcessorName));
         }
+        #endregion
     }
 }
