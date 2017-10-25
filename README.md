@@ -67,6 +67,7 @@ Earlier versions of VS don't support Azure Functions.
 
 1) Create an Azure Blob Storage instance in the Azure portal
 ![] (https://user-images.githubusercontent.com/3628580/31473265-35c4b40c-aea8-11e7-89ec-4903c214a0aa.png)
+
 ![](https://user-images.githubusercontent.com/3628580/31473163-9f245156-aea7-11e7-9042-19248f5be84d.png)
 
 2) Give it a unique name (it will only lowercase letter and numbers)
@@ -165,6 +166,7 @@ For more information on device twins, visit this article on [understanding devic
 #### In the device explorer panel, add a device (provide a unique ID) and view it's twin:
 
 ![](https://user-images.githubusercontent.com/13558917/31976234-1c670ab2-b8eb-11e7-9501-a0ed6be788a5.png)
+
 ![](https://user-images.githubusercontent.com/13558917/31976232-1c31999a-b8eb-11e7-8271-3eb9597f62a8.png)
 
 
