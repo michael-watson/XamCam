@@ -150,9 +150,9 @@ The file Constants.cs in the IOTManager project contains a few properties that w
 
 1. Navigate to your ResourceGroup that contains the newly created IoT Hub, and click on the IoT Hub
 2. Under "Overview" - copy and paste the value for "HostName" to the <HostName> property in Constants.cs
-![](images/iothub.png)
+![](https://user-images.githubusercontent.com/13558917/31976233-1c4c756c-b8eb-11e7-9757-23a548027282.png)
 3. Under "Shared access policies" - click on "iothubowner" and copy the value of "Connection string—primary key" into the <ConnectionString> property in Constants.cs
-![](images/iothubkey.png)
+![](https://user-images.githubusercontent.com/13558917/31976235-1c7e04f6-b8eb-11e7-9b25-0eb8a34f0ce8.png)
 
 ### The Device Twin
 
