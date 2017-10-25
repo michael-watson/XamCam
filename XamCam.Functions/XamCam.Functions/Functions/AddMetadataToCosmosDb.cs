@@ -23,7 +23,7 @@ namespace XamCam.Functions.Functions
             catch (Exception e)
             {
                 log.Info(e.Message);
-                mediaMetadataForCosmos = null;
+                throw e;
             }
         }
     }

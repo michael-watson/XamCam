@@ -18,7 +18,7 @@ namespace XamCam.Functions
 			if (string.IsNullOrWhiteSpace(id))
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
 
-            var addDeviceResult = await IoTDeviceService.Instance.AddDeviceAsync(id);
+            var addDeviceResult = await IoTDeviceService.Instance.AddDeviceAsync(id).ConfigureAwait(false);
 
 			if (string.IsNullOrWhiteSpace(addDeviceResult))
 				return req.CreateResponse(HttpStatusCode.InternalServerError, "There was an error with your request, please check the service logs or try again");

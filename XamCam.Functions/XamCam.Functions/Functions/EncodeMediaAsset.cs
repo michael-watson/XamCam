@@ -19,19 +19,30 @@ namespace XamCam.Functions.Functions
         {
             log.Info($"{nameof(EncodeMediaAsset)} triggered");
 
-            var asset = AzureMediaServices.GetAsset(mediaMetadataFromQueue);
-            var newAsset = AzureMediaServices.EncodeToAdaptiveBitrateMP4Set(asset, mediaMetadataFromQueue.Title);
-
-            mediaMetadataToPublish = new MediaMetadata
+            IAsset asset = null;
+            try
             {
-                FileName = newAsset.Name,
-                MediaServicesAssetId = newAsset.Id,
-                MediaAssetUri = newAsset.Uri,
-                Title = mediaMetadataFromQueue.Title,
-                UploadedAt = mediaMetadataFromQueue.UploadedAt,
-            };
+                asset = AzureMediaServices.GetAsset(mediaMetadataFromQueue);
+                var newAsset = AzureMediaServices.EncodeToAdaptiveBitrateMP4Set(asset, mediaMetadataFromQueue.Title);
 
-            asset.Delete(false);
+                mediaMetadataToPublish = new MediaMetadata
+                {
+                    FileName = newAsset.Name,
+                    MediaServicesAssetId = newAsset.Id,
+                    MediaAssetUri = newAsset.Uri,
+                    Title = mediaMetadataFromQueue.Title,
+                    UploadedAt = mediaMetadataFromQueue.UploadedAt,
+                };
+            }
+            catch (Exception e)
+            {
+                log.Info($"Error {e.Message}");
+                throw e;
+            }
+            finally
+            { 
+                asset?.Delete(false);
+            }
         }
     }
 }

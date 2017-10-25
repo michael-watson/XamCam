@@ -33,7 +33,7 @@ namespace XamCam.Functions.Functions
             catch(Exception e)
             {
                 log.Info($"Error: {e.Message}");
-                mediaMetadataToAddToCosmosDb = null;
+                throw e;
             }
         }
     }

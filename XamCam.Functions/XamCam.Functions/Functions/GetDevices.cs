@@ -15,9 +15,9 @@ namespace XamCam.Functions
 		{
 			log.Info("C# HTTP trigger function processed a request.");
 
-            var deviceConfigurationList = await IoTDeviceService.Instance.GetDevicesAsync(id);
+            var deviceConfigurationList = await IoTDeviceService.Instance.GetDevicesAsync(id).ConfigureAwait(false);
 
-			return req.CreateResponse(HttpStatusCode.OK, deviceConfigurationList);
+            return req.CreateResponse(HttpStatusCode.OK, deviceConfigurationList);
 		}
 	}
 }

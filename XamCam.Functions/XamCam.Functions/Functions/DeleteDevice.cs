@@ -18,7 +18,7 @@ namespace XamCam.Functions
             if (string.IsNullOrWhiteSpace(id))
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
 
-            var wasDeviceRemovedSuccessfully = await IoTDeviceService.Instance.RemoveDeviceAsync(id);
+            var wasDeviceRemovedSuccessfully = await IoTDeviceService.Instance.RemoveDeviceAsync(id).ConfigureAwait(false);
 
             if (!wasDeviceRemovedSuccessfully)
                 return req.CreateErrorResponse(HttpStatusCode.BadRequest, $"Device with Id: {id} not found.");
