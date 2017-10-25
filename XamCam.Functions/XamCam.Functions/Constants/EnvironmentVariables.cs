@@ -20,11 +20,6 @@ namespace XamCam.Functions
         public static readonly string ClientId = Environment.GetEnvironmentVariable(nameof(ClientId));
         #endregion
 
-        #region Webhook and Signing Key
-        public static readonly string WebHookEndpoint = Environment.GetEnvironmentVariable(nameof(WebHookEndpoint));
-        public static readonly string WebHookSigningKey = Environment.GetEnvironmentVariable(nameof(WebHookSigningKey));
-        #endregion
-
         #region IoT Hub
         public static readonly string IoTHubConnectionString = Environment.GetEnvironmentVariable(nameof(IoTHubConnectionString));
         #endregion
