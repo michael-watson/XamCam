@@ -25,7 +25,7 @@ namespace Recorder.IoT
         #endregion
 
         #region Properties
-        public static DeviceInfo Instance => instance ?? (instance = new Recorder.IoT.DeviceInfo());
+        public static DeviceInfo Instance => instance ?? (instance = new DeviceInfo());
         public static string OSName { get; set; }
         public string Id { get; private set; }
         public string Model { get; private set; }
@@ -36,19 +36,17 @@ namespace Recorder.IoT
         #region Methods
         static string GetId()
         {
-            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.System.Profile.HardwareIdentification"))
-            {
-                var token = HardwareIdentification.GetPackageSpecificToken(null);
-                var hardwareId = token.Id;
-                var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(hardwareId);
+            if (!Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.System.Profile.HardwareIdentification"))
+                throw new Exception("No API present for device ID");
 
-                byte[] bytes = new byte[hardwareId.Length];
-                dataReader.ReadBytes(bytes);
+            var token = HardwareIdentification.GetPackageSpecificToken(null);
+            var hardwareId = token.Id;
+            var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(hardwareId);
 
-                return BitConverter.ToString(bytes).Replace("-", "");
-            }
+            byte[] bytes = new byte[hardwareId.Length];
+            dataReader.ReadBytes(bytes);
 
-            throw new Exception("NO API FOR DEVICE ID PRESENT!");
+            return BitConverter.ToString(bytes).Replace("-", "");
         }
         #endregion
     }
