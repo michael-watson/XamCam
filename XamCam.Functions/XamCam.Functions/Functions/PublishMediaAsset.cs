@@ -12,7 +12,7 @@ namespace XamCam.Functions.Functions
     {
         [FunctionName(nameof(PublishMediaAsset))]
         public static void Run(
-            [QueueTrigger(QueueNames.MediaToPusblish)]MediaMetadata mediaMetadataFromQueue,
+            [QueueTrigger(QueueNames.MediaToPublish)]MediaMetadata mediaMetadataFromQueue,
             [Queue(QueueNames.MediaToAddToCosmosDb)] out MediaMetadata mediaMetadataToAddToCosmosDb,
             TraceWriter log)
         {

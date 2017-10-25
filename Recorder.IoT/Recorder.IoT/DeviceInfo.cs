@@ -7,21 +7,34 @@ namespace Recorder.IoT
 {
     public sealed class DeviceInfo
     {
+        #region Fields
         static DeviceInfo instance;
+        #endregion
 
-        public static string OSName { get; set; }
+        #region Constructors
+        DeviceInfo()
+        {
+            var deviceInformation = new EasClientDeviceInformation();
 
-        public static DeviceInfo Instance {
-            get
-            {
-                if (instance == null)
-                    instance = new DeviceInfo();
-
-                return instance;
-            }
+            Id = GetId();
+            Model = deviceInformation.SystemProductName;
+            Manufracturer = deviceInformation.SystemManufacturer;
+            Name = deviceInformation.FriendlyName;
+            OSName = deviceInformation.OperatingSystem;
         }
+        #endregion
 
-        private static string GetId()
+        #region Properties
+        public static DeviceInfo Instance => instance ?? (instance = new Recorder.IoT.DeviceInfo());
+        public static string OSName { get; set; }
+        public string Id { get; private set; }
+        public string Model { get; private set; }
+        public string Manufracturer { get; private set; }
+        public string Name { get; private set; }
+        #endregion
+
+        #region Methods
+        static string GetId()
         {
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.System.Profile.HardwareIdentification"))
             {
@@ -37,21 +50,6 @@ namespace Recorder.IoT
 
             throw new Exception("NO API FOR DEVICE ID PRESENT!");
         }
-
-        private DeviceInfo()
-        {
-            var deviceInformation = new EasClientDeviceInformation();
-
-            Id = GetId();
-            Model = deviceInformation.SystemProductName;
-            Manufracturer = deviceInformation.SystemManufacturer;
-            Name = deviceInformation.FriendlyName;
-            OSName = deviceInformation.OperatingSystem;
-        }
-
-        public string Id { get; private set; }
-        public string Model { get; private set; }
-        public string Manufracturer { get; private set; }
-        public string Name { get; private set; }
+        #endregion
     }
 }

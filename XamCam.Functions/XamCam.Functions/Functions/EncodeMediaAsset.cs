@@ -14,7 +14,7 @@ namespace XamCam.Functions.Functions
         [FunctionName(nameof(EncodeMediaAsset))]
         public static void Run(
             [QueueTrigger(QueueNames.MediaToEncode)]MediaMetadata mediaMetadataFromQueue,
-            [Queue(QueueNames.MediaToPusblish)] out MediaMetadata mediaMetadataToPublish,
+            [Queue(QueueNames.MediaToPublish)] out MediaMetadata mediaMetadataToPublish,
             TraceWriter log)
         {
             log.Info($"{nameof(EncodeMediaAsset)} triggered");
@@ -31,7 +31,7 @@ namespace XamCam.Functions.Functions
                 UploadedAt = mediaMetadataFromQueue.UploadedAt,
             };
 
-            //asset.Delete(false);
+            asset.Delete(false);
         }
     }
 }
