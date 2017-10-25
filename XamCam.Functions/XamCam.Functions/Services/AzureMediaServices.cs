@@ -33,7 +33,7 @@ namespace XamCam.Functions
             return job.OutputMediaAssets.FirstOrDefault();
         }
 
-        public static (Uri manifestUri, Uri hlsUri, Uri mpegDashUri) BuildStreamingURIs(IAsset asset)
+        public static (string manifestUri, string hlsUri, string mpegDashUri) BuildStreamingURLs(IAsset asset)
         {
             var accessPolicy = CloudMediaContext.AccessPolicies.Create(
                 "Streaming policy",
@@ -49,12 +49,12 @@ namespace XamCam.Functions
             var manifestFile = asset.AssetFiles.Where(x => x.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
 
             var manifestUrl = originLocator.Path + manifestFile.Name + "/manifest";
-            manifestUrl.Replace("http://", "https://");
+            manifestUrl= manifestUrl.Replace(@"http://", @"https://");
 
             var hlsUrl = manifestFile + "(format=m3u8-aapl)";
             var dashUrl = manifestUrl + "(format=mpd-time-csf)";
 
-            return (new Uri(manifestUrl), new Uri(hlsUrl), new Uri(dashUrl));
+            return (manifestUrl, hlsUrl, dashUrl);
         }
 
         public static IAsset CreateAssetAndUploadSingleFile(AssetCreationOptions assetCreationOptions, string mediaTitle, string fileName, byte[] mediaFile, TraceWriter log)

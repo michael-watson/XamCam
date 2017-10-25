@@ -18,22 +18,30 @@ namespace XamCam.Functions.Functions
         {
             log.Info($"{nameof(PublishMediaAsset)} triggered");
 
+            IAsset asset = null;
+
             try
             {
                 mediaMetadataToAddToCosmosDb = mediaMetadataFromQueue;
 
-                var asset = AzureMediaServices.GetAsset(mediaMetadataFromQueue);
+                asset = AzureMediaServices.GetAsset(mediaMetadataFromQueue);
 
-                var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURIs(asset);
+                var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURLs(asset);
 
-                mediaMetadataToAddToCosmosDb.ManifestUri = manifestUri;
-                mediaMetadataToAddToCosmosDb.HLSUri = hlsUri;
-                mediaMetadataToAddToCosmosDb.MPEGDashUri = mpegDashUri;
+                mediaMetadataToAddToCosmosDb.ManifestUrl = manifestUri;
+                mediaMetadataToAddToCosmosDb.HLSUrl = hlsUri;
+                mediaMetadataToAddToCosmosDb.MPEGDashUrl = mpegDashUri;
             }
             catch(Exception e)
             {
                 log.Info($"Error: {e.Message}");
+                asset.Delete();
+
                 throw e;
+            }
+            finally
+            {
+                log.Info($"{nameof(PublishMediaAsset)} completed");
             }
         }
     }

@@ -42,6 +42,7 @@ namespace XamCam.Functions.Functions
             finally
             { 
                 asset?.Delete(false);
+                log.Info($"{nameof(EncodeMediaAsset)} completed");
             }
         }
     }
