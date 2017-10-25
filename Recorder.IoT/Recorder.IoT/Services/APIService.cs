@@ -20,7 +20,7 @@ namespace Recorder.IoT
         readonly static Lazy<HttpClient> httpClientHolder = new Lazy<HttpClient>(() =>
             new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
             {
-                BaseAddress = new Uri("https://homecamfunction.azurewebsites.net/api")
+                BaseAddress = new Uri("https://homecamfunction.azurewebsites.net/api/")
             });
 
         const string postMediaFileAPI = "PostMediaFile";

@@ -99,12 +99,13 @@ namespace Recorder.IoT
 
         async Task<MethodResponse> StopRecordingAsync(MethodRequest methodRequest, object userContext)
         {
-            if (!isRecording) return await Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Not currently recording"), (int)HttpStatusCode.Conflict));
+            if (!isRecording)
+                return await Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Not currently recording"), (int)HttpStatusCode.Conflict));
 
             await mediaCapture.StopRecordAsync();
 
             //Send video to Azure Function
-            await APIService.UploadVideoAsync(deviceClient, deviceTwin, recordedFileName).ConfigureAwait(false);
+            await APIService.UploadVideoAsync(deviceClient, deviceTwin, recordedFileStorageName).ConfigureAwait(false);
 
             isRecording = false;
 
