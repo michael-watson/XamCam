@@ -15,5 +15,6 @@ namespace XamCam.Functions
 		public string ManifestUrl{ get; set; }
 		public string HLSUrl { get; set; }
 		public string MPEGDashUrl { get; set; }
+        public string BlobStorageMediaUrl { get; set; } 
 	}
 }

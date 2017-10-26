@@ -40,6 +40,9 @@ namespace XamCam.Functions
             return job.OutputMediaAssets.FirstOrDefault();
         }
 
+        public static string GetMP4FileName(IAsset asset) =>
+            Uri.EscapeDataString(asset.AssetFiles.Where(x => x.Name.ToLower().EndsWith(".mp4")).FirstOrDefault()?.Name)?.ToString();
+
         public static (string manifestUri, string hlsUri, string mpegDashUri) BuildStreamingURLs(IAsset asset)
         {
             var accessPolicy = CloudMediaContext.AccessPolicies.Create(
@@ -58,8 +61,10 @@ namespace XamCam.Functions
             var manifestUrl = originLocator.Path + manifestFile.Name + "/manifest";
             manifestUrl = manifestUrl.Replace(@"http://", @"https://");
 
-            var hlsUrl = manifestFile + "(format=m3u8-aapl)";
-            var dashUrl = manifestUrl + "(format=mpd-time-csf)";
+            while (manifestUrl.Contains(" "))
+
+            var hlsUrl = $"{manifestUrl}(format=m3u8-aapl)";
+            var dashUrl = $"{manifestUrl}(format=mpd-time-csf)";
 
             return (manifestUrl, hlsUrl, dashUrl);
         }

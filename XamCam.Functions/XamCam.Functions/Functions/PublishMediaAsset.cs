@@ -28,6 +28,7 @@ namespace XamCam.Functions.Functions
 
                 var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURLs(asset);
 
+                mediaMetadataToAddToCosmosDb.BlobStorageMediaUrl = $"{mediaMetadataToAddToCosmosDb.MediaAssetUri}/{AzureMediaServices.GetMP4FileName(asset)}";
                 mediaMetadataToAddToCosmosDb.ManifestUrl = manifestUri;
                 mediaMetadataToAddToCosmosDb.HLSUrl = hlsUri;
                 mediaMetadataToAddToCosmosDb.MPEGDashUrl = mpegDashUri;
@@ -35,7 +36,7 @@ namespace XamCam.Functions.Functions
             catch(Exception e)
             {
                 log.Info($"Error: {e.Message}");
-                asset.Delete();
+                asset?.Delete();
 
                 throw e;
             }

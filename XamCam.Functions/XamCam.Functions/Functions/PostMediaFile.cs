@@ -51,6 +51,7 @@ namespace XamCam.Functions
                 log.Info("Context object created.");
 
                 newAzureMediaServicesAsset = AzureMediaServices.CreateAssetAndUploadSingleFile(AssetCreationOptions.None, mediaTitle, mediaMetadataToEncode.FileName, mediaBlobAsByteArrary, log);
+
                 mediaMetadataToEncode.MediaServicesAssetId = newAzureMediaServicesAsset.Id;
                 mediaMetadataToEncode.MediaAssetUri = newAzureMediaServicesAsset.Uri;
 
