@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.MediaServices.Client;
+using Microsoft.WindowsAzure.MediaServices.Client.Live;
 
 namespace XamCam.Functions
 {
@@ -40,6 +41,27 @@ namespace XamCam.Functions
             return job.OutputMediaAssets.FirstOrDefault();
         }
 
+        public static string GetMP4FileName(IAsset asset) =>
+            Uri.EscapeDataString(asset.AssetFiles.Where(x => x.Name.ToLower().EndsWith(".mp4")).FirstOrDefault()?.Name)?.ToString();
+
+        public static void CreateStreamingEndpoint()
+        {
+            if (CloudMediaContext.StreamingEndpoints.Count() <= 0)
+            {
+                var streamingEndpointOptions = new StreamingEndpointCreationOptions("XamCamStreamingEndpoint", 1)
+                {
+                    StreamingEndpointVersion = new Version("2.0"),
+                    CdnEnabled = true,
+                    CdnProfile = "XamCamCDNProfile",
+                    CdnProvider = CdnProviderType.StandardAkamai,
+                };
+
+                CloudMediaContext.StreamingEndpoints.Create(streamingEndpointOptions);
+            }
+
+            CloudMediaContext.StreamingEndpoints.FirstOrDefault()?.Start();
+        }
+
         public static (string manifestUri, string hlsUri, string mpegDashUri) BuildStreamingURLs(IAsset asset)
         {
             var accessPolicy = CloudMediaContext.AccessPolicies.Create(
@@ -58,8 +80,11 @@ namespace XamCam.Functions
             var manifestUrl = originLocator.Path + manifestFile.Name + "/manifest";
             manifestUrl = manifestUrl.Replace(@"http://", @"https://");
 
-            var hlsUrl = manifestFile + "(format=m3u8-aapl)";
-            var dashUrl = manifestUrl + "(format=mpd-time-csf)";
+            while (manifestUrl.Contains(" "))
+                manifestUrl = manifestUrl.Replace(" ", "%20");
+
+            var hlsUrl = $"{manifestUrl}(format=m3u8-aapl)";
+            var dashUrl = $"{manifestUrl}(format=mpd-time-csf)";
 
             return (manifestUrl, hlsUrl, dashUrl);
         }
