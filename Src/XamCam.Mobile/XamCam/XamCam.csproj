@@ -13,7 +13,7 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Pages\HomePage.xaml">
+    <EmbeddedResource Include="Pages\VideoListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Pages\NativeVideoPlayerPageXaml.xaml">

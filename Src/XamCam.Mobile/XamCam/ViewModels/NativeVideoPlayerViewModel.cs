@@ -37,16 +37,7 @@ namespace XamCam
         }
         #endregion
 
-        #region Methods
-        public async Task Initialize()
-        {
-            await CrossMediaManager.Current.Pause();
-            UpdateButtonSource();
-
-            await CrossMediaManager.Current.Play();
-            UpdateButtonSource();
-        }
-
+        #region MethodsS
         public async Task<bool> TogglePlayback()
         {
             if (CrossMediaManager.Current.VideoPlayer.Status == MediaPlayerStatus.Playing)

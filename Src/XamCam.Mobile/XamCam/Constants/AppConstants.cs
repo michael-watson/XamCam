@@ -1,9 +1,10 @@
 ﻿namespace XamCam
 {
-	public static class AppConstants
-	{
-		public const string MediaAssetsUrl = "https://iccfunction.azurewebsites.net/api/GetMediaAssets";
-		public const string IotDeviceBaseUrl = "https://homecamfunction.azurewebsites.net/api/";
-		public static readonly string GetDevicesUrl = $"{IotDeviceBaseUrl}GetDevices";
-	}
+    public static class AppConstants
+    {
+        public static string GetDevicesUrl => $"{baseUrl}GetDevices";
+        public static string MediaAssetsUrl => $"{baseUrl}GetMediaMetadata";
+
+        const string baseUrl = "https://homecamfunction.azurewebsites.net/api/";
+    }
 }

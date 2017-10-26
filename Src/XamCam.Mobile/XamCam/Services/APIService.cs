@@ -53,7 +53,10 @@ namespace XamCam
 
         static HttpClient CreateHttpClient()
         {
-            var httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip });
+            var httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return httpClient;

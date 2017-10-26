@@ -9,39 +9,38 @@ using Xamarin.Forms;
 
 namespace XamCam
 {
-    public class HomePageViewModel : BaseViewModel
+    public class VideoListViewModel : BaseViewModel
     {
+        #region Fields
+        ICommand refreshCommand;
+        #endregion
+
         #region Constructors
-        public HomePageViewModel()
-        {
-            RefreshCommand = new Command(async () => await GetAllVideosAsync());
-            GetAllDevicesAvailableAsync();
-        }
+        public VideoListViewModel() =>
+            Task.Run(async () => await GetAllDevicesAvailableAsync());
+        #endregion
+
+        #region Events
+        public event EventHandler<int> RefreshCompleted;
         #endregion
 
         #region Properties
-        public ICommand RefreshCommand { get; private set; }
+        public ICommand RefreshCommand => refreshCommand ??
+            (refreshCommand = new Command(async () => await ExecuteRefreshCommand()));
+
         public List<CameraDevice> CamerasAvailable { get; set; } = new List<CameraDevice>();
         public ObservableCollection<MediaMetadata> Videos { get; set; } = new ObservableCollection<MediaMetadata>();
         #endregion
 
         #region Methods
-        public async Task GetAllVideosAsync()
+        async Task ExecuteRefreshCommand()
         {
             if (!IsInternetConnectionActive)
                 IsInternetConnectionActive = true;
 
-            Videos.Clear();
-
             try
             {
-                var intermediateList = await APIService.GetAllVideosAsync();
-
-                if (intermediateList?.Count != Videos?.Count && intermediateList.Count != 0)
-                {
-                    foreach (var video in intermediateList)
-                        Videos.Add(video);
-                }
+                Videos = new ObservableCollection<MediaMetadata>(await APIService.GetAllVideosAsync());
             }
             catch (Exception e)
             {
@@ -50,6 +49,7 @@ namespace XamCam
             finally
             {
                 IsInternetConnectionActive = false;
+                OnRefreshCompleted(Videos?.Count ?? 0);
             }
         }
 
@@ -64,6 +64,9 @@ namespace XamCam
                 Debug.WriteLine(e.Message);
             }
         }
+
+        void OnRefreshCompleted(int numberOfVideos) =>
+            RefreshCompleted?.Invoke(this, numberOfVideos);
         #endregion
     }
 }

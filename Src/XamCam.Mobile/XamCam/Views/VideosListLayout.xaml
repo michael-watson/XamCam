@@ -4,11 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     x:Class="XamCam.VideosListLayout"
     xmlns:ViewCell="clr-namespace:XamCam"
-    x:Name="VideoList"
     ItemsSource="{Binding Videos}"
     HasUnevenRows="true"
     SeparatorVisibility="None"
-    IsRefreshing="{Binding IsBusy}"
+    IsRefreshing="{Binding IsInternetConnectionActive}"
     IsPullToRefreshEnabled="true"
     RefreshCommand="{Binding RefreshCommand}">
     <ListView.ItemTemplate>

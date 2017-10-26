@@ -119,7 +119,6 @@ namespace XamCam
             progressBar.PropertyChanged += ProgressBar_PropertyChanged;
             CrossMediaManager.Current.PlayingChanged += VideoViewProgressChanged;
 
-            await ViewModel.Initialize();
             await BeginToFadeSlider();
         }
 

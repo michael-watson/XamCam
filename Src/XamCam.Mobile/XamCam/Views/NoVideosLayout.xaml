@@ -17,31 +17,30 @@
         AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All" />
 
     <ActivityIndicator 
-        IsRunning="{Binding IsBusy}" 
-        IsVisible="{Binding IsBusy}" 
+        IsRunning="{Binding IsInternetConnectionActive}" 
+        IsVisible="{Binding IsInternetConnectionActive}" 
         AbsoluteLayout.LayoutBounds="0,0,1,1" />
     
     <StackLayout 
         Padding= "40, 0" Spacing= "20"
         AbsoluteLayout.LayoutBounds= "0, 0.9, 1, 0.3" AbsoluteLayout.LayoutFlags= "All">
             <Label 
-            Text="You currently don't have any media." 
-            HorizontalOptions="Center" 
-            FontAttributes="Bold"
-            FontSize="15" />
+                Text="You currently don't have any media." 
+                HorizontalOptions="Center" 
+                FontAttributes="Bold"
+                FontSize="15" />
 
             <Label 
-            HorizontalOptions="Center" 
-            HorizontalTextAlignment="Center" 
-            FontSize="13"
-            Text= "Add some videos to enable you to search and playback your company's media."> 
-            </Label>
+                HorizontalOptions="Center" 
+                HorizontalTextAlignment="Center" 
+                FontSize="13"
+                Text= "Add some videos to enable you to search and playback your company's media."/>
 
             <Image 
-            HorizontalOptions="Center"
-            Source="camera.png"
-            HeightRequest="130"
-            Aspect="AspectFit" /> 
+                HorizontalOptions="Center"
+                Source="camera.png"
+                HeightRequest="130"
+                Aspect="AspectFit" /> 
 
     </StackLayout>
 </AbsoluteLayout>

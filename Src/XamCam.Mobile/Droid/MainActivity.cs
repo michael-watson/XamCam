@@ -17,6 +17,7 @@ namespace XamCam.Droid
 			base.OnCreate(savedInstanceState);
 
 			VideoViewRenderer.Init();
+            global::Xamarin.Forms.Forms.SetFlags("FastRenderers_Experimental");
 			global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
 			var density = Resources.DisplayMetrics.Density;
