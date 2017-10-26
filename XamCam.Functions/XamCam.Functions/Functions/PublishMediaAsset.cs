@@ -32,6 +32,8 @@ namespace XamCam.Functions.Functions
                 mediaMetadataToAddToCosmosDb.ManifestUrl = manifestUri;
                 mediaMetadataToAddToCosmosDb.HLSUrl = hlsUri;
                 mediaMetadataToAddToCosmosDb.MPEGDashUrl = mpegDashUri;
+
+                AzureMediaServices.CreateStreamingEndpoint();
             }
             catch(Exception e)
             {
