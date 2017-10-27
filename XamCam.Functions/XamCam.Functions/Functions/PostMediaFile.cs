@@ -29,10 +29,11 @@ namespace XamCam.Functions
             if (string.IsNullOrWhiteSpace(mediaTitle))
                 badRequestMessageStringBuilder.AppendLine("Video Title Empty");
 
-            if (badRequestMessageStringBuilder.Length > 0)
+            switch (badRequestMessageStringBuilder.Length > 0)
             {
-                mediaMetadataToEncode = null;
-                return req.CreateResponse(HttpStatusCode.BadRequest, badRequestMessageStringBuilder.ToString());
+                case true:
+                    mediaMetadataToEncode = null;
+                    return req.CreateResponse(HttpStatusCode.BadRequest, badRequestMessageStringBuilder.ToString());
             }
 
             log.Info($"Using Azure Media Service Rest API Endpoint : {APIEndpointUrls.MediaServiceRestEndpoint}");

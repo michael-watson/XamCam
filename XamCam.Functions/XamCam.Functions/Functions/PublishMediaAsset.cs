@@ -35,6 +35,9 @@ namespace XamCam.Functions.Functions
                 log.Info($"Generating Urls");
                 var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURLs(asset, locator);
 
+                log.Info($"Enabling Blob Storage Read-Only Access");
+                AzureMediaServices.EnableReadAccessForBlobStorage(asset);
+
                 mediaMetadataToAddToCosmosDb.BlobStorageMediaUrl = $"{mediaMetadataToAddToCosmosDb.MediaAssetUri}/{AzureMediaServices.GetMP4FileName(asset)}";
                 mediaMetadataToAddToCosmosDb.ManifestUrl = manifestUri;
                 mediaMetadataToAddToCosmosDb.HLSUrl = hlsUri;

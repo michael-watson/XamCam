@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.MediaServices.Client;
 using Microsoft.WindowsAzure.MediaServices.Client.Live;
 
@@ -96,6 +97,15 @@ namespace XamCam.Functions
             var dashUrl = $"{manifestUrl}(format=mpd-time-csf)";
 
             return (manifestUrl, hlsUrl, dashUrl);
+        }
+
+        public static void EnableReadAccessForBlobStorage(IAsset asset)
+        {
+            var blobContainer = new CloudBlobContainer(asset.Uri);
+            var permissions = blobContainer.GetPermissions();
+
+            permissions.PublicAccess = BlobContainerPublicAccessType.Container;
+            blobContainer.SetPermissions(permissions);
         }
 
         public static IAsset CreateAssetAndUploadSingleFile(AssetCreationOptions assetCreationOptions, string mediaTitle, string fileName, byte[] mediaFile, TraceWriter log)
