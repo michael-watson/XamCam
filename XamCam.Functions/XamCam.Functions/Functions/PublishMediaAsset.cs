@@ -26,14 +26,19 @@ namespace XamCam.Functions.Functions
 
                 asset = AzureMediaServices.GetAsset(mediaMetadataFromQueue);
 
-                var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURLs(asset);
+                log.Info($"Publishing Media");
+                var locator = AzureMediaServices.PublishMedia(asset, TimeSpan.FromDays(999));
+
+                log.Info($"Generating Streaming Endpoint");
+                AzureMediaServices.CreateStreamingEndpoint();
+
+                log.Info($"Generating Urls");
+                var (manifestUri, hlsUri, mpegDashUri) = AzureMediaServices.BuildStreamingURLs(asset, locator);
 
                 mediaMetadataToAddToCosmosDb.BlobStorageMediaUrl = $"{mediaMetadataToAddToCosmosDb.MediaAssetUri}/{AzureMediaServices.GetMP4FileName(asset)}";
                 mediaMetadataToAddToCosmosDb.ManifestUrl = manifestUri;
                 mediaMetadataToAddToCosmosDb.HLSUrl = hlsUri;
                 mediaMetadataToAddToCosmosDb.MPEGDashUrl = mpegDashUri;
-
-                AzureMediaServices.CreateStreamingEndpoint();
             }
             catch(Exception e)
             {
