@@ -735,7 +735,13 @@ namespace XamCam.Droid
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.abc_textfield_search_material = global::XamCam.Droid.Resource.Drawable.abc_textfield_search_material;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.abc_vector_test = global::XamCam.Droid.Resource.Drawable.abc_vector_test;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_hide_password = global::XamCam.Droid.Resource.Drawable.avd_hide_password;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_hide_password_1 = global::XamCam.Droid.Resource.Drawable.avd_hide_password_1;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_hide_password_2 = global::XamCam.Droid.Resource.Drawable.avd_hide_password_2;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_hide_password_3 = global::XamCam.Droid.Resource.Drawable.avd_hide_password_3;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_show_password = global::XamCam.Droid.Resource.Drawable.avd_show_password;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_show_password_1 = global::XamCam.Droid.Resource.Drawable.avd_show_password_1;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_show_password_2 = global::XamCam.Droid.Resource.Drawable.avd_show_password_2;
+			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.avd_show_password_3 = global::XamCam.Droid.Resource.Drawable.avd_show_password_3;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.design_bottom_navigation_item_background = global::XamCam.Droid.Resource.Drawable.design_bottom_navigation_item_background;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.design_fab_background = global::XamCam.Droid.Resource.Drawable.design_fab_background;
 			global::Plugin.MediaManager.Forms.Android.Resource.Drawable.design_ic_visibility = global::XamCam.Droid.Resource.Drawable.design_ic_visibility;

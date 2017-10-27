@@ -4,9 +4,9 @@ namespace XamCam
 {
 	public class CameraViewCell : ViewCell
 	{
-		Label cameraName;
+        readonly Label cameraName;
 
-		public CameraViewCell()
+        public CameraViewCell()
 		{
 			cameraName = new Label
 			{

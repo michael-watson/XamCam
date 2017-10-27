@@ -17,9 +17,8 @@ namespace XamCam
         readonly Button playButton;
         readonly Slider progressBar;
         readonly VideoView videoView;
-        readonly Label transcriptLabel;
         readonly ContentView clickContainer;
-		const uint fadeDuration = 500;
+        const uint fadeDuration = 500;
         #endregion
 
         #region Fields
@@ -32,19 +31,12 @@ namespace XamCam
         {
             Title = "Native Video Player";
 
-            if (!url.Contains("https"))
-                url = url.Replace("http", "https");
-
             videoView = new VideoView
             {
                 Source = url,
-                AspectMode = VideoAspectMode.None
+                AspectMode = VideoAspectMode.AspectFit
             };
-            transcriptLabel = new Label
-            {
-                LineBreakMode = LineBreakMode.WordWrap,
-                Text = "This is where our transcript would go if we had one"
-            };
+
             playButton = new Button
             {
                 VerticalOptions = LayoutOptions.Center,
@@ -86,10 +78,9 @@ namespace XamCam
             grid.Children.Add(clickContainer, 0, 3, 0, 1);
             grid.Children.Add(progressBar, 1, 2, 0, 1);
             grid.Children.Add(playButton, 1, 2, 0, 1);
-            grid.Children.Add(transcriptLabel, 1, 2, 1, 2);
 
             var tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += UserResetFade;
+            tapGesture.Tapped += HandleClickContainerTapped;
 
             clickContainer.GestureRecognizers.Add(tapGesture);
             playButton.SetBinding(Button.ImageProperty, nameof(NativeVideoPlayerViewModel.ButtonImageSource));
@@ -103,10 +94,16 @@ namespace XamCam
         {
             base.OnSizeAllocated(width, height);
 
-            if (width > height)
-                SetLandscapeMode();
-            else
-                SetPortraitMode();
+            switch (width > height)
+            {
+                case true:
+                    SetLandscapeMode();
+                    break;
+
+                default:
+                    SetPortraitMode();
+                    break;
+            }
         }
 
         protected override async void OnAppearing()
@@ -118,8 +115,6 @@ namespace XamCam
             progressBar.PropertyChanging += ProgressBar_PropertyChanging;
             progressBar.PropertyChanged += ProgressBar_PropertyChanged;
             CrossMediaManager.Current.PlayingChanged += VideoViewProgressChanged;
-
-            await BeginToFadeSlider();
         }
 
         protected override async void OnDisappearing()
@@ -129,6 +124,8 @@ namespace XamCam
             playButton.Clicked -= TogglePlaybackButtonClicked;
             progressBar.ValueChanged -= ProgressBarValueChanged;
             CrossMediaManager.Current.PlayingChanged -= VideoViewProgressChanged;
+            progressBar.PropertyChanging -= ProgressBar_PropertyChanging;
+            progressBar.PropertyChanged -= ProgressBar_PropertyChanged;
 
             ViewModel.CancelTokenSource.Cancel();
             await CrossMediaManager.Current.Stop();
@@ -157,12 +154,18 @@ namespace XamCam
             }
         }
 
-        void UserResetFade(object sender, EventArgs e)
+        void HandleClickContainerTapped(object sender, EventArgs e)
         {
-            if (CrossMediaManager.Current.VideoPlayer.Status != MediaPlayerStatus.Paused)
-                ResetFade();
-            else
-                ResetFade(false);
+            switch (CrossMediaManager.Current.VideoPlayer.Status)
+            {
+                case MediaPlayerStatus.Paused:
+                    ResetFade(false);
+                    break;
+
+                default:
+                    ResetFade();
+                    break;
+            }
         }
 
         void VideoViewProgressChanged(object sender, PlayingChangedEventArgs e)
@@ -176,7 +179,8 @@ namespace XamCam
         async void ProgressBarValueChanged(object sender, ValueChangedEventArgs e)
         {
             var newValue = Math.Round(e.NewValue, 2);
-            if (newValue == videoProgress) return;
+            if (newValue == videoProgress)
+                return;
 
             videoProgress = e.NewValue;
 
@@ -210,8 +214,12 @@ namespace XamCam
                 ViewExtensions.CancelAnimations(progressBar);
                 ViewExtensions.CancelAnimations(playButton);
 
-                if (restartFade)
-                    await BeginToFadeSlider();
+                switch (restartFade)
+                {
+                    case true:
+                        await BeginToFadeSlider();
+                        break;
+                }
             });
         }
 
@@ -255,8 +263,6 @@ namespace XamCam
 
         void SetPortraitMode()
         {
-            transcriptLabel.IsVisible = true;
-
             NavigationPage.SetHasNavigationBar(this, true);
 
             Grid.SetRowSpan(videoView, 1);
@@ -267,8 +273,6 @@ namespace XamCam
 
         void SetLandscapeMode()
         {
-            transcriptLabel.IsVisible = false;
-
             NavigationPage.SetHasNavigationBar(this, false);
 
             Grid.SetRowSpan(videoView, 2);

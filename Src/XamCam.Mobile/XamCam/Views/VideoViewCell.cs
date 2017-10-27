@@ -71,15 +71,21 @@ namespace XamCam
         {
             base.OnBindingContextChanged();
 
-            var video = BindingContext as MediaMetadata;
+            var videoMetadata = BindingContext as MediaMetadata;
 
-            videoPreview.VideoUrl = "https://";
+            videoPreview.VideoUrl = videoMetadata.BlobStorageMediaUrl;
             durationLabel.Text = "Error, No Duration Provided";
 
-            if (video?.Title?.Length > 15)
-                titleLabel.Text = $"{video?.Title?.Substring(0, 15)}...";
-            else
-                titleLabel.Text = video?.Title ?? "No Title Entered";
+            switch (videoMetadata?.Title?.Length > 15)
+            {
+                case true:
+					titleLabel.Text = $"{videoMetadata?.Title?.Substring(0, 15)}...";
+                    break;
+
+                default:
+					titleLabel.Text = videoMetadata?.Title ?? "No Title Entered";
+                    break;
+            }
         }
         #endregion
     }

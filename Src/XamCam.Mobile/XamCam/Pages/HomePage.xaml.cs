@@ -47,7 +47,7 @@ namespace XamCam
             if (videoSelected == null)
                 return;
 
-            Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new NativeVideoPlayerPage(videoSelected.HLSUrl)));
+            Device.BeginInvokeOnMainThread(async () => await Navigation.PushAsync(new WebViewVideoPage(videoSelected.HLSUrl)));
 
             ((ListView)sender).SelectedItem = null;
         }
