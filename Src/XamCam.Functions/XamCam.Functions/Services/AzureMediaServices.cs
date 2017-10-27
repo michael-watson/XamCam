@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.MediaServices.Client;
 using Microsoft.WindowsAzure.MediaServices.Client.Live;
 
@@ -13,6 +14,7 @@ namespace XamCam.Functions
         #region Constant Fields
         const string encoderName = "Media Encoder Standard";
         const string encoderPreset = "Content Adaptive Multiple Bitrate MP4";
+        const string cdnStreamingEndpointName = "XamCamStreamingEndpoint";
         #endregion
 
         #region Fields
@@ -46,47 +48,64 @@ namespace XamCam.Functions
 
         public static void CreateStreamingEndpoint()
         {
-            if (CloudMediaContext.StreamingEndpoints.Count() <= 0)
-            {
-                var streamingEndpointOptions = new StreamingEndpointCreationOptions("XamCamStreamingEndpoint", 1)
-                {
-                    StreamingEndpointVersion = new Version("2.0"),
-                    CdnEnabled = true,
-                    CdnProfile = "XamCamCDNProfile",
-                    CdnProvider = CdnProviderType.StandardAkamai,
-                };
+            const string cdnProfileName = "XamCamCDNProfile";
 
-                CloudMediaContext.StreamingEndpoints.Create(streamingEndpointOptions);
+            switch (CloudMediaContext.StreamingEndpoints.Where(x => x.CdnProfile.Equals(cdnProfileName)).Count() > 0)
+            {
+                case false:
+                    var streamingEndpointOptions = new StreamingEndpointCreationOptions(cdnStreamingEndpointName, 1)
+                    {
+                        StreamingEndpointVersion = new Version("2.0"),
+                        CdnEnabled = true,
+                        CdnProfile = cdnProfileName,
+                        CdnProvider = CdnProviderType.StandardAkamai,
+                    };
+
+                    CloudMediaContext.StreamingEndpoints.Create(streamingEndpointOptions);
+                    break;
             }
 
-            CloudMediaContext.StreamingEndpoints.FirstOrDefault()?.Start();
+            switch (CloudMediaContext.StreamingEndpoints.FirstOrDefault()?.State)
+            {
+                case StreamingEndpointState.Stopped:
+                    CloudMediaContext.StreamingEndpoints.FirstOrDefault()?.Start();
+                    break;
+            }
         }
 
-        public static (string manifestUri, string hlsUri, string mpegDashUri) BuildStreamingURLs(IAsset asset)
+        public static ILocator PublishMedia(IAsset asset, TimeSpan publishTimeSpan)
         {
             var accessPolicy = CloudMediaContext.AccessPolicies.Create(
                 "Streaming policy",
-                TimeSpan.FromMinutes(30),
+                publishTimeSpan,
                 AccessPermissions.Read);
 
-            var originLocator = CloudMediaContext.Locators.CreateLocator(
+            return CloudMediaContext.Locators.CreateLocator(
                 LocatorType.OnDemandOrigin,
                 asset,
                 accessPolicy,
                 DateTime.UtcNow.AddMinutes(-5));
+        }
 
+        public static (string manifestUri, string hlsUri, string mpegDashUri) BuildStreamingURLs(IAsset asset, ILocator locator)
+        {
             var manifestFile = asset.AssetFiles.Where(x => x.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
 
-            var manifestUrl = originLocator.Path + manifestFile.Name + "/manifest";
-            manifestUrl = manifestUrl.Replace(@"http://", @"https://");
-
-            while (manifestUrl.Contains(" "))
-                manifestUrl = manifestUrl.Replace(" ", "%20");
+            var manifestUrl = GetStreamingManifestUrl(locator, manifestFile, cdnStreamingEndpointName);
 
             var hlsUrl = $"{manifestUrl}(format=m3u8-aapl)";
             var dashUrl = $"{manifestUrl}(format=mpd-time-csf)";
 
             return (manifestUrl, hlsUrl, dashUrl);
+        }
+
+        public static void EnableReadAccessForBlobStorage(IAsset asset)
+        {
+            var blobContainer = new CloudBlobContainer(asset.Uri);
+            var permissions = blobContainer.GetPermissions();
+
+            permissions.PublicAccess = BlobContainerPublicAccessType.Container;
+            blobContainer.SetPermissions(permissions);
         }
 
         public static IAsset CreateAssetAndUploadSingleFile(AssetCreationOptions assetCreationOptions, string mediaTitle, string fileName, byte[] mediaFile, TraceWriter log)
@@ -129,6 +148,17 @@ namespace XamCam.Functions
                 .LastOrDefault();
 
             return processor ?? throw new ArgumentException(string.Format("Unknown media processor", mediaProcessorName));
+        }
+
+        static string GetStreamingManifestUrl(ILocator locator, IAssetFile assetFile, string cdnStreamingEndpointName)
+        {
+            var manifestUrl = locator.Path + assetFile.Name + "/manifest";
+            manifestUrl = manifestUrl.Replace("http://", $"https://{cdnStreamingEndpointName}-");
+
+            while (manifestUrl.Contains(" "))
+                manifestUrl = manifestUrl.Replace(" ", "%20");
+
+            return manifestUrl;
         }
         #endregion
     }
