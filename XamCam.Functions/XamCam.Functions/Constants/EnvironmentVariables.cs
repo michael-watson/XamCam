@@ -6,6 +6,7 @@ namespace XamCam.Functions
     {
         #region Blob Storage
         public const string AzureWebJobsStorage = nameof(AzureWebJobsStorage);
+        public static readonly string BlobStorageConnectionString = Environment.GetEnvironmentVariable(nameof(BlobStorageConnectionString));
         #endregion
 
         #region CosmosDb
