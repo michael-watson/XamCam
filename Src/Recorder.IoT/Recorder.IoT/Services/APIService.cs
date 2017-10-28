@@ -52,7 +52,7 @@ namespace Recorder.IoT
 
             var videoToUpload = await ConvertFileToBytesAsync(storageFile).ConfigureAwait(false);
             var title = Uri.EscapeDataString(recordedFileName);
-            var apiUrl = $"{postMediaFileAPI}/{deviceTwin?.DeviceId ?? Uri.EscapeDataString("No Id")}/{title}?code={postMediaFileFunctionKey}";
+            var apiUrl = $"{postMediaFileAPI}/{deviceTwin?.DeviceId ?? Uri.EscapeDataString("No_Id")}/{title}?code={postMediaFileFunctionKey}";
 
             var content = new ByteArrayContent(videoToUpload);
 
