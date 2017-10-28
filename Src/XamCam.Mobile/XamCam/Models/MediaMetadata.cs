@@ -4,7 +4,7 @@ namespace XamCam
 {
 	public class MediaMetadata
 	{
-        public string Id { get; set; }
+        public string MetadataId { get; set; }
         public string MediaServicesAssetId { get; set; }
         public Uri MediaAssetUri { get; set; }
         public string FileName { get; set; }
