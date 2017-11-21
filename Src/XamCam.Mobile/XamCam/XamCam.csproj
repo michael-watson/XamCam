@@ -13,6 +13,12 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Remove="Views\NoVideosLayout.xaml" />
+    <EmbeddedResource Remove="Views\VideosListLayout.xaml" />
+    <EmbeddedResource Remove="Pages\NativeVideoPlayerPageXaml.xaml" />
+    <EmbeddedResource Remove="Pages\VideoListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Pages\VideoListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -25,7 +31,6 @@
     <EmbeddedResource Include="Views\VideosListLayout.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Pages\HomePage.xaml.cs">
