@@ -1,5 +1,4 @@
 using System.Net;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -21,7 +20,7 @@ namespace XamCam.Functions
 				return req.CreateResponse(HttpStatusCode.BadRequest, "Please provide an id for a device");
 			}
 
-			var res = await DeviceManager.Instance.AddDeviceAsync(id);
+			var res = await IoTDeviceService.Instance.AddDeviceAsync(id);
 
 			if (string.IsNullOrEmpty(res))
 			{

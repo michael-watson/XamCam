@@ -71,6 +71,7 @@ namespace Recorder.IoT
                 await initializeCameraAsync();
 
                 await startRecordingAsync(null, null);
+                recordedFileName = "Brandon Presenting";
                 await Task.Delay(5000);
                 await stopRecordingAsync(null, null);
             }
@@ -137,7 +138,7 @@ namespace Recorder.IoT
                     //var stringContent = JsonConvert.SerializeObject(uploadContent);
 
                     var title = Uri.EscapeDataString(recordedFileName);
-                    var url = $"http://iccfunction.azurewebsites.net/api/PostMediaAssetToSpecifiedBlobContainer/{DeviceInfo.Instance.Id}/{title}";
+                    var url = $"http://iccfunction.azurewebsites.net/api/PostMediaAssetToSpecifiedBlobContainer/{DeviceInfo.Instance.Name}/{title}";
 
                     var content = new ByteArrayContent(videoToUpload);
                     //var content = new StringContent(stringContent, Encoding.UTF8, "application/json");
@@ -148,9 +149,9 @@ namespace Recorder.IoT
                     {
                         //Stub if we want to do handle post result
 
-                    }
+                        System.Diagnostics.Debug.WriteLine(success);
 
-                    System.Diagnostics.Debug.WriteLine(success);
+                    }
                 }
 
                 await deviceClient.SendEventAsync(new Message(Encoding.UTF8.GetBytes($"{deviceTwin.DeviceId}: Upload Completed")));
