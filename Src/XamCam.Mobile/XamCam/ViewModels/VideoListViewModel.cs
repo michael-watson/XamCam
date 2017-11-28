@@ -9,64 +9,69 @@ using Xamarin.Forms;
 
 namespace XamCam
 {
-    public class VideoListViewModel : BaseViewModel
-    {
-        #region Fields
-        ICommand refreshCommand;
-        #endregion
+	public class VideoListViewModel : BaseViewModel
+	{
+		#region Fields
+		ICommand refreshCommand;
+		#endregion
 
-        #region Constructors
-        public VideoListViewModel() =>
-            Task.Run(async () => await GetAllDevicesAvailableAsync());
-        #endregion
+		#region Constructors
+		public VideoListViewModel() =>
+			Task.Run(async () => await GetAllDevicesAvailableAsync());
+		#endregion
 
-        #region Events
-        public event EventHandler<int> RefreshCompleted;
-        #endregion
+		#region Properties
+		public ICommand RefreshCommand => refreshCommand ??
+			(refreshCommand = new Command(async () => await ExecuteRefreshCommand()));
 
-        #region Properties
-        public ICommand RefreshCommand => refreshCommand ??
-            (refreshCommand = new Command(async () => await ExecuteRefreshCommand()));
+		public List<CameraDevice> CamerasAvailable { get; set; } = new List<CameraDevice>();
+		public ObservableCollection<MediaMetadata> Videos { get; set; } = new ObservableCollection<MediaMetadata>();
 
-        public List<CameraDevice> CamerasAvailable { get; set; } = new List<CameraDevice>();
-        public ObservableCollection<MediaMetadata> Videos { get; set; } = new ObservableCollection<MediaMetadata>();
-        #endregion
+		public bool DisplayNoVideosIndicator
+		{
+			get => Videos.Count == 0;
+		}
+		#endregion
 
-        #region Methods
-        async Task ExecuteRefreshCommand()
-        {
-            if (!IsInternetConnectionActive)
-                IsInternetConnectionActive = true;
+		#region Methods
+		async Task ExecuteRefreshCommand()
+		{
+			if (IsBusy)
+				return;
 
-            try
-            {
-                Videos = new ObservableCollection<MediaMetadata>(await APIService.GetAllVideosAsync());
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-            finally
-            {
-                IsInternetConnectionActive = false;
-                OnRefreshCompleted(Videos?.Count ?? 0);
-            }
-        }
+			IsBusy = true;
 
-        public async Task GetAllDevicesAvailableAsync()
-        {
-            try
-            {
-                CamerasAvailable = await APIService.GetAllDevicesAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-        }
+			Videos.Clear();
 
-        void OnRefreshCompleted(int numberOfVideos) =>
-            RefreshCompleted?.Invoke(this, numberOfVideos);
-        #endregion
-    }
+			try
+			{
+				var videos = await APIService.GetAllVideosAsync();
+				foreach (var video in videos)
+					Videos.Add(video);
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				IsBusy = false;
+
+				OnPropertyChanged(nameof(DisplayNoVideosIndicator));
+			}
+		}
+
+		public async Task GetAllDevicesAvailableAsync()
+		{
+			try
+			{
+				CamerasAvailable = await APIService.GetAllDevicesAsync();
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+			}
+		}
+		#endregion
+	}
 }

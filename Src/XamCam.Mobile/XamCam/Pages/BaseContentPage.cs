@@ -7,7 +7,7 @@ namespace XamCam
         public BaseContentPage()
         {
             BindingContext = new T();
-            this.SetBinding(IsBusyProperty, nameof(ViewModel.IsInternetConnectionActive));
+            this.SetBinding(IsBusyProperty, nameof(ViewModel.IsBusy));
         }
 
         protected T ViewModel => BindingContext as T;

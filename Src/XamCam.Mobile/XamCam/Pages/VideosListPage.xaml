@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<local:BaseContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:XamCam;assembly=XamCam"
+    x:TypeArguments="local:VideoListViewModel"
+    x:Class="XamCam.VideosListPage"
+    
+    Title= "Videos"
+    Icon = "camera.png">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            Name="DevicesButton" 
+            Order="Primary" 
+            Text="Devices" 
+            Priority="0" 
+            Activated="OnDevicesClicked"/>
+    </ContentPage.ToolbarItems>
+    <local:BaseContentPage.Content>
+        <StackLayout>
+            <ListView x:Name="videoList"
+                xmlns="http://xamarin.com/schemas/2014/forms" 
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+                x:Class="XamCam.VideosListLayout"
+                xmlns:ViewCell="clr-namespace:XamCam"
+                ItemsSource="{Binding Videos}"
+                HasUnevenRows="true"
+                SeparatorVisibility="None"
+                IsRefreshing="{Binding IsBusy, Mode=TwoWay}"
+                IsPullToRefreshEnabled="true"
+                RefreshCommand="{Binding RefreshCommand}"
+                ItemSelected="DisplayVideoSelected"
+                VerticalOptions="StartAndExpand">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                       <local:VideoViewCell/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ContentView x:Name="noVideosLabel"
+                IsVisible="{Binding DisplayNoVideosIndicator}"
+                BackgroundColor="Red"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="End">
+                <ContentView.Content>
+                    <Label Text="No Videos Found"
+                        TextColor="White"
+                        HorizontalOptions="Center"/>
+                </ContentView.Content>
+            </ContentView>
+        </StackLayout>
+    </local:BaseContentPage.Content>
+</local:BaseContentPage>

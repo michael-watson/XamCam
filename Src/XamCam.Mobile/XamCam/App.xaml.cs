@@ -21,7 +21,7 @@ namespace XamCam
 
 			InitializeComponent();
 
-            MainPage = new NavigationPage(new VideoListPage());
+			MainPage = new NavigationPage(new VideosListPage());
 		}
 
 		protected override void OnStart()
