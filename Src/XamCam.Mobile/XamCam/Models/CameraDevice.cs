@@ -8,7 +8,7 @@ namespace XamCam
 		public string DeviceId { get; set; }
 
 		[JsonProperty("Nickname")]
-		public object Nickname { get; set; }
+		public string Nickname { get; set; }
 
 		[JsonProperty("ConnectionState")]
 		public long ConnectionState { get; set; }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27019.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XamCam.Functions", "XamCam.Functions\XamCam.Functions.csproj", "{929BC168-886F-4359-B0F3-9A0369C23236}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamCam.Functions", "XamCam.Functions\XamCam.Functions.csproj", "{929BC168-886F-4359-B0F3-9A0369C23236}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
