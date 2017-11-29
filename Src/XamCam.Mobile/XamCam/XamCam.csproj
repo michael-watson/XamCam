@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Constants\" />
+    <Folder Include="Models\" />
+    <Folder Include="Pages\" />
+    <Folder Include="Services\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\NoVideosLayout.xaml" />
+    <EmbeddedResource Remove="Views\VideosListLayout.xaml" />
+    <EmbeddedResource Remove="Pages\NativeVideoPlayerPageXaml.xaml" />
+    <EmbeddedResource Remove="Pages\VideoListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="App.xaml.cs">
+      <DependentUpon>*.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="2.4.0.18342" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Rg.Plugins.Popup" Version="1.0.4" />
+    <PackageReference Include="Plugin.MediaManager.Forms" Version="0.4.5" />
+    <PackageReference Include="Microsoft.Azure.Mobile.Analytics" Version="0.16.0" />
+    <PackageReference Include="Microsoft.Azure.Mobile.Crashes" Version="0.16.0" />
+  </ItemGroup>
+</Project>
